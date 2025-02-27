@@ -1,0 +1,9 @@
+[package]
+name = "datasheet_creator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+printpdf = {version = "0.7.0", features = ["embedded_images"]}
+ron = "0.8.1"
+serde = {version = "1.0.218", features = ["derive"]}
