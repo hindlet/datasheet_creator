@@ -81,7 +81,7 @@ impl Weapon {
         }
 
         let skill: String;
-        if cased_keywords.contains(&"Torrent".to_string()) {
+        if cased_keywords.contains(&"TORRENT".to_string()) {
             skill = "N/A".to_string();
         } else {
             skill = format!("{}+", self.skill)
