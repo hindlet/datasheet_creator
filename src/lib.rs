@@ -34,8 +34,7 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
         }
     };
 
-    let mut context = unit.get_context();
-
+    let context = unit.get_context();
 
     let result = tera.render("datasheet.html", &context).unwrap();
     let html_path = unit.get_html_path(&output_path);
@@ -63,8 +62,8 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     }
 }
 
-pub fn render_folder(path: String) {
-    let f = File::open(path).unwrap();
-    // let unit: Unit = from_reader(f).unwrap();
-    // unit.render();
-}
+// pub fn render_folder(path: String) {
+//     let f = File::open(path).unwrap();
+//     // let unit: Unit = from_reader(f).unwrap();
+//     // unit.render();
+// }
