@@ -63,5 +63,6 @@ Unit (
     faction_keyword: "T'au Empire",
     keywords: [
         "Example", "Walker", "Battlesuit"
-    ]
+    ],
+    damaged: Some(3)
 )

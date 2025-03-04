@@ -49,7 +49,8 @@ pub struct Unit {
     pub core_abilities: Vec<String>,
     pub unique_abilities: Vec<Ability>,
     pub faction_keyword: String,
-    pub keywords: Vec<String>
+    pub keywords: Vec<String>,
+    pub damaged: Option<u32>
 }
 
 
@@ -100,6 +101,12 @@ impl Unit {
             context.insert("movement", &"20+".to_string());
         }
 
+        let damaged: String;
+        if let Some(damaged_wall) = self.damaged {
+            damaged = format!("{}", damaged_wall);
+        } else {
+            damaged = "None".to_string();
+        }
         
         context.insert("ranged_weapons", &self.get_ranged_weapon_list());
         context.insert("melee_weapons", &self.get_melee_weapon_list());
@@ -108,6 +115,7 @@ impl Unit {
         context.insert("unique_abilities", &self.unique_abilities);
         context.insert("faction_keyword", &self.faction_keyword.to_uppercase());
         context.insert("keywords", &cased_keywords);
+        context.insert("damaged", &damaged);
 
         return context;
     }

@@ -75,15 +75,26 @@ pub type WeaponTuple = (String, String, String, String, u32, String, String, Vec
 
 impl Weapon {
     pub fn to_html_data(&self) -> WeaponTuple {
+        let mut cased_keywords = Vec::new();
+        for keyword in self.keywords.iter() {
+            cased_keywords.push(keyword.to_uppercase());
+        }
+
+        let skill: String;
+        if cased_keywords.contains(&"Torrent".to_string()) {
+            skill = "N/A".to_string();
+        } else {
+            skill = format!("{}+", self.skill)
+        }
         (
             self.name.clone(),
             self.range.to_string(),
             self.attacks.to_string(),
-            format!("{}+", self.skill),
+            skill,
             self.strength,
             format!("-{}", self.ap),
             self.damage.to_string(),
-            self.keywords.clone()
+            cased_keywords
         )
     }
 }
