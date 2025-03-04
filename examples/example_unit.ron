@@ -1,13 +1,13 @@
 Unit (
     name: "Example Unit",
     stats: UnitStats(
-        movement: 2,
-        toughness: 2,
-        save: 2,
+        movement: 9,
+        toughness: 4,
+        save: 3,
         invuln: Some(5),
-        wounds: 2,
-        leadership: 2,
-        oc: 2,
+        wounds: 8,
+        leadership: 7,
+        oc: 1,
     ),
     ranged_weapons: [
         Weapon (
@@ -60,6 +60,5 @@ Unit (
         ),
     ],
     keywords: [
-
     ]
 )

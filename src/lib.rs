@@ -37,7 +37,6 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     let mut context = unit.get_context();
 
 
-    context.insert("movement", &2);
     let result = tera.render("datasheet.html", &context).unwrap();
     let html_path = unit.get_html_path(&output_path);
     let mut html_file = File::create(html_path.clone()).unwrap();

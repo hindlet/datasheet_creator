@@ -17,16 +17,16 @@ pub struct UnitStats {
 
 impl UnitStats {
     pub fn add_context(&self, context: &mut Context) {
-        context.insert("movement", &format!("{}\"", self.movement));
+        context.insert("movement", &format!("{}", self.movement));
         context.insert("toughness", &self.toughness);
-        context.insert("save", &format!("{}+", self.save));
+        context.insert("save", &self.save);
         if let Some(invuln) = self.invuln {
-            context.insert("invuln", &format!("{}+", invuln));
+            context.insert("invuln", &format!("{}", invuln));
         } else {
             context.insert("invuln", &"None".to_string());
         }
         context.insert("wounds", &self.wounds);
-        context.insert("leadership", &format!("{}+", self.leadership));
+        context.insert("leadership", &self.leadership);
         context.insert("oc", &self.oc);
     }
 }
@@ -85,15 +85,27 @@ impl Unit {
         &self
     ) -> Context {
         let mut context = Context::new();
+
+        let mut cased_keywords = Vec::new();
+        for keyword in self.keywords.iter() {
+            cased_keywords.push(keyword.to_uppercase());
+        }
+        
         
         context.insert("unit_name", &self.name);
         self.stats.add_context(&mut context);
+
+        if cased_keywords.contains(&"AIRCRAFT".to_string()) {
+            context.insert("movement", &"20+".to_string());
+        }
+
+        
         context.insert("ranged_weapons", &self.get_ranged_weapon_list());
         context.insert("melee_weapons", &self.get_melee_weapon_list());
         context.insert("faction_ability", &self.faction_ability.clone().unwrap_or("none".to_string()));
         context.insert("core_abilities", &self.core_abilities);
         context.insert("unique_abilities", &self.unique_abilities);
-        context.insert("keywords", &self.keywords);
+        context.insert("keywords", &cased_keywords);
 
         return context;
     }
