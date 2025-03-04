@@ -23,25 +23,21 @@ pub enum VariableValue {
 }
 
 impl VariableValue {
-    pub fn to_string(&self) -> (String, f32) {
+    pub fn to_string(&self) -> String {
         match self {
             VariableValue::Rolled(count, die, add) => {
                 let mut text = String::new();
-                let mut offset = 0.7;
                 if *count != 1 {
                     text += &format!("{}", count);
-                    offset += 0.8;
                 }
                 text += die.to_string();
                 if *add != 0 {
                     text += &format!("+{}", add);
-                    offset += 1.3 + (*add >= 10) as i32 as f32 * 0.7;
                 }
-                return (text, offset);
+                return text;
             },
             VariableValue::Set(val) => {
-                let offset = (*val >= 10) as i32 as f32 * 0.7;
-                return (format!("{}", val), offset);
+                return format!("{}", val);
             }
         }
     }
@@ -51,6 +47,15 @@ impl VariableValue {
 pub enum Range {
     Melee,
     Ranged(u32)
+}
+
+impl Range {
+    pub fn to_string(&self) -> String {
+        match self {
+            Range::Melee => return "melee".to_string(),
+            Range::Ranged(range) => return format!("{}\"", range)
+        }
+    }
 }
 
 
@@ -64,4 +69,21 @@ pub struct Weapon {
     pub ap: u32,
     pub damage: VariableValue,
     pub keywords: Vec<String>
+}
+
+pub type WeaponTuple = (String, String, String, String, u32, String, String, Vec<String>);
+
+impl Weapon {
+    pub fn to_html_data(&self) -> WeaponTuple {
+        (
+            self.name.clone(),
+            self.range.to_string(),
+            self.attacks.to_string(),
+            format!("{}+", self.skill),
+            self.strength,
+            format!("-{}", self.ap),
+            self.damage.to_string(),
+            self.keywords.clone()
+        )
+    }
 }

@@ -1,0 +1,289 @@
+<head>
+    <style>
+        .GridHeader {
+            grid-area: header;
+        }
+        .GridMain {
+            grid-area: main;
+
+
+            /* border-color: black;
+            border-radius: 5px;
+            border-style: solid;
+            text-decoration-line: none; */
+            width: 500px;
+        }
+        .GridSidebar {
+            grid-area: sidebar;
+
+
+            /* border-color: black;
+            border-radius: 5px;
+            border-style: solid;
+            text-decoration-line: none; */
+            width: 300px;
+        }
+        .GridFooter {
+            grid-area: footer;
+        }
+
+        .hline { width:100%; height:1px; background: black }
+
+
+        .StatGrid {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            column-gap: 10px;
+        }
+        .StatBox {
+            text-align: center;
+            width: 50px;
+            font-size: 20px;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+        }
+        .StatSquare {
+            width: 50px;
+            height: 50px;
+            /* I had to base64 encode the image to render it */
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAA7HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjajVHZDcMwCP33FB2BywfjOJfUDTp+sY2TplKlEkHgQeBBwv56HuHRhAoFibkkTQlMREWpmlNgyNItgnTbhclzeMfDmSCDuFWOUCe+G24+eqw+BGf9bDQdrObFK1Gr48sdX7whle9GzoBxTIbNP6jnKoORjHh1RklLvq22rXCXcqlwphQTZjErBDknNb8QSLZ7bo3osZL2RnEc9ARmPEvJONHOyGCWuQyW3DRy7e9qmoIVtqdBaBY598OD/UqjYMzVB1U4j/l5m+tGP+SftcIbJQ92sEIWQhwAAAGBaUNDUElDQyBwcm9maWxlAAB4nH2RO0gDQRRFj6sSEcXCFCIWW6iVNipiGaMggkKICv4KdzcmBrKbsLtiYynYChZ+Gn+FjbW2FraCIPgBsResFG1E1jfZQIIYB4Y53Hn3zswb0A5zlu3VxcB2fDc5Ftdn5+b1yAsa7UANGJZXGE4kJqg6Pu9UHdz2qqzqdX+O5tSyZ8lBunDMKri+8JLw4JpfULwrHLVWjJTwmXCPKxcUflC6GfKr4kyRNZUZdaeTI8JRYT1TwWYFWyuuLTwg3JmyHcnXZkNOKV5XbOdWrdI91Qublp2ZKaXL7GCMcSZJoGOySpYcPr2yOqJ4JGU/XsXfXvQnxGWKK4sljlHy2BhFP+oPfvfWS/f3hUlNcah/DoL3Lohsw/dWEHwdBcH3MdQ+waVT9ucPYehD9K2y1nkALRtwflXWzB242IS2x4LhGkWpVqaWTsPbqXzTHLTeQONC2LfSPif3MC29mriGvX3ozkj2YpV3N1T27d+aUv9+AOj6cm/xmPkwAAANemlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDpiNDk0NzI4Yi1iMDE5LTQzMjEtOTg1NC01NzA0NDgyZjc1NmYiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTYzOTgzOWEtN2M5Ny00ZWQ0LTgzNDYtYjhlY2NkMTYwZjk5IgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YmMyNmU1NzctMjUwNS00ODlhLWIyMmYtNGQwOGRjMjg0Mjg0IgogICBHSU1QOkFQST0iMi4wIgogICBHSU1QOlBsYXRmb3JtPSJNYWMgT1MiCiAgIEdJTVA6VGltZVN0YW1wPSIxNzQwNTI4MDc3Njg3NTYxIgogICBHSU1QOlZlcnNpb249IjIuMTAuMzgiCiAgIGRjOkZvcm1hdD0iaW1hZ2UvcG5nIgogICB0aWZmOk9yaWVudGF0aW9uPSIxIgogICB4bXA6Q3JlYXRvclRvb2w9IkdJTVAgMi4xMCIKICAgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNTowMjoyNlQwMDowMToxNyswMDowMCIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjU6MDI6MjZUMDA6MDE6MTcrMDA6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1MmYyMDdkMC01ODRkLTQwMzktYTZmZi1kZjlmNmZjZDg4NGEiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAyNS0wMi0yNlQwMDowMToxNyswMDowMCIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz4goFw8AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6QIaAAERy1AVwgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAACvSURBVFjD7djLDYAwDAPQYDFMu/8wHadcENDyaS4QIzkL5KnNIfFUa7VR5Zzt2wKhacwKMZnZ7DeVUt7WbB3BYxp/YqzpmhVuumAxmHoWialh8Zh2FpVpZbGZzAyEpn7kSUwNi8fk2iDEEkssscQSSyyxxBJLLLH+yDperCA0sbDOlz0ITfGvdZeAgNAUyXpOikBoimF5EjUQmr5m+ZPHKaUUMl7PKR8ITTEsTxq6AIl/TFUjxrmtAAAAAElFTkSuQmCC);
+            text-align: center;
+            line-height: 50px;
+            font-size: 30px;
+            font-family: Roboto,
+        }
+        .UnitName {
+            font-size: 40px;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+
+
+        .SectionHeader {
+            background-color: lightblue;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 17px;
+            height: 20px;
+            text-align: left;
+            line-height: 20px;
+        }
+
+        .SectionText {
+            font-family: roboto, 'Courier New', Courier, monospace;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .WeaponSection {
+            display: grid;
+            grid-template-columns: 7fr 2fr 1fr 1fr 1fr 1fr 1fr;
+            text-align: center;
+        }
+
+        /* .RangedWeaponGrid {
+            display: grid;
+            grid-template-columns: repeat(10, 20px);
+            grid-template-rows: auto;
+            grid-template-areas: 
+                repeat(10, "header"),
+                reapeat({{ranged_weapons|length}}, reapeat(10, "main"));
+        } */
+
+        /* .MeleeWeaponGrid {
+            display: grid;
+            grid-template-columns: repeat(10, 20px);
+            grid-template-rows: auto;
+            grid-template-areas: ;
+        } */
+
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(8, 100px);
+            grid-template-rows: auto;
+            grid-template-areas: 
+                "header header header header header header header header"
+                "main main main main main sidebar sidebar sidebar"
+                "footer footer footer footer footer footer footer footer";
+        }
+
+        
+    </style>
+</head>
+
+
+<section class="container">
+    <div class="GridHeader">
+        <div class = "UnitName">
+            {{unit_name}}
+        </div>
+        <div class="StatGrid">
+            <div class="StatBox">
+                M
+                <div class="StatSquare">
+                    {{movement}}
+                </div>
+            </div>
+            <div class="StatBox">
+                T
+                <div class="StatSquare">
+                    {{toughness}}
+                </div>
+            </div>
+            <div class="StatBox">
+                Sv
+                <div class="StatSquare">
+                    {{save}}
+                </div>
+            </div>
+            <div class="StatBox">
+                W
+                <div class="StatSquare">
+                    {{wounds}}
+                </div>
+            </div>
+            <div class="StatBox">
+                Ld
+                <div class="StatSquare">
+                    {{leadership}}
+                </div>
+            </div>
+            <div class="StatBox">
+                OC
+                <div class="StatSquare">
+                    {{oc}}
+                </div>
+            </div>
+        
+        {% if invuln != "None" -%}
+            <div class="StatBox" style="width: 200; text-align: left;">
+                Invulnerable Save
+                <div class="StatSquare">
+                    {{invuln}}
+                </div>
+            </div>
+        {% endif %}
+        </div>
+        <br>
+    </div>
+
+
+    <div class="GridMain">
+
+        <div class="hline"></div>
+        <div class="SectionHeader WeaponSection">
+            <div style="text-align: left;">RANGED WEAPONS</div>
+            <div>RANGE</div>
+            <div>A</div>
+            <div>BS</div>
+            <div>S</div>
+            <div>AP</div>
+            <div>D</div>
+        </div>
+        {% for weapon in ranged_weapons -%}
+        <div class="hline"></div>
+        <div class="SectionText WeaponSection">
+            <div style="text-align: left;">
+                {{weapon[0]}}
+                <div style="color: blue; font-size: 12px;">
+                    {% for keyword in weapon[7] -%}
+                        [{{keyword}}]
+                    {% endfor -%}
+                </div>
+            </div>
+            <div>{{weapon[1]}}</div>
+            <div>{{weapon[2]}}</div>
+            <div>{{weapon[3]}}</div>
+            <div>{{weapon[4]}}</div>
+            <div>{{weapon[5]}}</div>
+            <div>{{weapon[6]}}</div>
+        </div>
+        {% endfor -%}
+
+        <div class="hline"></div>
+        <div class="SectionHeader WeaponSection">
+            <div style="text-align: left;">MELEE WEAPONS</div>
+            <div>RANGE</div>
+            <div>A</div>
+            <div>WS</div>
+            <div>S</div>
+            <div>AP</div>
+            <div>D</div>
+        </div>
+        {% for weapon in melee_weapons -%}
+        <div class="hline"></div>
+        <div class="SectionText WeaponSection">
+            <div style="text-align: left;">
+                {{weapon[0]}}
+                <div style="color: blue; font-size: 12px;">
+                    {% for keyword in weapon[7] -%}
+                        [{{keyword}}]
+                    {% endfor -%}
+                </div>
+            </div>
+            <div>{{weapon[1]}}</div>
+            <div>{{weapon[2]}}</div>
+            <div>{{weapon[3]}}</div>
+            <div>{{weapon[4]}}</div>
+            <div>{{weapon[5]}}</div>
+            <div>{{weapon[6]}}</div>
+        </div>
+        {% endfor -%}
+
+    </div>
+
+
+
+    <div class="GridSidebar" style="border-left: 1px solid black;">
+        <div class="hline"></div>
+        <div class="SectionHeader">
+            ABILITIES
+        </div>
+
+        
+        {% if core_abilities|length != 0 -%}
+            <div class="hline"></div>
+            <div class="SectionText">
+                CORE:
+                {% for ability in core_abilities -%}
+                    {{ability}}
+                    {% if loop.index != core_abilities|length -%}
+                        ,
+                    {% endif -%}
+                {% endfor -%}
+            </div>
+        {% endif %}
+            
+
+        {% if faction_ability != "None" -%}
+            <div class="hline"></div>
+            <div class="SectionText">
+                FACTION: {{faction_ability}}
+            </div>
+        {% endif %}
+
+        <div class="hline"></div>
+        {% for ability in unique_abilities -%}
+            <div style="font-weight: bold;">
+                {{ability.name}}:
+                <div style="font-weight: normal; display: inline;">
+                    {{ability.description}}
+                </div>
+            </div>
+            {% if loop.index != core_abilities|length -%}
+                <br>
+            {% endif -%}
+        {% endfor -%}
+
+        
+        <div class="hline"></div>
+        <div class="SectionHeader">
+            UNIT COMPOSITION
+        </div>
+
+    </div>
+    <div class="GridFooter">
+    </div>
+</section>
