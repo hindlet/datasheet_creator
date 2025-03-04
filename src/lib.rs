@@ -15,13 +15,13 @@ fn strip_path(path: &String) -> String{
 
 /// Renders a single card and writes its pdf to the same folder
 pub fn render_card(path: String, delete_html: bool, output_directory: Option<String>) {
-    let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
+    // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let f = File::open(path.clone()).unwrap();
     let unit: Unit = from_reader(f).unwrap();
 
     let output_path: String;
     if let Some(out_path) = output_directory {
-        output_path = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), out_path);
+        output_path = out_path;
     } else {
         output_path = strip_path(&path);
     }
