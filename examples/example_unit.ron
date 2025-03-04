@@ -47,7 +47,8 @@ Unit (
     faction_ability: Some("For the Greater Good"),
     core_abilities: [
         "Deadly Demise D6+2",
-        "Stealth"
+        "Stealth",
+        "Lone Operative"
     ],
     unique_abilities: [
         Ability (
@@ -59,6 +60,8 @@ Unit (
             description: "You can even have more than one!"
         ),
     ],
+    faction_keyword: "T'au Empire",
     keywords: [
+        "Example", "Walker", "Battlesuit"
     ]
 )

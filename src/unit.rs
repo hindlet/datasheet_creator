@@ -48,6 +48,7 @@ pub struct Unit {
     pub faction_ability: Option<String>,
     pub core_abilities: Vec<String>,
     pub unique_abilities: Vec<Ability>,
+    pub faction_keyword: String,
     pub keywords: Vec<String>
 }
 
@@ -105,6 +106,7 @@ impl Unit {
         context.insert("faction_ability", &self.faction_ability.clone().unwrap_or("none".to_string()));
         context.insert("core_abilities", &self.core_abilities);
         context.insert("unique_abilities", &self.unique_abilities);
+        context.insert("faction_keyword", &self.faction_keyword.to_uppercase());
         context.insert("keywords", &cased_keywords);
 
         return context;
