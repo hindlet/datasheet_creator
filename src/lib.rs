@@ -19,6 +19,8 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     let f = File::open(path.clone()).unwrap();
     let unit: Unit = from_reader(f).unwrap();
 
+    let path_to_crate = env!("CARGO_MANIFEST_DIR");
+
     let output_path: String;
     if let Some(out_path) = output_directory {
         output_path = out_path;
@@ -26,7 +28,7 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
         output_path = strip_path(&path);
     }
 
-    let tera = match Tera::new("templates/**/*.html") {
+    let tera = match Tera::new(&format!("{}/templates/**/*.html", path_to_crate)) {
         Ok(t) => t,
         Err(e) => {
             println!("Parsing error(s): {}", e);
