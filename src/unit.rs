@@ -1,4 +1,4 @@
-use crate::weapon::{Range, VariableValue, Weapon, WeaponTuple};
+use crate::weapon::{Weapon, WeaponTuple};
 use serde::{Deserialize, Serialize};
 use tera::Context;
 

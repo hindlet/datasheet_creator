@@ -1,6 +1,6 @@
 use ron::de::from_reader;
 use tera::Tera;
-use std::{ffi::{OsStr, OsString}, fs::{self, remove_file, File}, io::Write, path::{Path, PathBuf}, str::FromStr};
+use std::{ffi::OsStr, fs::{self, remove_file, File}, io::Write, path::{Path, PathBuf}, str::FromStr};
 mod unit;
 use unit::Unit;
 mod weapon;
