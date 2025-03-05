@@ -1,0 +1,297 @@
+<head>
+    <style>
+        .GridHeader {
+            grid-area: header;
+            width: 800px;
+        }
+        .GridMain {
+            grid-area: main;
+
+
+            /* border-color: black;
+            border-radius: 5px;
+            border-style: solid;
+            text-decoration-line: none; */
+            width: 500px;
+        }
+        .GridSidebar {
+            grid-area: sidebar;
+
+
+            /* border-color: black;
+            border-radius: 5px;
+            border-style: solid;
+            text-decoration-line: none; */
+            width: 300px;
+        }
+
+        .hline { width:100%; height:1px; background: black }
+
+
+        .StatGrid {
+            /* display: grid;
+            grid-template-rows: 1;
+            grid-template-columns: auto;
+            column-gap: 10px; */
+            display: flex;
+            flex-direction: row;
+        }
+        .StatBox {
+            text-align: center;
+            width: 50px;
+            font-size: 20px;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            margin-right: 7px;
+        }
+        .StatSquare {
+            width: 50px;
+            height: 50px;
+            /* I had to base64 encode the image to render it */
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAA7HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjajVHZDcMwCP33FB2BywfjOJfUDTp+sY2TplKlEkHgQeBBwv56HuHRhAoFibkkTQlMREWpmlNgyNItgnTbhclzeMfDmSCDuFWOUCe+G24+eqw+BGf9bDQdrObFK1Gr48sdX7whle9GzoBxTIbNP6jnKoORjHh1RklLvq22rXCXcqlwphQTZjErBDknNb8QSLZ7bo3osZL2RnEc9ARmPEvJONHOyGCWuQyW3DRy7e9qmoIVtqdBaBY598OD/UqjYMzVB1U4j/l5m+tGP+SftcIbJQ92sEIWQhwAAAGBaUNDUElDQyBwcm9maWxlAAB4nH2RO0gDQRRFj6sSEcXCFCIWW6iVNipiGaMggkKICv4KdzcmBrKbsLtiYynYChZ+Gn+FjbW2FraCIPgBsResFG1E1jfZQIIYB4Y53Hn3zswb0A5zlu3VxcB2fDc5Ftdn5+b1yAsa7UANGJZXGE4kJqg6Pu9UHdz2qqzqdX+O5tSyZ8lBunDMKri+8JLw4JpfULwrHLVWjJTwmXCPKxcUflC6GfKr4kyRNZUZdaeTI8JRYT1TwWYFWyuuLTwg3JmyHcnXZkNOKV5XbOdWrdI91Qublp2ZKaXL7GCMcSZJoGOySpYcPr2yOqJ4JGU/XsXfXvQnxGWKK4sljlHy2BhFP+oPfvfWS/f3hUlNcah/DoL3Lohsw/dWEHwdBcH3MdQ+waVT9ucPYehD9K2y1nkALRtwflXWzB242IS2x4LhGkWpVqaWTsPbqXzTHLTeQONC2LfSPif3MC29mriGvX3ozkj2YpV3N1T27d+aUv9+AOj6cm/xmPkwAAANemlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDpiNDk0NzI4Yi1iMDE5LTQzMjEtOTg1NC01NzA0NDgyZjc1NmYiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTYzOTgzOWEtN2M5Ny00ZWQ0LTgzNDYtYjhlY2NkMTYwZjk5IgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YmMyNmU1NzctMjUwNS00ODlhLWIyMmYtNGQwOGRjMjg0Mjg0IgogICBHSU1QOkFQST0iMi4wIgogICBHSU1QOlBsYXRmb3JtPSJNYWMgT1MiCiAgIEdJTVA6VGltZVN0YW1wPSIxNzQwNTI4MDc3Njg3NTYxIgogICBHSU1QOlZlcnNpb249IjIuMTAuMzgiCiAgIGRjOkZvcm1hdD0iaW1hZ2UvcG5nIgogICB0aWZmOk9yaWVudGF0aW9uPSIxIgogICB4bXA6Q3JlYXRvclRvb2w9IkdJTVAgMi4xMCIKICAgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNTowMjoyNlQwMDowMToxNyswMDowMCIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjU6MDI6MjZUMDA6MDE6MTcrMDA6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1MmYyMDdkMC01ODRkLTQwMzktYTZmZi1kZjlmNmZjZDg4NGEiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAyNS0wMi0yNlQwMDowMToxNyswMDowMCIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz4goFw8AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6QIaAAERy1AVwgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAACvSURBVFjD7djLDYAwDAPQYDFMu/8wHadcENDyaS4QIzkL5KnNIfFUa7VR5Zzt2wKhacwKMZnZ7DeVUt7WbB3BYxp/YqzpmhVuumAxmHoWialh8Zh2FpVpZbGZzAyEpn7kSUwNi8fk2iDEEkssscQSSyyxxBJLLLH+yDperCA0sbDOlz0ITfGvdZeAgNAUyXpOikBoimF5EjUQmr5m+ZPHKaUUMl7PKR8ITTEsTxq6AIl/TFUjxrmtAAAAAElFTkSuQmCC);
+            text-align: center;
+            line-height: 50px;
+            font-size: 30px;
+            font-family: Roboto, 'Courier New', Courier, monospace;
+        }
+        .StatRect {
+            width: 75px;
+            height: 50px;
+            /* I had to base64 encode the image to render it */
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAAyCAYAAAAUYybjAAAA7XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjajVHbDcMwCPz3FB0BA34wjvOo1A06fi82bppKlYpkDAeB8yXsz8c93A7jykFTqdlyJpiaGjcElYYt3UfS7rvp4rV4xYOwFxiQ4JaR2sR34Iij5+ZL4uyfg2YQG6J0FlpzfLniiw/k+j3IGUgcm2nzD3yQsDPSka/OKFstl6dtK12tnkelcE45FoVXplKyIa5MWqDndhC9r2x9UHLxJjDz2crgxLtEIXiROljKcZI03NK9Bh5wQ6vBq6QuPOFXggKYmy9q9BbzU5tTox/2z7PCC41rduqzllv/AAABg2lDQ1BJQ0MgcHJvZmlsZQAAeJx9kT1Iw0AcxV/TiiIVETOIOGSoTnbRIo61CkWoEGqFVh1MLv2CJi1Jiouj4Fpw8GOx6uDirKuDqyAIfoC4C06KLlLi/5JCixgPjvvx7t7j7h0gNCtMt0JxQDdsM51MSNncqtT7iiBCEDGEmMKs2pwsp+A7vu4R4OtdlGf5n/tzDGh5iwEBiTjOaqZNvEE8s2nXOO8Ti6ykaMTnxJMmXZD4keuqx2+ciy4LPFM0M+l5YpFYKnax2sWsZOrEMeKIphuUL2Q91jhvcdYrdda+J39hOG+sLHOd5hiSWMQSZEhQUUcZFdiI0mqQYiFN+wkf/6jrl8mlkqsMRo4FVKFDcf3gf/C7W6swPeUlhRNAz4vjfIwDvbtAq+E438eO0zoBgs/AldHxV5vA7CfpjY4WOQIGt4GL646m7gGXO8DIU00xFVcK0hQKBeD9jL4pBwzfAv1rXm/tfZw+ABnqKnUDHBwCE0XKXvd5d193b/+eaff3A4+0crLhVoOkAAAOXmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDpiNDk0NzI4Yi1iMDE5LTQzMjEtOTg1NC01NzA0NDgyZjc1NmYiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmQ0MjZkODktZGE1OC00NDIwLWE2ZjEtOGE0NDAwM2Q3ZGVhIgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YmMyNmU1NzctMjUwNS00ODlhLWIyMmYtNGQwOGRjMjg0Mjg0IgogICBHSU1QOkFQST0iMi4wIgogICBHSU1QOlBsYXRmb3JtPSJNYWMgT1MiCiAgIEdJTVA6VGltZVN0YW1wPSIxNzQxMTE5NTg4MjQ0ODgwIgogICBHSU1QOlZlcnNpb249IjIuMTAuMzgiCiAgIGRjOkZvcm1hdD0iaW1hZ2UvcG5nIgogICB0aWZmOk9yaWVudGF0aW9uPSIxIgogICB4bXA6Q3JlYXRvclRvb2w9IkdJTVAgMi4xMCIKICAgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNTowMzowNFQyMDoxOTo0NSswMDowMCIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjU6MDM6MDRUMjA6MTk6NDUrMDA6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1MmYyMDdkMC01ODRkLTQwMzktYTZmZi1kZjlmNmZjZDg4NGEiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAyNS0wMi0yNlQwMDowMToxNyswMDowMCIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDowZjU1MmNjMC01NTc1LTQ5OTQtYmM0Mi1kYzcxNTAzZDc4ODAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAyNS0wMy0wNFQyMDoxOTo0OCswMDowMCIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz7YXndUAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6QMEFBMwaUR3/wAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADFSURBVGje7drBDcMgDEZhx+qBUWD/YbwKN/da9fSbpFFU3tuAT8ABfGRmWqExhlWbc9pKrTV7Uv5rqH/KgdJ7rUJFxBZAn2t3oC46hkCJWECJWECJWECJWECJWECJWECJWECduOCBErGAuvDVASwCCyywwAILLAILLLDAAgssAgsssMACCywCC6yb+/5TBUuEAqsAFRFgqVDsrAIUWAUosApQYFltNs2B0qC2xloZ4nOgNCgzs6P3nrZ56hCfA6VPOzpQem+mYVFTgPP6gQAAAABJRU5ErkJggg==);
+            text-align: center;
+            line-height: 50px;
+            font-size: 30px;
+            font-family: Roboto, 'Courier New', Courier, monospace;
+        }
+        .UnitName {
+            font-size: 40px;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+
+
+        .SectionHeader {
+            background-color: lightblue;
+            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 17px;
+            height: 20px;
+            text-align: left;
+            line-height: 20px;
+        }
+
+        .SectionText {
+            font-family: Roboto, 'Courier New', Courier, monospace;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .WeaponSection {
+            display: grid;
+            grid-template-columns: 7fr 2fr 1fr 1fr 1fr 1fr 1fr;
+            text-align: center;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(8, 100px);
+            grid-template-rows: auto;
+            grid-template-areas: 
+                "header header header header header header header header"
+                "main main main main main sidebar sidebar sidebar"
+        }
+
+        
+    </style>
+</head>
+
+
+<section class="container">
+    <div class="GridHeader">
+        <div class = "UnitName">
+            Example Unit
+        </div>
+        <div class="StatGrid">
+                <div class="StatBox">
+                        M
+                        <div class="StatSquare">
+                            9"
+                        </div>
+                    </div>
+                <div class="StatBox">
+                T
+                <div class="StatSquare">
+                    4
+                </div>
+            </div>
+            <div class="StatBox">
+                Sv
+                <div class="StatSquare">
+                    3+
+                </div>
+            </div>
+            <div class="StatBox">
+                W
+                <div class="StatSquare">
+                    8
+                </div>
+            </div>
+            <div class="StatBox">
+                Ld
+                <div class="StatSquare">
+                    7+
+                </div>
+            </div>
+            <div class="StatBox">
+                OC
+                <div class="StatSquare">
+                    1
+                </div>
+            </div>
+        </div>
+        <div class="StatBox" style="position: relative; width: 400; display: flex; flex-direction: row; line-height: 50px; left: 115px; top: 5px;">
+                <div class="StatSquare">
+                    5+
+                </div>
+                   Invulnerable Save
+            </div>
+        
+        <div style="height: 10px;"></div>
+    </div>
+
+
+
+    <div class="GridMain">
+        <div class="hline"></div>
+        <div class="SectionHeader WeaponSection">
+            <div style="text-align: left;">RANGED WEAPONS</div>
+            <div>RANGE</div>
+            <div>A</div>
+            <div>BS</div>
+            <div>S</div>
+            <div>AP</div>
+            <div>D</div>
+        </div>
+        <div class="hline"></div>
+        <div class="SectionText WeaponSection">
+            <div style="text-align: left;">
+                Example Gun
+                <div style="color: blue; font-size: 12px;">
+                    [TWIN-LINKED]
+                    [DEVASTATING WOUNDS]
+                    </div>
+            </div>
+            <div>10&quot;</div>
+            <div>12</div>
+            <div>2+</div>
+            <div>90</div>
+            <div>-4</div>
+            <div>12</div>
+        </div>
+        <div class="hline"></div>
+        <div class="SectionText WeaponSection">
+            <div style="text-align: left;">
+                More Gun
+                <div style="color: blue; font-size: 12px;">
+                    </div>
+            </div>
+            <div>20&quot;</div>
+            <div>D6+2</div>
+            <div>2+</div>
+            <div>10</div>
+            <div>-3</div>
+            <div>3</div>
+        </div>
+        <div class="hline"></div>
+        <div class="SectionHeader WeaponSection">
+            <div style="text-align: left;">MELEE WEAPONS</div>
+            <div>RANGE</div>
+            <div>A</div>
+            <div>WS</div>
+            <div>S</div>
+            <div>AP</div>
+            <div>D</div>
+        </div>
+        <div class="hline"></div>
+        <div class="SectionText WeaponSection">
+            <div style="text-align: left;">
+                Close Combat Weapon
+                <div style="color: blue; font-size: 12px;">
+                    </div>
+            </div>
+            <div>melee</div>
+            <div>3</div>
+            <div>3+</div>
+            <div>6</div>
+            <div>-2</div>
+            <div>2</div>
+        </div>
+        <div class="SectionText" style="position: absolute; bottom: 0px; width: 500px; height: 30px; border-top: 1px solid black; line-height: 30px; border-right: 1px solid black; line-height: 30px;">
+            KEYWORDS:
+            EXAMPLE
+            ,
+            WALKER
+            ,
+            BATTLESUIT
+            </div>
+
+    </div>
+
+    <!-- <div style="height: 300; position: absolute; margin: 0px; left: 507px; bottom: 0px; border-right: 1px solid black;"></div> -->
+
+    <div class="GridSidebar" style="border-left: 1px solid black;">
+        <div class="hline"></div>
+        <div class="SectionHeader">
+            ABILITIES
+        </div>
+
+        
+        <div class="hline"></div>
+            <div class="SectionText">
+                CORE:
+                Deadly Demise D6+2
+                    ,
+                    Stealth
+                    ,
+                    Lone Operative
+                    </div>
+        
+            
+
+        <div class="hline"></div>
+            <div class="SectionText">
+                FACTION: For the Greater Good
+            </div>
+        
+
+        <div class="hline"></div>
+        <div style="font-weight: bold;">
+                Example:
+                <div style="font-weight: normal; display: inline;">
+                    Your ability description goes here
+                </div>
+            </div>
+            <br>
+        <div style="font-weight: bold;">
+                Another:
+                <div style="font-weight: normal; display: inline;">
+                    You can even have more than one!
+                </div>
+            </div>
+            <br>
+        <div class="hline"></div>
+        <div class="SectionHeader">
+            UNIT COMPOSITION
+        </div>
+
+        <div class="hline"></div>
+            <div class="SectionHeader">
+                DAMAGED: 1-3 WOUNDS REMAINING
+            </div>
+        <div class="SectionText" style="position: absolute; left: 508px; bottom: 0px; width: 300px; height: 30px; border-top: 1px solid black; line-height: 30px;">
+            <div style="position: relative; left: 2px;">FACTION KEYWORDS: T&#x27;AU EMPIRE</div>
+        </div>
+    </div>
+</section>

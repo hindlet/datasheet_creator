@@ -1,0 +1,68 @@
+Unit (
+    name: "Example Unit",
+    stats: UnitStats(
+        movement: 9,
+        toughness: 4,
+        save: 3,
+        invuln: Some(5),
+        wounds: 8,
+        leadership: 7,
+        oc: 1,
+    ),
+    ranged_weapons: [
+        Weapon (
+            name: "Example Gun",
+            range: Ranged(10),
+            attacks: Set(12),
+            skill: 2,
+            strength: 90,
+            ap: 4,
+            // damage: Rolled(2, D3, 11)
+            damage: Set(12),
+            keywords: ["TWIN-LINKED", "DEVASTATING WOUNDS"]
+        ),
+        Weapon (
+            name: "More Gun",
+            range: Ranged(20),
+            attacks: Rolled(1, D6, 2),
+            skill: 2,
+            strength: 10,
+            ap: 3,
+            damage: Set(3),
+            keywords: []
+        )
+    ],
+    melee_weapons: [
+        Weapon (
+            name: "Close Combat Weapon",
+            range: Melee,
+            attacks: Set(3),
+            skill: 3,
+            strength: 6,
+            ap: 2,
+            damage: Set(2),
+            keywords: []
+        )
+    ],
+    faction_ability: Some("For the Greater Good"),
+    core_abilities: [
+        "Deadly Demise D6+2",
+        "Stealth",
+        "Lone Operative"
+    ],
+    unique_abilities: [
+        Ability (
+            name: "Example",
+            description: "Your ability description goes here"
+        ),
+        Ability (
+            name: "Another",
+            description: "You can even have more than one!"
+        ),
+    ],
+    faction_keyword: "T'au Empire",
+    keywords: [
+        "Example", "Walker", "Battlesuit"
+    ],
+    damaged: Some(3)
+)

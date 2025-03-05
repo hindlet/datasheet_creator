@@ -1,10 +1,11 @@
 use ron::de::from_reader;
 use tera::Tera;
-use std::{fs::{remove_file, File}, io::Write, path::PathBuf, str::FromStr};
+use std::{ffi::{OsStr, OsString}, fs::{self, remove_file, File}, io::Write, path::{Path, PathBuf}, str::FromStr};
 mod unit;
 use unit::Unit;
 mod weapon;
 use html2pdf::{run, Margin, Options};
+
 
 // removes the doc from the path
 fn strip_path(path: &String) -> String{
@@ -23,6 +24,9 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
 
     let output_path: String;
     if let Some(out_path) = output_directory {
+        if !Path::new(&out_path).exists() {
+            let _ = fs::create_dir(out_path.clone());
+        }
         output_path = out_path;
     } else {
         output_path = strip_path(&path);
@@ -64,8 +68,16 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     }
 }
 
-// pub fn render_folder(path: String) {
-//     let f = File::open(path).unwrap();
-//     // let unit: Unit = from_reader(f).unwrap();
-//     // unit.render();
-// }
+pub fn render_folder(path: String, delete_html: bool, output_directory: String) {
+    // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
+    let paths = fs::read_dir(path.clone()).unwrap();
+    let ron_str = OsStr::new("ron");
+
+    for file_path in paths {
+        let item_path = file_path.unwrap().file_name();
+        if Path::new(&item_path).extension() != Some(ron_str) {
+            continue;
+        }
+        render_card(format!("{}/{}", path.clone(), item_path.to_str().unwrap()), delete_html, Some(output_directory.clone()));
+    }
+}

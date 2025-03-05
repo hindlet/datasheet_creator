@@ -3,11 +3,9 @@
 
 This is a small personal project to render custom datacards for warhammer.
 
-## Current Features
-- Name and stats
-- Weapons
+## Unit Data
+The unit data is read from .ron files, the layout of which can be read in the examples
 
-## Future Features
-- Abilities
-- Weapon Abilities
-- Wargear options
+## Missing Features
+- Unit Composition
+- Which units can be lead
