@@ -295,6 +295,11 @@
         <div class="SectionHeader">
             UNIT COMPOSITION
         </div>
+        {% for composition in unit_composition -%}
+            <div class="SectionText">
+                {{composition.0}} models : {{composition.1}} points
+            </div>
+            {% endfor -%}
 
         {% if damaged != "None" -%}
             <div class="hline"></div>

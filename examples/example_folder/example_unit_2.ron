@@ -64,5 +64,8 @@ Unit (
     keywords: [
         "Example", "Walker", "Battlesuit"
     ],
-    damaged: Some(3)
+    damaged: Some(3),
+    compositon: [
+        (10, 100),
+    ]
 )
