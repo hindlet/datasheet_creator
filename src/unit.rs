@@ -51,7 +51,7 @@ pub struct Unit {
     pub faction_keyword: String,
     pub keywords: Vec<String>,
     pub damaged: Option<u32>,
-    pub compositon: Vec<(u32, u32)>
+    pub composition: Vec<(u32, u32)>
 }
 
 
@@ -117,7 +117,7 @@ impl Unit {
         context.insert("faction_keyword", &self.faction_keyword.to_uppercase());
         context.insert("keywords", &cased_keywords);
         context.insert("damaged", &damaged);
-        context.insert("unit_composition", &self.compositon);
+        context.insert("unit_composition", &self.composition);
 
         return context;
     }
