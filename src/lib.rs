@@ -14,7 +14,9 @@ fn strip_path(path: &String) -> String{
     return sections.join("/");
 }
 
-/// Renders a single card and writes its pdf to the same folder
+/// Renders a single card and writes its pdf to either the same folder or the output folder
+/// 
+/// This will panic if the card layout is not correct, does not yet locate the error for you
 pub fn render_card(path: String, delete_html: bool, output_directory: Option<String>) {
     // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let f = File::open(path.clone()).unwrap();
@@ -68,6 +70,9 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     }
 }
 
+/// Renders a folder of cards and outputs their pdfs to the given directory.
+/// 
+/// Will only render files that end in .ron but will panic if the formatting is wrong within the file
 pub fn render_folder(path: String, delete_html: bool, output_directory: String) {
     // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let paths = fs::read_dir(path.clone()).unwrap();
