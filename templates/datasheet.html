@@ -24,6 +24,10 @@
             text-decoration-line: none; */
             width: 300px;
         }
+        .GridFooter {
+            grid-area: footer;
+            width: 800px;
+        }
 
         .hline { width:100%; height:1px; background: black }
 
@@ -40,7 +44,7 @@
             text-align: center;
             width: 50px;
             font-size: 20px;
-            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-family: ConduitITCStd;
             font-weight: bold;
             margin-right: 7px;
         }
@@ -52,7 +56,7 @@
             text-align: center;
             line-height: 50px;
             font-size: 30px;
-            font-family: Roboto, 'Courier New', Courier, monospace;
+            font-family: Roboto;
         }
         .StatRect {
             width: 75px;
@@ -62,11 +66,11 @@
             text-align: center;
             line-height: 50px;
             font-size: 30px;
-            font-family: Roboto, 'Courier New', Courier, monospace;
+            font-family: Roboto;
         }
         .UnitName {
             font-size: 40px;
-            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-family: ConduitITCStd;
             font-weight: bold;
             padding-bottom: 10px;
         }
@@ -74,7 +78,7 @@
 
         .SectionHeader {
             background-color: lightblue;
-            font-family: ConduitITCStd, Arial, Helvetica, sans-serif;
+            font-family: ConduitITCStd;
             font-weight: bold;
             font-size: 17px;
             height: 20px;
@@ -83,7 +87,7 @@
         }
 
         .SectionText {
-            font-family: Roboto, 'Courier New', Courier, monospace;
+            font-family: Roboto;
             font-size: 14px;
             text-align: left;
         }
@@ -101,6 +105,7 @@
             grid-template-areas: 
                 "header header header header header header header header"
                 "main main main main main sidebar sidebar sidebar"
+                "footer footer footer footer footer footer footer footer"
         }
 
         
@@ -237,15 +242,7 @@
         </div>
         {% endfor -%}
 
-        <div class="SectionText" style="position: absolute; bottom: 0px; width: 500px; height: 30px; border-top: 1px solid black; line-height: 30px; border-right: 1px solid black; line-height: 30px;">
-            KEYWORDS:
-            {% for keyword in keywords -%}
-                {{keyword}}
-            {% if loop.index != keywords|length -%}
-                ,
-            {% endif -%}
-        {% endfor -%}
-        </div>
+        
 
     </div>
 
@@ -263,9 +260,10 @@
             <div class="SectionText">
                 CORE:
                 {% for ability in core_abilities -%}
-                    {{ability}}
                     {% if loop.index != core_abilities|length -%}
-                        ,
+                        {{ability}},
+                    {% else -%}
+                        {{ability}}
                     {% endif -%}
                 {% endfor -%}
             </div>
@@ -306,6 +304,9 @@
             <div class="SectionHeader">
                 DAMAGED: 1-{{damaged}} WOUNDS REMAINING
             </div>
+            <div class="SectionText">
+                While this model has 1-{{damaged}} wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.
+            </div>
         {% endif -%}
 
         {% if leader|length != 0 -%}
@@ -321,7 +322,23 @@
         {% endif %}
 
 
-        <div class="SectionText" style="position: absolute; left: 508px; bottom: 0px; width: 300px; height: 30px; border-top: 1px solid black; line-height: 30px;">
+        
+    </div>
+
+    <div class="GridFooter" style="flex-direction: row; display: flex;">
+
+        <div class="SectionText" style="width: 502px; height: 30px; border-top: 1px solid black; line-height: 30px; border-right: 1px solid black; line-height: 30px;">
+            KEYWORDS:
+            {% for keyword in keywords -%}
+                {% if loop.index != core_abilities|length -%}
+                    {{keyword}},
+                {% else -%}
+                    {{keyword}}
+                {% endif -%}
+            {% endfor -%}
+        </div>
+
+        <div class="SectionText" style="width: 300px; height: 30px; border-top: 1px solid black; line-height: 30px;">
             <div style="position: relative; left: 2px;">FACTION KEYWORDS: {{faction_keyword}}</div>
         </div>
     </div>
