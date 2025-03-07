@@ -57,13 +57,13 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     let _ = run(&Options {
         input: PathBuf::from_str(&html_path).unwrap(),
         output: Some(PathBuf::from_str(&pdf_path).unwrap()),
-        landscape: false,
+        landscape: true,
         background: true,
         wait: None,
         header: None,
         footer: None,
-        paper: None,
-        scale: None,
+        paper: Some(html2pdf::PaperSize::Letter),
+        scale: Some(1.5),
         range: None,
         margin: Some(Margin::All(0.0)),
         disable_sandbox: false
