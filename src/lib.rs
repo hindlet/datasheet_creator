@@ -17,9 +17,10 @@ fn strip_path(path: &String) -> String{
 /// Renders a single card and writes its pdf to either the same folder or the output folder
 /// 
 /// This will panic if the card layout is not correct, does not yet locate the error for you
-pub fn render_card(path: String, delete_html: bool, output_directory: Option<String>) {
+pub fn render_card(path: String, delete_html: bool, output_directory: Option<String>, information: bool) {
     // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let f = File::open(path.clone()).unwrap();
+    if information {println!("Reading {}", path.clone());}
     let mut unit: Unit = from_reader(f).unwrap();
 
     let path_to_crate = env!("CARGO_MANIFEST_DIR");
@@ -42,6 +43,8 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
         }
     };
 
+    if information {println!("Rendering {} to html", unit.name);}
+
     let context = unit.get_context();
 
     let result = tera.render("datasheet.html", &context).unwrap();
@@ -49,6 +52,7 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     let mut html_file = File::create(html_path.clone()).unwrap();
     let _ = html_file.write(result.as_bytes());
 
+    if information {println!("Rendering {} to pdf", unit.name);}
     let pdf_path = unit.get_pdf_path(&output_path);
     let _ = run(&Options {
         input: PathBuf::from_str(&html_path).unwrap(),
@@ -66,14 +70,16 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
     });
 
     if delete_html {
+        if information {println!("Removing {}", html_path);}
         let _ = remove_file(html_path);
     }
+    if information {println!("Completed {}!", unit.name);}
 }
 
 /// Renders a folder of cards and outputs their pdfs to the given directory.
 /// 
 /// Will only render files that end in .ron but will panic if the formatting is wrong within the file
-pub fn render_folder(path: String, delete_html: bool, output_directory: String) {
+pub fn render_folder(path: String, delete_html: bool, output_directory: String, information: bool) {
     // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let paths = fs::read_dir(path.clone()).unwrap();
     let ron_str = OsStr::new("ron");
@@ -83,6 +89,6 @@ pub fn render_folder(path: String, delete_html: bool, output_directory: String) 
         if Path::new(&item_path).extension() != Some(ron_str) {
             continue;
         }
-        render_card(format!("{}/{}", path.clone(), item_path.to_str().unwrap()), delete_html, Some(output_directory.clone()));
+        render_card(format!("{}/{}", path.clone(), item_path.to_str().unwrap()), delete_html, Some(output_directory.clone()), information);
     }
 }
