@@ -86,7 +86,7 @@ impl Unit {
     }
 
     pub fn get_context(
-        &self
+        &mut self
     ) -> Context {
         let mut context = Context::new();
 
@@ -104,8 +104,8 @@ impl Unit {
             context.insert("movement", &"20+".to_string());
         }
         // leader keyword
-        if self.leader.is_some() && !cased_keywords.contains(&"LEADER".to_string()){
-            cased_keywords.push("LEADER".to_string());
+        if self.leader.is_some() && !self.core_abilities.contains(&"Leader".to_string()){
+            self.core_abilities.push("Leader".to_string());
         }
 
         // damage bracket

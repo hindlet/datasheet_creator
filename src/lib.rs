@@ -20,7 +20,7 @@ fn strip_path(path: &String) -> String{
 pub fn render_card(path: String, delete_html: bool, output_directory: Option<String>) {
     // let path  = format!("{}/{}", env!("CARGO_MANIFEST_DIR"), path);
     let f = File::open(path.clone()).unwrap();
-    let unit: Unit = from_reader(f).unwrap();
+    let mut unit: Unit = from_reader(f).unwrap();
 
     let path_to_crate = env!("CARGO_MANIFEST_DIR");
 
