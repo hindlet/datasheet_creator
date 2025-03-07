@@ -90,6 +90,6 @@ pub fn render_folder(path: String, delete_html: bool, output_directory: String, 
             continue;
         }
         render_card(format!("{}/{}", path.clone(), item_path.to_str().unwrap()), delete_html, Some(output_directory.clone()), information);
-        if information {println!("Done!")}
     }
+    if information {println!("Done!")}
 }
