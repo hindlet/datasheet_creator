@@ -73,7 +73,7 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
         if information {println!("Removing {}", html_path);}
         let _ = remove_file(html_path);
     }
-    if information {println!("Completed {}!", unit.name);}
+    if information {println!("Completed {}! \n", unit.name);}
 }
 
 /// Renders a folder of cards and outputs their pdfs to the given directory.
@@ -90,5 +90,6 @@ pub fn render_folder(path: String, delete_html: bool, output_directory: String, 
             continue;
         }
         render_card(format!("{}/{}", path.clone(), item_path.to_str().unwrap()), delete_html, Some(output_directory.clone()), information);
+        if information {println!("Done!")}
     }
 }
