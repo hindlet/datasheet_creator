@@ -65,8 +65,9 @@ Unit (
         "Example", "Walker", "Battlesuit"
     ],
     damaged: Some(3),
-    compositon: [
+    composition: [
         (5, 100),
         (10, 100)
-    ]
+    ],
+    leader: None
 )

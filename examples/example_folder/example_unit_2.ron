@@ -65,7 +65,10 @@ Unit (
         "Example", "Walker", "Battlesuit"
     ],
     damaged: Some(3),
-    compositon: [
+    composition: [
         (10, 100),
-    ]
+    ],
+    leader: Some([
+        "Example Unit"
+    ]),
 )

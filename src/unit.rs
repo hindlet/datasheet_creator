@@ -51,7 +51,8 @@ pub struct Unit {
     pub faction_keyword: String,
     pub keywords: Vec<String>,
     pub damaged: Option<u32>,
-    pub composition: Vec<(u32, u32)>
+    pub composition: Vec<(u32, u32)>,
+    pub leader: Option<Vec<String>>
 }
 
 
@@ -98,10 +99,16 @@ impl Unit {
         context.insert("unit_name", &self.name);
         self.stats.add_context(&mut context);
 
+        // aircraft movement box
         if cased_keywords.contains(&"AIRCRAFT".to_string()) {
             context.insert("movement", &"20+".to_string());
         }
+        // leader keyword
+        if self.leader.is_some() && !cased_keywords.contains(&"LEADER".to_string()){
+            cased_keywords.push("LEADER".to_string());
+        }
 
+        // damage bracket
         let damaged: String;
         if let Some(damaged_wall) = self.damaged {
             damaged = format!("{}", damaged_wall);
@@ -118,6 +125,7 @@ impl Unit {
         context.insert("keywords", &cased_keywords);
         context.insert("damaged", &damaged);
         context.insert("unit_composition", &self.composition);
+        context.insert("leader", &self.leader.clone().unwrap_or(Vec::new()));
 
         return context;
     }
