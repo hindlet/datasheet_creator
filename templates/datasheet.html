@@ -165,17 +165,6 @@
                 </div>
             </div>
         </div>
-        {% if invuln != "None" -%}
-            <div class="StatBox" style="position: relative; width: 400; display: flex; flex-direction: row; line-height: 50px; left: 115px; top: 5px;">
-                {% if movement == "20+" -%}
-                    <div style="width: 25px;"></div>
-                {% endif -%}
-                <div class="StatSquare">
-                    {{invuln}}+
-                </div>
-                   Invulnerable Save
-            </div>
-        {% endif %}
         <div style="height: 10px;"></div>
     </div>
 
@@ -249,6 +238,15 @@
     <!-- <div style="height: 300; position: absolute; margin: 0px; left: 507px; bottom: 0px; border-right: 1px solid black;"></div> -->
 
     <div class="GridSidebar" style="border-left: 1px solid black;">
+
+        {% if invuln != "None" -%}
+            <div class="hline"></div>
+            <div class="SectionHeader" style="background-color: lightgreen;">
+                Invulnerable {{invuln}}+ save
+            </div>
+        {% endif %}
+
+
         <div class="hline"></div>
         <div class="SectionHeader">
             ABILITIES
@@ -276,6 +274,8 @@
                 FACTION: {{faction_ability}}
             </div>
         {% endif %}
+
+        
 
         <div class="hline"></div>
         {% for ability in unique_abilities -%}
