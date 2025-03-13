@@ -66,7 +66,7 @@ pub struct Weapon {
     pub attacks: VariableValue,
     pub skill: u32,
     pub strength: u32,
-    pub ap: u32,
+    pub ap: i32,
     pub damage: VariableValue,
     pub keywords: Vec<String>
 }
@@ -86,13 +86,21 @@ impl Weapon {
         } else {
             skill = format!("{}+", self.skill)
         }
+
+        let ap: String;
+        if self.ap > 0 {
+            ap = format!("-{}", self.ap);
+        } else {
+            ap = format!("{}", self.ap);
+        }
+
         (
             self.name.clone(),
             self.range.to_string(),
             self.attacks.to_string(),
             skill,
             self.strength,
-            format!("-{}", self.ap),
+            ap,
             self.damage.to_string(),
             cased_keywords
         )
