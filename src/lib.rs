@@ -63,7 +63,7 @@ pub fn render_card(path: String, delete_html: bool, output_directory: Option<Str
         header: None,
         footer: None,
         paper: Some(html2pdf::PaperSize::Letter),
-        scale: Some(1.5),
+        scale: Some(1.25),
         range: None,
         margin: Some(Margin::All(0.0)),
         disable_sandbox: false
