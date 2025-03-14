@@ -70,4 +70,6 @@ Unit (
         (10, 100)
     ],
     leader: None,
+    default_wargear: None,
+    wargear_options: None,
 )

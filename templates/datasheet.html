@@ -231,6 +231,16 @@
         </div>
         {% endfor -%}
 
+
+        {% if wargear_options != "none" -%}
+        <div class="hline"></div>
+        <div class="SectionHeader">
+            Wargear Options
+        </div>
+        <div class="hline"></div>
+        <div class="SectionText" style="white-space: pre-line;">{{wargear_options}}</div>
+        
+        {% endif -%}
         
 
     </div>
@@ -239,7 +249,7 @@
 
     <div class="GridSidebar" style="border-left: 1px solid black;">
 
-        {% if invuln != "None" -%}
+        {% if invuln != "none" -%}
             <div class="hline"></div>
             <div class="SectionHeader" style="background-color: lightgreen;">
                 Invulnerable {{invuln}}+ save
@@ -268,7 +278,7 @@
         {% endif %}
             
 
-        {% if faction_ability != "None" -%}
+        {% if faction_ability != "none" -%}
             <div class="hline"></div>
             <div class="SectionText">
                 FACTION: {{faction_ability}}
@@ -299,7 +309,7 @@
             </div>
             {% endfor -%}
 
-        {% if damaged != "None" -%}
+        {% if damaged != "none" -%}
             <div class="hline"></div>
             <div class="SectionHeader">
                 DAMAGED: 1-{{damaged}} WOUNDS REMAINING

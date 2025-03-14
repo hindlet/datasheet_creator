@@ -52,7 +52,10 @@ pub struct Unit {
     pub keywords: Vec<String>,
     pub damaged: Option<u32>,
     pub composition: Vec<(u32, u32)>,
-    pub leader: Option<Vec<String>>
+    pub leader: Option<Vec<String>>,
+
+    // pub default_wargear: Option<String>,
+    pub wargear_options: Option<String>,
 }
 
 
@@ -113,7 +116,7 @@ impl Unit {
         if let Some(damaged_wall) = self.damaged {
             damaged = format!("{}", damaged_wall);
         } else {
-            damaged = "None".to_string();
+            damaged = "none".to_string();
         }
         
         context.insert("ranged_weapons", &self.get_ranged_weapon_list());
@@ -126,6 +129,9 @@ impl Unit {
         context.insert("damaged", &damaged);
         context.insert("unit_composition", &self.composition);
         context.insert("leader", &self.leader.clone().unwrap_or(Vec::new()));
+        // context.insert("default_wargear", &self.default_wargear.clone().unwrap_or("none".to_string()));
+        context.insert("wargear_options", &self.wargear_options.clone().unwrap_or("none".to_string()));
+        
 
         return context;
     }

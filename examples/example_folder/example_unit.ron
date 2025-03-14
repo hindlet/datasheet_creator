@@ -69,5 +69,7 @@ Unit (
         (5, 100),
         (10, 100)
     ],
-    leader: None
+    leader: None,
+    default_wargear: None,
+    wargear_options: None,
 )

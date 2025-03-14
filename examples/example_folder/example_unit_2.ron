@@ -71,4 +71,6 @@ Unit (
     leader: Some([
         "Example Unit"
     ]),
+    // default_wargear: None,
+    wargear_options: Some("Test Data \nSecond Line has text oh boy \nlist\n    - aosidjoa \n    - aoisdhaod"),
 )
