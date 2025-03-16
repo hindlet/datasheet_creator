@@ -2,7 +2,7 @@
     <style>
         .GridHeader {
             grid-area: header;
-            width: 800px;
+            width: 850px;
         }
         .GridMain {
             grid-area: main;
@@ -22,11 +22,11 @@
             border-radius: 5px;
             border-style: solid;
             text-decoration-line: none; */
-            width: 300px;
+            width: 350px;
         }
         .GridFooter {
             grid-area: footer;
-            width: 800px;
+            width: 850px;
         }
 
         .hline { width:100%; height:1px; background: black }
@@ -100,12 +100,12 @@
         
         .container {
             display: grid;
-            grid-template-columns: repeat(8, 100px);
+            grid-template-columns: 500px 350px;
             grid-template-rows: auto;
             grid-template-areas: 
-                "header header header header header header header header"
-                "main main main main main sidebar sidebar sidebar"
-                "footer footer footer footer footer footer footer footer"
+                "header header "
+                "main sidebar"
+                "footer footer"
         }
 
         
@@ -310,7 +310,7 @@
                 BATTLESUIT
                 </div>
 
-        <div class="SectionText" style="width: 300px; height: 30px; border-top: 1px solid black; line-height: 30px;">
+        <div class="SectionText" style="width: 350px; height: 30px; border-top: 1px solid black; line-height: 30px;">
             <div style="position: relative; left: 2px;">FACTION KEYWORDS: T&#x27;AU EMPIRE</div>
         </div>
     </div>
