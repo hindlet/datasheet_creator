@@ -341,7 +341,7 @@
         <div class="SectionText" style="width: 502px; height: 30px; border-top: 1px solid black; line-height: 30px; border-right: 1px solid black; line-height: 30px;">
             KEYWORDS:
             {% for keyword in keywords -%}
-                {% if loop.index != core_abilities|length -%}
+                {% if loop.index != keywords|length -%}
                     {{keyword}},
                 {% else -%}
                     {{keyword}}
