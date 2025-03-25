@@ -1,0 +1,51 @@
+Unit (
+    name: "",
+    stats: UnitStats(
+        movement: 0,
+        toughness: 0,
+        save: 0,
+        invuln: None,
+        wounds: 0,
+        leadership: 0,
+        oc: 0,
+    ),
+    ranged_weapons: [
+        Weapon (
+            name: "",
+            range: Ranged(0),
+            attacks: Set(0),
+            skill: 0,
+            strength: 0,
+            ap: 0,
+            damage: Set(0),
+            keywords: []
+        ),
+    ],
+    melee_weapons: [
+        Weapon (
+            name: "",
+            range: Melee,
+            attacks: Set(0),
+            skill: 0,
+            strength: 0,
+            ap: 0,
+            damage: Set(0),
+            keywords: []
+        ),
+    ],
+    faction_ability: None,
+    core_abilities: [],
+    unique_abilities: [
+        Ability (
+            name: "",
+            description: ""
+        ),
+    ],
+    faction_keyword: "",
+    keywords: [],
+    damaged: None,
+    composition: [],
+    leader: None,
+    default_wargear: None,
+    wargear_options: None,
+)
