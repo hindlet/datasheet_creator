@@ -153,6 +153,20 @@ impl DatasheetApp {
                 ui.label("Ability");
             })
         });
+
+        egui::TopBottomPanel::bottom("Keywords").show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                let last = unit.keywords.len() - 1;
+                for (i, keyword) in unit.keywords.iter().enumerate() {
+                    if i < last{
+                        ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(Color32::LIGHT_BLUE));
+                    } else {
+                        ui.label(RichText::new(keyword.to_uppercase()).color(Color32::LIGHT_BLUE));
+                    }
+                    
+                }
+            })
+        });
             
         egui::CentralPanel::default().show(ctx, |ui| {
             TableBuilder::new(ui)
