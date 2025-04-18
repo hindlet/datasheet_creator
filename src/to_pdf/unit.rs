@@ -4,7 +4,7 @@ use tera::Context;
 
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct UnitStats {
     pub movement: u32,
     pub toughness: u32,
@@ -53,7 +53,7 @@ pub struct Ability {
     description: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Unit {
     pub name: String,
     pub stats: UnitStats,

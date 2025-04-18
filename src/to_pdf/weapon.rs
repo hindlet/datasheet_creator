@@ -1,11 +1,11 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::vals::VariableValue;
 
 
 
 
-#[derive(Debug, Deserialize, Clone, Copy)]
+#[derive(Debug, Deserialize, Clone, Copy, Serialize)]
 pub enum Range {
     Melee,
     Ranged(u32)
@@ -21,7 +21,7 @@ impl Range {
 }
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Weapon {
     pub name: String,
     pub range: Range,
