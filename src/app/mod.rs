@@ -133,6 +133,9 @@ impl DatasheetApp {
                 show_stat_name_func(ui, "M");
                 show_stat_name_func(ui, "T");
                 show_stat_name_func(ui, "Sv");
+                if unit.stats.invuln.is_some() {
+                    show_stat_name_func(ui, "Inv");
+                }
                 show_stat_name_func(ui, "W");
                 show_stat_name_func(ui, "ld");
                 show_stat_name_func(ui, "OC");
@@ -140,6 +143,9 @@ impl DatasheetApp {
                 show_stat_func(ui, format!("{}\"", unit.stats.movement));
                 show_stat_func(ui, unit.stats.toughness.to_string());
                 show_stat_func(ui, format!("{}+", unit.stats.save));
+                if let Some(invuln) = unit.stats.invuln {
+                    show_stat_func(ui, format!("{}++", invuln));
+                }
                 show_stat_func(ui, unit.stats.wounds.to_string());
                 show_stat_func(ui, format!("{}+", unit.stats.leadership));
                 show_stat_func(ui, unit.stats.oc.to_string());
@@ -182,27 +188,16 @@ impl DatasheetApp {
                 .column(Column::auto().at_least(40.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    header.col(|ui| {
-                        ui.strong("Ranged Weapons");
-                    });
-                    header.col(|ui| {
-                        ui.strong("Range");
-                    });
-                    header.col(|ui| {
-                        ui.strong("A");
-                    });
-                    header.col(|ui| {
-                        ui.strong("BS");
-                    });
-                    header.col(|ui| {
-                        ui.strong("S");
-                    });
-                    header.col(|ui| {
-                        ui.strong("AP");
-                    });
-                    header.col(|ui| {
-                        ui.strong("D");
-                    });
+                    let paint_bg = |ui: &mut egui::Ui| {
+                        let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
+                        ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
+                    };
+                    for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
+                        header.col(|ui| {
+                            paint_bg(ui);
+                            ui.strong(RichText::new(col_header).color(Color32::BLACK));
+                        });
+                    }
                 })
                 .body(|mut body| {
                     for weapon in unit.ranged_weapons.iter() {
@@ -246,27 +241,16 @@ impl DatasheetApp {
                 .column(Column::auto().at_least(40.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    header.col(|ui| {
-                        ui.strong("Melee Weapons");
-                    });
-                    header.col(|ui| {
-                        ui.strong("Range");
-                    });
-                    header.col(|ui| {
-                        ui.strong("A");
-                    });
-                    header.col(|ui| {
-                        ui.strong("BS");
-                    });
-                    header.col(|ui| {
-                        ui.strong("S");
-                    });
-                    header.col(|ui| {
-                        ui.strong("AP");
-                    });
-                    header.col(|ui| {
-                        ui.strong("D");
-                    });
+                    let paint_bg = |ui: &mut egui::Ui| {
+                        let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
+                        ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
+                    };
+                    for col_header in ["Melee Weapons", "Range", "A", "BS", "S", "AP", "D"] {
+                        header.col(|ui| {
+                            paint_bg(ui);
+                            ui.strong(RichText::new(col_header).color(Color32::BLACK));
+                        });
+                    }
                 })
                 .body(|mut body| {
                     for weapon in unit.melee_weapons.iter() {
