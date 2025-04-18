@@ -49,8 +49,8 @@ impl UnitStats {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Ability {
-    name: String,
-    description: String,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -1,7 +1,7 @@
 use std::{fs::{self, DirEntry, File}, path::PathBuf};
 
 use eframe::App;
-use egui::{Color32, Context, RichText, Ui};
+use egui::{Color32, Context, Rect, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
 use ron::{
     de::from_reader,
@@ -152,13 +152,53 @@ impl DatasheetApp {
             }); 
         });
 
+        let paint_bg = |ui: &mut egui::Ui| {
+            let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
+            ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
+        };
+
         egui::SidePanel::right("abilities").resizable(true).min_width(200.0).show(ctx, |ui| {
-            ui.label("Test");
+            ui.vertical_centered_justified(|ui| {
+                ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, Color32::LIGHT_BLUE);
+                ui.label(RichText::new("Abilities").size(15.0).color(Color32::BLACK))
+            });
+            ui.horizontal_wrapped(|ui| {
+                ui.label(RichText::new("CORE: "));
+                let last = unit.core_abilities.len() - 1;
+                for (i, ability) in unit.core_abilities.iter().enumerate() {
+                    if i < last{
+                        ui.label(RichText::new(format!("{},", ability)).strong());
+                    } else {
+                        ui.label(RichText::new(ability).strong());
+                    }
+                }
+            });
             ui.separator();
+            if let Some(ability) = &unit.faction_ability {
+                ui.horizontal_wrapped(|ui| {
+                    ui.label(RichText::new("FACTION: "));
+                    ui.label(RichText::new(ability).strong());
+                });
+                ui.separator();
+            }
+
             egui::ScrollArea::vertical().show(ui, |ui| {
-                ui.label("Ability");
+                let last = unit.unique_abilities.len() - 1;
+                for (i, ability) in unit.unique_abilities.iter().enumerate() {
+                    ui.horizontal_wrapped(|ui| {
+                        ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
+                        ui.label(RichText::new(&ability.description));
+                    });
+                    if i < last {
+                        ui.separator();
+                    }
+                }
+
             })
         });
+
+
+       
 
         egui::TopBottomPanel::bottom("Keywords").show(ctx, |ui| {
             ui.horizontal(|ui| {
@@ -188,10 +228,6 @@ impl DatasheetApp {
                 .column(Column::auto().at_least(40.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    let paint_bg = |ui: &mut egui::Ui| {
-                        let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
-                        ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
-                    };
                     for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
                         header.col(|ui| {
                             paint_bg(ui);
@@ -241,10 +277,6 @@ impl DatasheetApp {
                 .column(Column::auto().at_least(40.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    let paint_bg = |ui: &mut egui::Ui| {
-                        let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
-                        ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
-                    };
                     for col_header in ["Melee Weapons", "Range", "A", "BS", "S", "AP", "D"] {
                         header.col(|ui| {
                             paint_bg(ui);
