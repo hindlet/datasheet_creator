@@ -2,7 +2,7 @@ use std::{fs::{self, DirEntry, File}, path::PathBuf};
 
 use edit_mode::render_edit_mode;
 use eframe::App;
-use egui::{Color32, Context, Rect, RichText, Ui};
+use egui::{collapsing_header::paint_default_icon, CollapsingHeader, Color32, Context, Rect, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
 use read_mode::render_read_mode;
 use ron::{
@@ -139,21 +139,15 @@ impl App for DatasheetApp {
             egui::ScrollArea::vertical().show(ui, |ui| {
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
                     if let Some(name) = &folder.name {
-                        if folder.expanded {
-                            if ui.label(format!("□ {}", name)).clicked() {
-                                folder.expanded = false;
-                            };
-                            for (j, unit) in folder.units.iter().enumerate() {
-                                if ui.label(format!("> {}", unit.name)).clicked() && !self.open_files.contains(&(i, j)) {
-                                    self.open_files.push((i, j));
+                        CollapsingHeader::new(name)
+                            .default_open(false)
+                            .show(ui, |ui| {
+                                for (j, unit) in folder.units.iter().enumerate() {
+                                    if ui.selectable_label(false, &unit.name).clicked() && !self.open_files.contains(&(i, j)) {
+                                        self.open_files.push((i, j));
+                                    }
                                 }
-                            }
-                            ui.label("");
-                        } else {
-                            if ui.label(format!("– {}", name)).clicked() {
-                                folder.expanded = true;
-                            };
-                        }
+                            });
                     }
                 }
             })
@@ -169,7 +163,7 @@ impl App for DatasheetApp {
                         if i != 0 {
                             ui.label("|");
                         }
-                        if ui.label("X").clicked() {
+                        if ui.selectable_label(false, "X").clicked() {
                             to_close.push(i);
                         }
                         if ui.label(self.working_dir[*extra_dir].units[*intra_dir].name.clone()).clicked() {
