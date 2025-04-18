@@ -162,18 +162,22 @@ impl DatasheetApp {
                 ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, Color32::LIGHT_BLUE);
                 ui.label(RichText::new("Abilities").size(15.0).color(Color32::BLACK))
             });
-            ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new("CORE: "));
-                let last = unit.core_abilities.len() - 1;
-                for (i, ability) in unit.core_abilities.iter().enumerate() {
-                    if i < last{
-                        ui.label(RichText::new(format!("{},", ability)).strong());
-                    } else {
-                        ui.label(RichText::new(ability).strong());
+
+            if unit.core_abilities.len() != 0 {
+                ui.horizontal_wrapped(|ui| {
+                    ui.label(RichText::new("CORE: "));
+                    let last = unit.core_abilities.len() - 1;
+                    for (i, ability) in unit.core_abilities.iter().enumerate() {
+                        if i < last{
+                            ui.label(RichText::new(format!("{},", ability)).strong());
+                        } else {
+                            ui.label(RichText::new(ability).strong());
+                        }
                     }
-                }
-            });
-            ui.separator();
+                });
+                ui.separator();
+            }
+            
             if let Some(ability) = &unit.faction_ability {
                 ui.horizontal_wrapped(|ui| {
                     ui.label(RichText::new("FACTION: "));
@@ -423,9 +427,7 @@ impl App for DatasheetApp {
         if self.open_files.len() > self.selected_file {
             self.display_current(ctx);
         } else {
-            egui::CentralPanel::default().show(ctx, |ui| {
-
-            });
+            egui::CentralPanel::default().show(ctx, |_| {});
         }
 
         
