@@ -1,4 +1,4 @@
-use std::{fs::{self, File}, path::PathBuf};
+use std::{fmt::format, fs::{self, remove_file, File}, path::PathBuf};
 
 use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
@@ -20,7 +20,7 @@ pub struct DatasheetFolder {
     units: Vec<Unit>,
     unit_edit_data: Vec<UnitEditData>,
 
-    files: Vec<PathBuf>,
+    path: String,
 }
 
 pub enum DataSheetAppMode {
@@ -65,7 +65,6 @@ impl DatasheetApp {
         let mut units = Vec::new();
         let mut unit_edit_data = Vec::new();
         let dir = fs::read_dir(path.clone()).unwrap();
-        let mut paths: Vec<_> = Vec::new();
 
         for path in dir {
             let path = path.unwrap().path();
@@ -73,18 +72,16 @@ impl DatasheetApp {
                 if extension.to_str() == Some("ron") {
                     let f = File::open(path.clone()).unwrap();
                     let unit: Unit = from_reader(f).unwrap();
-                    unit_edit_data.push(UnitEditData::from(&unit));
+                    unit_edit_data.push(UnitEditData::from((&unit, path.file_name().unwrap().to_str().unwrap().replace(".ron", "").to_string())));
                     units.push(unit);
-                    
                 }
             }
-            paths.push(path);
         }
         self.working_dir.push(DatasheetFolder {
             name: Some(name),
             units: units,
             unit_edit_data,
-            files: paths
+            path: path.to_str().unwrap().to_string(),
         });
     }
 
@@ -108,16 +105,28 @@ impl DatasheetApp {
             .separate_tuple_members(true)
             .enumerate_arrays(true);
 
-        let new_unit: Unit = self.working_dir[extra_dir].unit_edit_data[intra_dir].clone().into();
+
+        let mut data = self.working_dir[extra_dir].unit_edit_data[intra_dir].clone();
+        
+        
+        let new_unit: Unit = data.clone().into();
         self.working_dir[extra_dir].units[intra_dir] = new_unit;
         let s = to_string_pretty(&self.working_dir[extra_dir].units[intra_dir], config).expect("Failed to serialize");
-        let _ = fs::write(self.working_dir[extra_dir].files[intra_dir].clone(), s);
+
+
+        if data.prev_filename != data.filename {
+            let _ = remove_file(format!("{}/{}.ron", self.working_dir[extra_dir].path, data.prev_filename.clone()));
+            data.prev_filename = data.filename.clone(); // update filename
+        }
+
+        let path = format!("{}/{}.ron", self.working_dir[extra_dir].path, data.filename.clone());
+        let _ = fs::write(path, s);
     }
 
     fn reset_current(&mut self) {
         let (extra_dir, intra_dir) = self.open_files[self.selected_file];
 
-        self.working_dir[extra_dir].unit_edit_data[intra_dir] = UnitEditData::from(&self.working_dir[extra_dir].units[intra_dir]);
+        self.working_dir[extra_dir].unit_edit_data[intra_dir] = UnitEditData::from((&self.working_dir[extra_dir].units[intra_dir], self.working_dir[extra_dir].unit_edit_data[intra_dir].prev_filename.clone()));
     }
 }
 
@@ -203,12 +212,10 @@ impl App for DatasheetApp {
                             if ui.button("Save Changes").clicked() {
                                 self.save_current();
                             }
-                            if ui.button("Delete Changes").clicked() {
+                            if ui.button("Discard Changes").clicked() {
                                 self.reset_current();
                             }
                         }
-
-
                     });
                 },
                 DataSheetAppMode::Read => {

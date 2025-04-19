@@ -72,6 +72,8 @@ impl Into<Weapon> for WeaponEditData {
 #[derive(Clone)]
 pub struct UnitEditData {
     pub name: String,
+    pub filename: String,
+    pub prev_filename: String,
 
     pub movement: u32,
     pub toughness: u32,
@@ -106,8 +108,8 @@ pub struct UnitEditData {
     pub wargear_options: String,
 }
 
-impl From<&Unit> for UnitEditData {
-    fn from(value: &Unit) -> Self {
+impl From<(&Unit, String)> for UnitEditData {
+    fn from((value, filename): (&Unit, String)) -> Self {
 
         let mut ranged_weapons = Vec::new();
         for weapon in value.ranged_weapons.iter() {
@@ -121,6 +123,8 @@ impl From<&Unit> for UnitEditData {
 
         Self {
             name: value.name.clone(),
+            filename: filename.clone(),
+            prev_filename: filename,
             
             movement: value.stats.movement,
             toughness: value.stats.toughness,
@@ -229,36 +233,40 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.heading("General");
             ui.horizontal(|ui| {
-                ui.label("Name");
+                ui.label("Name:");
                 ui.text_edit_singleline(&mut unit.name);
             });
             ui.horizontal(|ui| {
-                ui.label("Movement");
+                ui.label("Filename:");
+                ui.text_edit_singleline(&mut unit.filename);
+            });
+            ui.horizontal(|ui| {
+                ui.label("Movement:");
                 ui.add(egui::DragValue::new(&mut unit.movement)
                     .range(1..=99)).on_hover_text("Inches");
             });
             ui.horizontal(|ui| {
-                ui.label("Toughness");
+                ui.label("Toughness:");
                 ui.add(egui::DragValue::new(&mut unit.toughness)
                     .range(1..=99));
             });
             ui.horizontal(|ui| {
-                ui.label("Save");
+                ui.label("Save:");
                 ui.add(egui::DragValue::new(&mut unit.save)
                     .range(1..=6));
             });
             ui.horizontal(|ui| {
-                ui.label("Wounds");
+                ui.label("Wounds:");
                 ui.add(egui::DragValue::new(&mut unit.wounds)
                     .range(1..=99));
             });
             ui.horizontal(|ui| {
-                ui.label("Leadership");
+                ui.label("Leadership:");
                 ui.add(egui::DragValue::new(&mut unit.leadership)
                     .range(1..=12));
             });
             ui.horizontal(|ui| {
-                ui.label("Objective Control");
+                ui.label("Objective Control:");
                 ui.add(egui::DragValue::new(&mut unit.objective_control)
                     .range(0..=99));
             });
