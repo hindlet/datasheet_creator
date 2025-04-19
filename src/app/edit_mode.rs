@@ -287,10 +287,16 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                     }
                 })
                 .body(|mut body| {
-                    for weapon in unit.ranged_weapons.iter_mut() {
+                    let mut to_remove = Vec::new();
+                    for (i, weapon) in unit.ranged_weapons.iter_mut().enumerate() {
                         body.row(20.0, |mut row| {
                             row.col(|ui| {
-                                ui.text_edit_singleline(&mut weapon.name);
+                                ui.horizontal(|ui| {
+                                    if ui.button("X").on_hover_text("Delete").clicked() {
+                                        to_remove.push(i);
+                                    }
+                                    ui.text_edit_singleline(&mut weapon.name);
+                                });
                             });
                             row.col(|ui| {
                                 ui.add(egui::DragValue::new(&mut weapon.range)
@@ -322,6 +328,9 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                             });
                         });
                     }
+                    for index in to_remove {
+                        unit.ranged_weapons.remove(index);
+                    }
                 });
 
             if ui.button("Add new weapon").clicked() {
@@ -349,10 +358,16 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                     }
                 })
                 .body(|mut body| {
-                    for weapon in unit.melee_weapons.iter_mut() {
+                    let mut to_remove = Vec::new();
+                    for (i, weapon) in unit.melee_weapons.iter_mut().enumerate() {
                         body.row(20.0, |mut row| {
                             row.col(|ui| {
-                                ui.text_edit_singleline(&mut weapon.name);
+                                ui.horizontal(|ui| {
+                                    if ui.button("X").on_hover_text("Delete").clicked() {
+                                        to_remove.push(i);
+                                    }
+                                    ui.text_edit_singleline(&mut weapon.name);
+                                });
                             });
                             row.col(|ui| {
                                 ui.label("melee");
@@ -383,17 +398,134 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                             });
                         });
                     }
+                    for index in to_remove {
+                        unit.melee_weapons.remove(index);
+                    }
                 });
             if ui.button("Add new weapon").clicked() {
-                unit.ranged_weapons.push(WeaponEditData {
+                unit.melee_weapons.push(WeaponEditData {
                     range: 0,
                     ..Default::default()
                 });
             }
             ui.separator();
             ui.heading("Abilities");
+
+            ui.horizontal(|ui| {
+                ui.label("Has Faction Ability:");
+                ui.checkbox(&mut unit.has_faction_ability, "");
+            });
+            
+
+            if unit.has_faction_ability {
+                ui.horizontal(|ui| {
+                    ui.label("Faction Ability:");
+                    ui.text_edit_singleline(&mut unit.faction_ability);
+                });
+            }
+
+            ui.strong("Core Abilities");
+            TableBuilder::new(ui)
+                .id_salt(3)
+                .striped(true)
+                .resizable(false)
+                .column(Column::auto().at_least(200.0))
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .body(|mut body| {
+                    let mut to_remove = Vec::new();
+                    for (i, ability) in unit.core_abilities.iter_mut().enumerate() {
+                        body.row(20.0, |mut row| {
+                            row.col(|ui| {
+                                ui.horizontal(|ui| {
+                                    if ui.button("X").on_hover_text("Delete").clicked() {
+                                        to_remove.push(i);
+                                    }
+                                    ui.text_edit_singleline(ability);
+                                });
+                            });
+                        });
+                    }
+                    for index in to_remove {
+                        unit.core_abilities.remove(index);
+                    }
+                });
+
+            if ui.button("Add new core ability").clicked() {
+                unit.core_abilities.push("".to_string());
+            }
+
+            TableBuilder::new(ui)
+                .id_salt(4)
+                .striped(true)
+                .resizable(false)
+                .column(Column::auto().at_least(200.0))
+                .column(Column::auto().at_least(400.0))
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .header(20.0, |mut header| {
+                    for col_header in ["Name", "Description"] {
+                        header.col(|ui| {
+                            ui.strong(RichText::new(col_header).size(15.0));
+                        });
+                    }
+                })
+                .body(|mut body| {
+                    let mut to_remove = Vec::new();
+                    for (i, ability) in unit.unique_abilities.iter_mut().enumerate() {
+                        body.row(80.0, |mut row| {
+                            row.col(|ui| {
+                                ui.horizontal(|ui| {
+                                    if ui.button("X").on_hover_text("Delete").clicked() {
+                                        to_remove.push(i);
+                                    }
+                                    ui.text_edit_singleline(&mut ability.name);
+                                });
+                            });
+                            row.col(|ui| {
+                                ui.text_edit_multiline(&mut ability.description);
+                            });
+                        });
+                    }
+                    for index in to_remove {
+                        unit.unique_abilities.remove(index);
+                    }
+                });
+
+            if ui.button("Add new ability").clicked() {
+                unit.unique_abilities.push(Ability::default());
+            }
+
             ui.separator();
             ui.heading("Keywords");
+
+            TableBuilder::new(ui)
+                .id_salt(5)
+                .striped(true)
+                .resizable(false)
+                .column(Column::auto().at_least(200.0))
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .body(|mut body| {
+                    let mut to_remove = Vec::new();
+                    for (i, keyword) in unit.keywords.iter_mut().enumerate() {
+                        body.row(20.0, |mut row| {
+                            row.col(|ui| {
+                                ui.horizontal(|ui| {
+                                    if ui.button("X").on_hover_text("Delete").clicked() {
+                                        to_remove.push(i);
+                                    }
+                                    ui.text_edit_singleline(keyword);
+                                });
+                                
+                            });
+                        });
+                    }
+                    for index in to_remove {
+                        unit.keywords.remove(index);
+                    }
+                });
+
+            if ui.button("Add new keyword").clicked() {
+                unit.unique_abilities.push(Ability::default());
+            }
             ui.separator();
         });
         
