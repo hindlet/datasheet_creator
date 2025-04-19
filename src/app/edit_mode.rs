@@ -256,6 +256,17 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                     .range(1..=6));
             });
             ui.horizontal(|ui| {
+                ui.label("Has Invulnerable Save:");
+                ui.checkbox(&mut unit.has_invuln, "");
+            });
+            if unit.has_invuln {
+                ui.horizontal(|ui| {
+                    ui.label("Invulnerable Save:");
+                    ui.add(egui::DragValue::new(&mut unit.invuln)
+                        .range(1..=6));
+                });
+            }
+            ui.horizontal(|ui| {
                 ui.label("Wounds:");
                 ui.add(egui::DragValue::new(&mut unit.wounds)
                     .range(1..=99));
