@@ -1,9 +1,8 @@
-use std::{fs::{self, DirEntry, File}, path::PathBuf};
+use std::{fs::{self, File}, path::PathBuf};
 
 use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
-use egui::{collapsing_header::paint_default_icon, CollapsingHeader, Color32, Context, Rect, RichText, Ui};
-use egui_extras::{Column, TableBuilder};
+use egui::{CollapsingHeader, Context};
 use read_mode::render_read_mode;
 use ron::{
     de::from_reader,
@@ -21,9 +20,7 @@ pub struct DatasheetFolder {
     units: Vec<Unit>,
     unit_edit_data: Vec<UnitEditData>,
 
-    path: PathBuf,
     files: Vec<PathBuf>,
-    expanded: bool
 }
 
 pub enum DataSheetAppMode {
@@ -86,8 +83,6 @@ impl DatasheetApp {
             name: Some(name),
             units: units,
             unit_edit_data,
-            expanded: false,
-            path,
             files: paths
         });
     }
@@ -141,7 +136,7 @@ impl Default for DatasheetApp {
 
 impl App for DatasheetApp {
     
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         
         egui::SidePanel::left("LeftPanel").min_width(150.0).resizable(false).show(ctx, |ui| {
             

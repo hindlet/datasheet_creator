@@ -12,7 +12,7 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Datasheet Creator",
         options,
-        Box::new(|cc| {
+        Box::new(|_| {
             Ok(Box::<DatasheetApp>::default())
         })
     )
