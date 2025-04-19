@@ -17,6 +17,21 @@ pub struct WeaponEditData {
     pub keywords: Vec<String>
 }
 
+impl Default for WeaponEditData {
+    fn default() -> Self {
+        Self {
+            name: "".to_string(),
+            range: 1,
+            attacks: "1".to_string(),
+            skill: 1,
+            strength: 1,
+            ap: 0,
+            damage: "1".to_string(),
+            keywords: Vec::new()
+        }
+    }
+}
+
 impl From<&Weapon> for WeaponEditData {
     fn from(value: &Weapon) -> Self {
         Self {
@@ -250,6 +265,8 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
 
             ui.separator();
             ui.heading("Ranged Weapons");
+            
+
             TableBuilder::new(ui)
                 .id_salt(1)
                 .striped(true)
@@ -280,6 +297,9 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                     .range(1..=300));
                             });
                             row.col(|ui| {
+                                if !VariableValue::is_valid_variable_val(&weapon.attacks) {
+                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                }
                                 ui.text_edit_singleline(&mut weapon.attacks);
                             });
                             row.col(|ui| {
@@ -295,11 +315,18 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                     .range(0..=6));
                             });
                             row.col(|ui| {
+                                if !VariableValue::is_valid_variable_val(&weapon.damage) {
+                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                }
                                 ui.text_edit_singleline(&mut weapon.damage);
                             });
                         });
                     }
                 });
+
+            if ui.button("Add new weapon").clicked() {
+                unit.ranged_weapons.push(WeaponEditData::default());
+            }
             ui.separator();
             ui.heading("Melee Weapons");
             TableBuilder::new(ui)
@@ -331,6 +358,9 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                 ui.label("melee");
                             });
                             row.col(|ui| {
+                                if !VariableValue::is_valid_variable_val(&weapon.attacks) {
+                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                }
                                 ui.text_edit_singleline(&mut weapon.attacks);
                             });
                             row.col(|ui| {
@@ -346,11 +376,20 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                     .range(0..=6));
                             });
                             row.col(|ui| {
+                                if !VariableValue::is_valid_variable_val(&weapon.damage) {
+                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                }
                                 ui.text_edit_singleline(&mut weapon.damage);
                             });
                         });
                     }
                 });
+            if ui.button("Add new weapon").clicked() {
+                unit.ranged_weapons.push(WeaponEditData {
+                    range: 0,
+                    ..Default::default()
+                });
+            }
             ui.separator();
             ui.heading("Abilities");
             ui.separator();

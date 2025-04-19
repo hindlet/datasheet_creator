@@ -46,21 +46,21 @@ impl VariableValue {
 
 
     pub fn is_valid_variable_val(string: &str) -> bool {
-        let dice_and_const = Regex::new(r"\d+D[36]\+\d+").unwrap();
-        let die_and_const = Regex::new(r"D[36]\+\d+").unwrap();
-        let dice_only = Regex::new(r"\d+D[36]").unwrap();
-        let die_only = Regex::new(r"D[36]").unwrap();
-        let const_only = Regex::new(r"\d+").unwrap();
+        let dice_and_const = Regex::new(r"^\d+D[36]\+\d+$").unwrap();
+        let die_and_const = Regex::new(r"^D[36]\+\d+$").unwrap();
+        let dice_only = Regex::new(r"^\d+D[36]$").unwrap();
+        let die_only = Regex::new(r"^D[36]$").unwrap();
+        let const_only = Regex::new(r"^\d+$").unwrap();
 
         return dice_and_const.is_match(string) || die_and_const.is_match(string) || dice_only.is_match(string) || die_only.is_match(string) || const_only.is_match(string);
     }
 
     pub fn from_string(string: &str) -> Result<Self, VariableValueConversionError> {
-        let dice_and_const = Regex::new(r"\d+D[36]\+\d+").unwrap();
-        let die_and_const = Regex::new(r"D[36]\+\d+").unwrap();
-        let dice_only = Regex::new(r"\d+D[36]").unwrap();
-        let die_only = Regex::new(r"D[36]").unwrap();
-        let const_only = Regex::new(r"\d+").unwrap();
+        let dice_and_const = Regex::new(r"^\d+D[36]\+\d+$").unwrap();
+        let die_and_const = Regex::new(r"^D[36]\+\d+$").unwrap();
+        let dice_only = Regex::new(r"^\d+D[36]$").unwrap();
+        let die_only = Regex::new(r"^D[36]$").unwrap();
+        let const_only = Regex::new(r"^\d+$").unwrap();
 
         if dice_and_const.is_match(string) {
             let split_one: Vec<&str> = string.split("+").collect();
