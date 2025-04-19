@@ -1,6 +1,6 @@
 use std::{fs::{self, DirEntry, File}, path::PathBuf};
 
-use edit_mode::render_edit_mode;
+use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
 use egui::{collapsing_header::paint_default_icon, CollapsingHeader, Color32, Context, Rect, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
@@ -19,6 +19,8 @@ mod edit_mode;
 pub struct DatasheetFolder {
     name: Option<String>,
     units: Vec<Unit>,
+    unit_edit_data: Vec<UnitEditData>,
+
     path: PathBuf,
     files: Vec<PathBuf>,
     expanded: bool
@@ -63,6 +65,7 @@ impl DatasheetApp {
 
         let name = path.file_name().unwrap().to_str().unwrap().to_string();
         let mut units = Vec::new();
+        let mut unit_edit_data = Vec::new();
         let dir = fs::read_dir(path.clone()).unwrap();
         let mut paths: Vec<_> = Vec::new();
 
@@ -72,7 +75,9 @@ impl DatasheetApp {
                 if extension.to_str() == Some("ron") {
                     let f = File::open(path.clone()).unwrap();
                     let unit: Unit = from_reader(f).unwrap();
+                    unit_edit_data.push(UnitEditData::from(&unit));
                     units.push(unit);
+                    
                 }
             }
             paths.push(path);
@@ -80,6 +85,7 @@ impl DatasheetApp {
         self.working_dir.push(DatasheetFolder {
             name: Some(name),
             units: units,
+            unit_edit_data,
             expanded: false,
             path,
             files: paths

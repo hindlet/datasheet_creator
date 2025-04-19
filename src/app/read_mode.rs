@@ -141,7 +141,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                 for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
                     header.col(|ui| {
                         paint_bg(ui);
-                        ui.strong(RichText::new(col_header).color(Color32::BLACK));
+                        ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
                     });
                 }
             })
@@ -190,7 +190,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                 for col_header in ["Melee Weapons", "Range", "A", "BS", "S", "AP", "D"] {
                     header.col(|ui| {
                         paint_bg(ui);
-                        ui.strong(RichText::new(col_header).color(Color32::BLACK));
+                        ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
                     });
                 }
             })
