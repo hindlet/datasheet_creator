@@ -1,10 +1,11 @@
 use egui::{Color32, Context, RichText};
 use egui_extras::{Column, TableBuilder};
 
-use crate::to_pdf::{Ability, Unit, Weapon};
+use crate::{to_pdf::{Ability, Range, Unit, Weapon, UnitStats}, vals::VariableValue};
 
 use super::DatasheetApp;
 
+#[derive(Clone)]
 pub struct WeaponEditData {
     pub name: String,
     pub range: u32,
@@ -21,7 +22,7 @@ impl From<&Weapon> for WeaponEditData {
         Self {
             name: value.name.clone(),
             range: match value.range {
-                crate::to_pdf::Range::Ranged(range) => range,
+                Range::Ranged(range) => range,
                 _ => 0
             },
             attacks: value.attacks.to_string(),
@@ -34,6 +35,26 @@ impl From<&Weapon> for WeaponEditData {
     }
 }
 
+impl Into<Weapon> for WeaponEditData {
+    fn into(self) -> Weapon {
+        Weapon {
+            name: self.name,
+            range: if self.range == 0 {
+                Range::Melee
+            } else {
+                Range::Ranged(self.range)
+            },
+            attacks: VariableValue::from_string(&self.attacks).unwrap_or(VariableValue::Set(0)),
+            skill: self.skill,
+            strength: self.strength,
+            ap: self.ap as i32,
+            damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
+            keywords: self.keywords
+        }
+    }
+}
+
+#[derive(Clone)]
 pub struct UnitEditData {
     pub name: String,
 
@@ -123,6 +144,64 @@ impl From<&Unit> for UnitEditData {
     }
 }
 
+impl Into<Unit> for UnitEditData {
+    fn into(self) -> Unit {
+        let mut ranged_weapons = Vec::new();
+        for weapon in self.ranged_weapons {
+            ranged_weapons.push(weapon.into());
+        }
+
+        let mut melee_weapons = Vec::new();
+        for weapon in self.melee_weapons {
+            melee_weapons.push(weapon.into());
+        }
+
+
+        Unit {
+            name: self.name,
+            stats: UnitStats {
+                movement: self.movement,
+                toughness: self.toughness,
+                save: self.save,
+                invuln: if self.has_invuln {
+                    Some(self.invuln)
+                } else {
+                    None
+                },
+                wounds: self.wounds,
+                leadership: self.leadership,
+                oc: self.objective_control
+            },
+            ranged_weapons,
+            melee_weapons,
+            faction_ability: if self.has_faction_ability {
+                Some(self.faction_ability)
+            } else {
+                None
+            },
+            core_abilities: self.core_abilities,
+            unique_abilities: self.unique_abilities,
+            faction_keyword: self.faction_keyword,
+            keywords: self.keywords,
+            damaged: if self.has_damaged {
+                Some(self.damaged)
+            } else {
+                None
+            },
+            composition: self.composition,
+            leader: if self.can_lead {
+                Some(self.leader)
+            } else {
+                None
+            },
+            wargear_options: if self.has_wargear_options {
+                Some(self.wargear_options)
+            } else {
+                None
+            },
+        }
+    }
+}
 
 
 
