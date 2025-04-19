@@ -103,16 +103,18 @@ impl DatasheetApp {
     
 
 
-    pub fn save_current(&self) {
+    pub fn save_current(&mut self) {
         let (extra_dir, intra_dir) = self.open_files[self.selected_file];
         let config = PrettyConfig::new()
             .depth_limit(2)
             .separate_tuple_members(true)
             .enumerate_arrays(true);
+
+        let new_unit: Unit = self.working_dir[extra_dir].unit_edit_data[intra_dir].clone().into();
+        self.working_dir[extra_dir].units[intra_dir] = new_unit;
         let s = to_string_pretty(&self.working_dir[extra_dir].units[intra_dir], config).expect("Failed to serialize");
         let _ = fs::write(self.working_dir[extra_dir].files[intra_dir].clone(), s);
     }
-
 }
 
 
@@ -186,9 +188,14 @@ impl App for DatasheetApp {
         egui::TopBottomPanel::bottom("BottomPanel").min_height(25.0).show(ctx, |ui| {
             match self.mode {
                 DataSheetAppMode::Edit => {
-                    if ui.button("Edit").clicked() {
-                        self.mode = DataSheetAppMode::Read
-                    }
+                    ui.horizontal(|ui| {
+                        if ui.button("Edit").clicked() {
+                            self.mode = DataSheetAppMode::Read
+                        };
+                        if self.open_files.len() > self.selected_file && ui.button("Save").clicked() {
+                            self.save_current();
+                        }
+                    });
                 },
                 DataSheetAppMode::Read => {
                     if ui.button("Read").clicked() {
