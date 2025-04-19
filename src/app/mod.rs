@@ -2,7 +2,7 @@ use std::{fmt::format, fs::{self, remove_file, File}, path::PathBuf};
 
 use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
-use egui::{CollapsingHeader, Color32, Context, RichText};
+use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, RichText};
 use read_mode::render_read_mode;
 use ron::{
     de::from_reader,
@@ -29,16 +29,22 @@ pub enum DataSheetAppMode {
 }
 
 pub struct DatasheetApp {
-    working_dir_name: String,
-    working_dir: Vec<DatasheetFolder>,
-    open_files: Vec<(usize, usize)>,
-    selected_file: usize,
-    mode: DataSheetAppMode,
-    deleting: (bool, Option<(usize, usize, String)>),
-    new_unit: (bool, usize, String),
+    pub working_dir_name: String,
+    pub working_dir: Vec<DatasheetFolder>,
+    pub open_files: Vec<(usize, usize)>,
+    pub selected_file: usize,
+    pub mode: DataSheetAppMode,
+    pub deleting: (bool, Option<(usize, usize, String)>),
+    pub new_unit: (bool, usize, String),
 
-    show_confirmation_dialog: bool,
-    allowed_to_close: bool,
+    pub show_confirmation_dialog: bool,
+    pub allowed_to_close: bool,
+
+
+
+    pub settings_open: bool,
+    pub bar_colour: Color32,
+
 }
 
 
@@ -186,7 +192,9 @@ impl Default for DatasheetApp {
             new_unit: (false, 0, "".to_string()),
 
             show_confirmation_dialog: false,
-            allowed_to_close: false
+            allowed_to_close: false,
+            settings_open: false,
+            bar_colour: Color32::LIGHT_BLUE,
         }
     }
 }
@@ -196,7 +204,6 @@ impl App for DatasheetApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         
         egui::SidePanel::left("LeftPanel").min_width(150.0).resizable(false).show(ctx, |ui| {
-            
 
             if ui.button(RichText::new(&self.working_dir_name).size(15.0)).clicked() {
                 if let Some(path) = rfd::FileDialog::new().pick_folder() {
@@ -245,6 +252,8 @@ impl App for DatasheetApp {
                     }
                 }
             })
+
+            
         });
 
             
@@ -272,9 +281,12 @@ impl App for DatasheetApp {
         });
 
         egui::TopBottomPanel::bottom("BottomPanel").min_height(25.0).show(ctx, |ui| {
-            match self.mode {
-                DataSheetAppMode::Edit => {
-                    ui.horizontal(|ui| {
+            ui.horizontal(|ui| {
+                if ui.button("Settings").clicked() {
+                    self.settings_open = true;
+                }
+                match self.mode {
+                    DataSheetAppMode::Edit => {
                         if ui.button("Edit Mode").clicked() {
                             self.mode = DataSheetAppMode::Read
                         };
@@ -286,14 +298,15 @@ impl App for DatasheetApp {
                                 self.reset_current();
                             }
                         }
-                    });
-                },
-                DataSheetAppMode::Read => {
-                    if ui.button("Read Mode").clicked() {
-                        self.mode = DataSheetAppMode::Edit
+                    },
+                    DataSheetAppMode::Read => {
+                        if ui.button("Read Mode").clicked() {
+                            self.mode = DataSheetAppMode::Edit
+                        }
                     }
                 }
-            }
+            })
+            
         });
 
         if self.open_files.len() > self.selected_file {
@@ -384,5 +397,57 @@ impl App for DatasheetApp {
                 });
         }
 
+        if self.settings_open {
+            egui::Window::new("Settings")
+                .collapsible(false)
+                .resizable(true)
+                
+                .show(ctx, |ui| {
+                    CollapsingHeader::new("UI")
+                        .default_open(false)
+                        .show(ui, |ui| {
+                            ui.horizontal(|ui| {
+                                ui.label("Light Mode:");
+                                global_theme_preference_switch(ui);
+                            });
+                            ui.horizontal(|ui| {
+                                ui.label("Bar Colour:");
+                                ui.color_edit_button_srgba(&mut self.bar_colour);
+                            })
+                        });
+                    if ui.button("Close").clicked() {
+                        self.settings_open = false;
+                    }
+                });
+        }
+
     }
+
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        storage.set_string("Bar_Colour", color32_to_string(self.bar_colour));
+        storage.flush();
+    }
+
+}
+
+
+
+fn color32_to_string(colour: Color32) -> String {
+    format!("[{},{},{},{}]", colour.r(), colour.g(), colour.b(), colour.a())
+}
+
+pub fn string_to_color32(string: String) -> Result<Color32, ()> {
+    let temp = string.replace("[", "").replace("]", "");
+    let nums: Vec<&str> = temp.split(",").collect();
+    if nums.len() != 4 {return Err(());}
+    if let Ok(r) = nums[0].parse() {
+        if let Ok(g) = nums[1].parse() {
+            if let Ok(b) = nums[2].parse() {
+                if let Ok(a) = nums[3].parse() {
+                    return Ok(Color32::from_rgba_unmultiplied(r, g, b, a));
+                }
+            }
+        }
+    }
+    return Err(());
 }
