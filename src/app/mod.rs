@@ -2,7 +2,7 @@ use std::{fmt::format, fs::{self, remove_file, File}, path::PathBuf};
 
 use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
-use egui::{CollapsingHeader, Context};
+use egui::{CollapsingHeader, Color32, Context, RichText};
 use read_mode::render_read_mode;
 use ron::{
     de::from_reader,
@@ -34,6 +34,8 @@ pub struct DatasheetApp {
     open_files: Vec<(usize, usize)>,
     selected_file: usize,
     mode: DataSheetAppMode,
+    deleting: (bool, Option<(usize, usize, String)>),
+    new_unit: (bool, usize, String),
 
     show_confirmation_dialog: bool,
     allowed_to_close: bool,
@@ -115,7 +117,8 @@ impl DatasheetApp {
 
 
         if data.prev_filename != data.filename {
-            let _ = remove_file(format!("{}/{}.ron", self.working_dir[extra_dir].path, data.prev_filename.clone()));
+            self.delete_unit(extra_dir, intra_dir);
+            // let _ = remove_file(format!("{}/{}.ron", self.working_dir[extra_dir].path, data.prev_filename.clone()));
             data.prev_filename = data.filename.clone(); // update filename
         }
 
@@ -127,6 +130,42 @@ impl DatasheetApp {
         let (extra_dir, intra_dir) = self.open_files[self.selected_file];
 
         self.working_dir[extra_dir].unit_edit_data[intra_dir] = UnitEditData::from((&self.working_dir[extra_dir].units[intra_dir], self.working_dir[extra_dir].unit_edit_data[intra_dir].prev_filename.clone()));
+    }
+
+    fn create_unit(&mut self, folder: usize, filename: String) {
+
+        let i= self.working_dir[folder].unit_edit_data.len();
+
+        let new_unit = Unit {
+            name: filename.clone(),
+            ..Default::default()
+        };
+        let new_unit_edit_data = UnitEditData::from((&new_unit, filename));
+
+        self.working_dir[folder].units.push(new_unit);
+        self.working_dir[folder].unit_edit_data.push(new_unit_edit_data);
+
+        let config = PrettyConfig::new()
+            .depth_limit(2)
+            .separate_tuple_members(true)
+            .enumerate_arrays(true);
+
+
+        let s = to_string_pretty(&self.working_dir[folder].units[i], config).expect("Failed to serialize");
+        let _ = fs::write(format!("{}/{}.ron", self.working_dir[folder].path, self.working_dir[folder].unit_edit_data[i].prev_filename), s);
+    }
+
+    fn delete_unit(&mut self, folder: usize, file: usize) {
+        
+        let _ = remove_file(format!("{}/{}.ron", self.working_dir[folder].path, self.working_dir[folder].unit_edit_data[file].prev_filename));
+        self.working_dir[folder].units.remove(file);
+        self.working_dir[folder].unit_edit_data.remove(file);
+        for (i, index) in self.open_files.iter().enumerate() {
+            if index == &(folder, file) {
+                self.open_files.remove(i);
+                break;
+            }
+        }
     }
 }
 
@@ -140,6 +179,8 @@ impl Default for DatasheetApp {
             open_files: Vec::new(),
             selected_file: 0,
             mode: DataSheetAppMode::Read,
+            deleting: (false, None),
+            new_unit: (false, 0, "".to_string()),
 
             show_confirmation_dialog: false,
             allowed_to_close: false
@@ -154,21 +195,47 @@ impl App for DatasheetApp {
         egui::SidePanel::left("LeftPanel").min_width(150.0).resizable(false).show(ctx, |ui| {
             
 
-            if ui.button(&self.working_dir_name).clicked() {
+            if ui.button(RichText::new(&self.working_dir_name).size(15.0)).clicked() {
                 if let Some(path) = rfd::FileDialog::new().pick_folder() {
                     self.working_dir_name = path.file_name().unwrap().to_str().unwrap().to_string();
                     self.open_folder(path);
                 }
             }
+            if self.working_dir_name != "No Folder Open".to_string() {
+                ui.horizontal(|ui| {
+                    if ui.button("New Unit").clicked() {
+                        self.new_unit = (true, 0, "".to_string());
+                    }
+
+                    ui.reset_style();
+                    if self.deleting.0 == true {
+                        ui.style_mut().visuals.widgets.active.weak_bg_fill = Color32::RED;
+                        ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::RED;
+                        ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
+                    }
+                    if ui.button("Delete Unit").clicked() {
+                        self.deleting.0 ^= true;
+                    }
+                });
+            }
             egui::ScrollArea::vertical().show(ui, |ui| {
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
+                    if self.deleting.0 {
+                        ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
+                    }
                     if let Some(name) = &folder.name {
                         CollapsingHeader::new(name)
                             .default_open(false)
                             .show(ui, |ui| {
                                 for (j, unit) in folder.units.iter().enumerate() {
-                                    if ui.selectable_label(false, &unit.name).clicked() && !self.open_files.contains(&(i, j)) {
-                                        self.open_files.push((i, j));
+                                    if ui.selectable_label(false, &unit.name).clicked() {
+                                        if !self.open_files.contains(&(i, j)) && !self.deleting.0 {
+                                            self.open_files.push((i, j));
+                                        }
+                                        if self.deleting.0 {
+                                            self.deleting.1 = Some((i, j, unit.name.clone()));
+                                        }
+                                        
                                     }
                                 }
                             });
@@ -262,5 +329,57 @@ impl App for DatasheetApp {
                     });
                 });
         }
+
+        if let Some((i, j, unit_name)) = self.deleting.1.clone() {
+            egui::Window::new("Confirm Deletion?")
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.label(format!("Do you want to delete {}", unit_name));
+                    ui.horizontal(|ui| {
+                        if ui.button("No").clicked() {
+                            self.deleting.1 = None;
+                        }
+
+                        if ui.button("Yes").clicked() {
+                            self.delete_unit(i, j);
+                            self.deleting.1 = None;
+                        }
+                    });
+                });
+        }
+
+        if self.new_unit.0 {
+            egui::Window::new("Create new Unit?")
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.horizontal(|ui| {
+                        ui.label("Folder: ");
+                        egui::ComboBox::from_id_salt(10)
+                            .selected_text(self.working_dir[self.new_unit.1].name.clone().unwrap_or("Main".to_string()))
+                            .show_ui(ui, |ui| {
+                                for (i, folder) in self.working_dir.iter().enumerate() {
+                                    ui.selectable_value(&mut self.new_unit.1, i, folder.name.clone().unwrap_or("Main".to_string()));
+                                }
+                            })
+                    });
+                    ui.horizontal(|ui| {
+                        ui.label("Filename: ");
+                        ui.text_edit_singleline(&mut self.new_unit.2);
+                    });
+                    ui.horizontal(|ui| {
+                        if ui.button("Cancel").clicked() {
+                            self.new_unit.0 = false;
+                        }
+
+                        if ui.button("Confirm").clicked() && self.new_unit.2 != "" {
+                            self.create_unit(self.new_unit.1, self.new_unit.2.clone());
+                            self.new_unit.0 = false;
+                        }
+                    });
+                });
+        }
+
     }
 }

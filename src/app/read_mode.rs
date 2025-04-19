@@ -72,7 +72,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
         if unit.core_abilities.len() != 0 {
             ui.horizontal_wrapped(|ui| {
                 ui.label(RichText::new("CORE: "));
-                let last = unit.core_abilities.len() - 1;
+                let last = unit.core_abilities.len().checked_sub(1).unwrap_or(0);
                 for (i, ability) in unit.core_abilities.iter().enumerate() {
                     if i < last{
                         ui.label(RichText::new(format!("{},", ability)).strong());
@@ -93,7 +93,8 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
         }
 
         egui::ScrollArea::vertical().show(ui, |ui| {
-            let last = unit.unique_abilities.len() - 1;
+            
+            let last = unit.unique_abilities.len().checked_sub(1).unwrap_or(0);
             for (i, ability) in unit.unique_abilities.iter().enumerate() {
                 ui.horizontal_wrapped(|ui| {
                     ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
@@ -112,7 +113,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
 
     egui::TopBottomPanel::bottom("Keywords").show(ctx, |ui| {
         ui.horizontal(|ui| {
-            let last = unit.keywords.len() - 1;
+            let last = unit.keywords.len().checked_sub(1).unwrap_or(0);
             for (i, keyword) in unit.keywords.iter().enumerate() {
                 if i < last{
                     ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(Color32::LIGHT_BLUE));
