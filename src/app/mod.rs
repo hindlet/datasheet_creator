@@ -2,7 +2,7 @@ use std::{fmt::format, fs::{self, remove_file, File}, path::PathBuf};
 
 use edit_mode::{render_edit_mode, UnitEditData};
 use eframe::App;
-use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, RichText};
+use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, RichText, ThemePreference};
 use read_mode::render_read_mode;
 use ron::{
     de::from_reader,
@@ -44,6 +44,7 @@ pub struct DatasheetApp {
 
     pub settings_open: bool,
     pub bar_colour: Color32,
+    pub dark_mode: bool,
 
 }
 
@@ -195,6 +196,7 @@ impl Default for DatasheetApp {
             allowed_to_close: false,
             settings_open: false,
             bar_colour: Color32::LIGHT_BLUE,
+            dark_mode: true,
         }
     }
 }
@@ -421,9 +423,15 @@ impl App for DatasheetApp {
                 });
         }
 
+        self.dark_mode = ctx.options(|opt| opt.theme_preference == ThemePreference::Dark);
+
     }
 
+
+
+
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        storage.set_string("Dark_Mode", self.dark_mode.to_string());
         storage.set_string("Bar_Colour", color32_to_string(self.bar_colour));
         storage.flush();
     }
