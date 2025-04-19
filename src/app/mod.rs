@@ -181,7 +181,7 @@ impl App for DatasheetApp {
                         if ui.selectable_label(false, "X").clicked() {
                             to_close.push(i);
                         }
-                        if ui.label(self.working_dir[*extra_dir].units[*intra_dir].name.clone()).clicked() {
+                        if ui.selectable_label(false, self.working_dir[*extra_dir].units[*intra_dir].name.clone()).clicked() {
                             self.selected_file = i;
                         };
                     }
