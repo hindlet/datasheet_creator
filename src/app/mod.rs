@@ -35,7 +35,8 @@ pub struct DatasheetApp {
     selected_file: usize,
     mode: DataSheetAppMode,
 
-
+    show_confirmation_dialog: bool,
+    allowed_to_close: bool,
 }
 
 
@@ -129,7 +130,10 @@ impl Default for DatasheetApp {
             working_dir: Vec::new(),
             open_files: Vec::new(),
             selected_file: 0,
-            mode: DataSheetAppMode::Read
+            mode: DataSheetAppMode::Read,
+
+            show_confirmation_dialog: false,
+            allowed_to_close: false
         }
     }
 }
@@ -192,11 +196,11 @@ impl App for DatasheetApp {
             match self.mode {
                 DataSheetAppMode::Edit => {
                     ui.horizontal(|ui| {
-                        if ui.button("Edit").clicked() {
+                        if ui.button("Edit Mode").clicked() {
                             self.mode = DataSheetAppMode::Read
                         };
                         if self.open_files.len() > self.selected_file {
-                            if ui.button("Save").clicked() {
+                            if ui.button("Save Changes").clicked() {
                                 self.save_current();
                             }
                             if ui.button("Delete Changes").clicked() {
@@ -208,7 +212,7 @@ impl App for DatasheetApp {
                     });
                 },
                 DataSheetAppMode::Read => {
-                    if ui.button("Read").clicked() {
+                    if ui.button("Read Mode").clicked() {
                         self.mode = DataSheetAppMode::Edit
                     }
                 }
@@ -221,6 +225,35 @@ impl App for DatasheetApp {
             egui::CentralPanel::default().show(ctx, |_| {});
         }
 
-        
+
+        if ctx.input(|i| i.viewport().close_requested()) {
+            if self.allowed_to_close {
+                // do nothing - we will close
+            } else {
+                ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+                self.show_confirmation_dialog = true;
+            }
+        }
+
+        if self.show_confirmation_dialog {
+            egui::Window::new("Do you want to quit?")
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.label("Make sure to save your work :)");
+                    ui.horizontal(|ui| {
+                        if ui.button("No").clicked() {
+                            self.show_confirmation_dialog = false;
+                            self.allowed_to_close = false;
+                        }
+
+                        if ui.button("Yes").clicked() {
+                            self.show_confirmation_dialog = false;
+                            self.allowed_to_close = true;
+                            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                        }
+                    });
+                });
+        }
     }
 }
