@@ -60,12 +60,12 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
 
     let paint_bg = |ui: &mut egui::Ui| {
         let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
-        ui.painter().rect_filled(gapless_rect, 0.0, Color32::LIGHT_BLUE);
+        ui.painter().rect_filled(gapless_rect, 0.0, app.bar_colour);
     };
 
     egui::SidePanel::right("abilities").resizable(true).min_width(200.0).show(ctx, |ui| {
         ui.vertical_centered_justified(|ui| {
-            ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, Color32::LIGHT_BLUE);
+            ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, app.bar_colour);
             ui.label(RichText::new("Abilities").size(15.0).color(Color32::BLACK))
         });
 
@@ -116,7 +116,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             let last = unit.keywords.len().checked_sub(1).unwrap_or(0);
             for (i, keyword) in unit.keywords.iter().enumerate() {
                 if i < last{
-                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(Color32::LIGHT_BLUE));
+                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(app.bar_colour));
                 } else {
                     ui.label(RichText::new(keyword.to_uppercase()).color(Color32::LIGHT_BLUE));
                 }

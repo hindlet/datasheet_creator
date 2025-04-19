@@ -1,4 +1,4 @@
-use app::DatasheetApp;
+use app::{string_to_color32, DatasheetApp};
 mod to_pdf;
 mod vals;
 mod app;
@@ -12,8 +12,17 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Datasheet Creator",
         options,
-        Box::new(|_| {
+        Box::new(|cc| {
+            if let Some(storage) = cc.storage {
+                if let Some(bar_col) =storage.get_string("Bar_Colour") {
+                    return Ok(Box::new(DatasheetApp {
+                        bar_colour: string_to_color32(bar_col).unwrap_or_default(),
+                        ..Default::default()
+                    }))
+                }
+            }
             Ok(Box::<DatasheetApp>::default())
+            
         })
     )
 }
