@@ -102,6 +102,8 @@ impl DatasheetApp {
 
     
 
+    
+
 
     pub fn save_current(&mut self) {
         let (extra_dir, intra_dir) = self.open_files[self.selected_file];
@@ -114,6 +116,12 @@ impl DatasheetApp {
         self.working_dir[extra_dir].units[intra_dir] = new_unit;
         let s = to_string_pretty(&self.working_dir[extra_dir].units[intra_dir], config).expect("Failed to serialize");
         let _ = fs::write(self.working_dir[extra_dir].files[intra_dir].clone(), s);
+    }
+
+    fn reset_current(&mut self) {
+        let (extra_dir, intra_dir) = self.open_files[self.selected_file];
+
+        self.working_dir[extra_dir].unit_edit_data[intra_dir] = UnitEditData::from(&self.working_dir[extra_dir].units[intra_dir]);
     }
 }
 
@@ -192,9 +200,16 @@ impl App for DatasheetApp {
                         if ui.button("Edit").clicked() {
                             self.mode = DataSheetAppMode::Read
                         };
-                        if self.open_files.len() > self.selected_file && ui.button("Save").clicked() {
-                            self.save_current();
+                        if self.open_files.len() > self.selected_file {
+                            if ui.button("Save").clicked() {
+                                self.save_current();
+                            }
+                            if ui.button("Delete Changes").clicked() {
+                                self.reset_current();
+                            }
                         }
+
+
                     });
                 },
                 DataSheetAppMode::Read => {
