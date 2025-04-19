@@ -45,6 +45,9 @@ pub struct DatasheetApp {
 impl DatasheetApp {
     fn open_folder(&mut self, path: PathBuf) {
         let dir = fs::read_dir(path).unwrap();
+        self.working_dir = Vec::new();
+        self.open_files = Vec::new();
+        self.selected_file = 0;
         
         for path in dir {
             let path = path.unwrap();
