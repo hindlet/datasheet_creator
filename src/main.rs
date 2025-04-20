@@ -10,7 +10,6 @@ fn main() -> eframe::Result {
     let archive = NamedArchive::load(include_dir!("assets"));
     let icon_data = archive.get("Logo_128.png").unwrap();
     let icon = image::load_from_memory(icon_data).unwrap().to_rgba8();
-    // let icon = image::open("assets/Logo_128.png").expect("Failed to open icon path").to_rgba8();
     let (icon_width, icon_height) = icon.dimensions();
 
     let options = eframe::NativeOptions {
@@ -21,7 +20,7 @@ fn main() -> eframe::Result {
         }),
         ..Default::default()
     };
-    eframe::run_native(
+    eframe::run_native( 
         "Datasheet Creator",
         options,
         Box::new(|cc| {

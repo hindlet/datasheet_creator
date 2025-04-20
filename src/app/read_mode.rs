@@ -116,7 +116,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             let last = unit.keywords.len().checked_sub(1).unwrap_or(0);
             for (i, keyword) in unit.keywords.iter().enumerate() {
                 if i < last{
-                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(app.bar_colour));
+                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(Color32::LIGHT_BLUE));
                 } else {
                     ui.label(RichText::new(keyword.to_uppercase()).color(Color32::LIGHT_BLUE));
                 }
