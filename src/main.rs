@@ -1,13 +1,20 @@
 use app::{string_to_color32, DatasheetApp};
-use egui::ThemePreference;
+use egui::{IconData, ThemePreference};
 mod to_pdf;
 mod vals;
 mod app;
 
 
 fn main() -> eframe::Result {
+    let icon = image::open("assets/Logo_128.png").expect("Failed to open icon path").to_rgba8();
+    let (icon_width, icon_height) = icon.dimensions();
+
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([1080.0, 720.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([1080.0, 720.0]).with_icon(IconData {
+            rgba: icon.to_vec(),
+            width: icon_width,
+            height: icon_height
+        }),
         ..Default::default()
     };
     eframe::run_native(
