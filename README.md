@@ -32,6 +32,6 @@ Datasheets/
 - [x] Melee weapons have WS instead of BS
 - [x] Stat labels show up in light mode
 - [x] Weapon keywords read mode
-- [ ] Weapon keywords edit mode
+- [x] Weapon keywords edit mode
 - [x] New unit doesnt crash if there are no folders
 
