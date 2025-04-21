@@ -59,15 +59,9 @@ impl DatasheetApp {
         for path in dir {
             let path = path.unwrap();
             if path.file_type().unwrap().is_dir() {
-                // println!("Name: {}", path.path().display());
                 self.read_dir(path.path());
                 continue;
             }
-            // if let Some(extension) = path.path().extension() {
-            //     if extension.to_str() == Some("ron") {
-            //         println!("Name: {}", path.path().display())
-            //     }
-            // }
         }
     }
 
@@ -128,7 +122,6 @@ impl DatasheetApp {
 
         if data.prev_filename != data.filename {
             self.delete_unit(extra_dir, intra_dir);
-            // let _ = remove_file(format!("{}/{}.ron", self.working_dir[extra_dir].path, data.prev_filename.clone()));
             data.prev_filename = data.filename.clone(); // update filename
         }
 
