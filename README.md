@@ -15,7 +15,12 @@ There is now a GUI written using [egui](https://crates.io/crates/egui). It is fa
 
 The folders used with the app should be layed out as follows. The child folders are where the datacards are stored and can have any name wanted
 
+```
 Datasheets/
 ├─ infantry/
+│  ├─ unit.ron
 ├─ vehicles/
+│  ├─ unit.ron
 ├─ characters/
+│  ├─ commander.ron
+```
