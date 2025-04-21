@@ -424,7 +424,6 @@ impl App for DatasheetApp {
         }
 
         self.dark_mode = ctx.options(|opt| opt.theme_preference == ThemePreference::Dark);
-
     }
 
 

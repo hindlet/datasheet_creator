@@ -18,12 +18,16 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             .corner_radius(10)
             .fill(egui::Color32::DARK_GRAY)
             .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY));
-    
+
+       
+        let stat_title_color = if app.dark_mode {Color32::WHITE} else {Color32::BLACK};
         let show_stat_name_func = |ui: &mut Ui, stat: &str| {
             ui.vertical_centered(|ui| {
-                ui.label(RichText::new(stat).color(Color32::WHITE).size(20.0));
+                ui.label(RichText::new(stat).color(stat_title_color).size(20.0));
             });
         };
+
+        
         let show_stat_func = |ui: &mut Ui, stat: String| {
             frame.show(ui, |ui| {
                 ui.set_width(50.0);
@@ -200,7 +204,11 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                     let data = weapon.to_html_data();
                     body.row(20.0, |mut row| {
                         row.col(|ui| {
-                            ui.label(data.0);
+                            ui.vertical(|ui| {
+                                ui.label(data.0);
+                                
+                            });
+                            
                         });
                         row.col(|ui| {
                             ui.label(data.1);
