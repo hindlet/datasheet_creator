@@ -4,7 +4,32 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+eframe = {version = "0.31.1", features = ["persistence"]}
+egui = "0.31.1"
+egui_extras = "0.31.1"
 html2pdf = "0.8.2"
+image = "0.25.6"
+include_assets = "1.0.0"
+regex = "1.11.1"
+rfd = "0.15.3"
 ron = "0.8.1"
 serde = {version = "1.0.218", features = ["derive"]}
 tera = "1.20.0"
+
+[package.metadata.bundle]
+name = "Hindlets_Datasheet_App"
+identifier = "com.hindlet.datasheet_app"
+icon = ["assets/Logo_32.png", "assets/Logo_128.png",]
+version = "1.0.0"
+resources = ["assets"]
+category = "Developer Tool"
+short_description = "An example application."
+long_description = """
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.  Ut
+enim ad minim veniam, quis nostrud exercitation ullamco laboris
+nisi ut aliquip ex ea commodo consequat.
+"""
+deb_depends = ["libgl1-mesa-glx", "libsdl2-2.0-0 (>= 2.0.5)"]
+osx_frameworks = []
+osx_url_schemes = ["com.hindlet.datasheet_app"]
