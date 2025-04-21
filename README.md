@@ -33,3 +33,5 @@ Datasheets/
 [✓] - Stat labels show up in light mode
 [✓] - weapon keywords read mode
 [] - weapon keywords edit mode
+[✓] - new unit doesnt crash if there are no folders
+

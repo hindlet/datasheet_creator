@@ -368,7 +368,8 @@ impl App for DatasheetApp {
         }
 
         if self.new_unit.0 {
-            egui::Window::new("Create new Unit?")
+            if self.working_dir.len() != 0 {
+                egui::Window::new("Create new Unit?")
                 .collapsible(false)
                 .resizable(false)
                 .show(ctx, |ui| {
@@ -397,6 +398,16 @@ impl App for DatasheetApp {
                         }
                     });
                 });
+            } else {
+                egui::Window::new("Please add Folders Before Making Units")
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    if ui.button("I Promise I Will").clicked() {
+                        self.new_unit.0 = false;
+                    };
+                });
+            }
         }
 
         if self.settings_open {
