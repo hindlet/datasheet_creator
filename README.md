@@ -3,9 +3,11 @@
 
 This is a small personal project to render custom datacards for warhammer.
 
-## Unit Data
-The unit data is read from .ron files, the layout of which can be read in the examples
 
-## Missing Features
-- Unit Composition
-- Which units can be lead
+
+
+### UI
+
+There is now a GUI written using [egui](https://crates.io/crates/egui). It is fairly basic but includes a card editor and some basic theme customisation.
+
+[Download](builds/datasheet_creator.exe)
