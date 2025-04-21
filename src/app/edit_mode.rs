@@ -543,7 +543,7 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                 });
 
             if ui.button("Add new keyword").clicked() {
-                unit.unique_abilities.push(Ability::default());
+                unit.keywords.push("".to_string());
             }
             ui.separator();
         });
