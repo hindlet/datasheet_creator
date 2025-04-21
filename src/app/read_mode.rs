@@ -188,7 +188,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             .column(Column::auto().at_least(40.0))
             .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
             .header(20.0, |mut header| {
-                for col_header in ["Melee Weapons", "Range", "A", "BS", "S", "AP", "D"] {
+                for col_header in ["Melee Weapons", "Range", "A", "WS", "S", "AP", "D"] {
                     header.col(|ui| {
                         paint_bg(ui);
                         ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
