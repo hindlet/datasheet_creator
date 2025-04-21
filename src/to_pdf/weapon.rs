@@ -67,4 +67,19 @@ impl Weapon {
             cased_keywords
         )
     }
+
+
+    pub fn format_keywords(&self) -> String{
+        let mut keywords: String = "[".to_string();
+
+        let last = self.keywords.len().checked_sub(1).unwrap_or(0);
+        for (i, keyword) in self.keywords.iter().enumerate() {
+            keywords += &keyword.to_uppercase();
+            if i != last {
+                keywords += ", ";
+            }
+        }
+
+        return keywords + "]";
+    }
 }

@@ -153,9 +153,20 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             .body(|mut body| {
                 for weapon in unit.ranged_weapons.iter() {
                     let data = weapon.to_html_data();
-                    body.row(20.0, |mut row| {
+                    let keyword_string = weapon.format_keywords();
+                    let has_keywords = keyword_string != "[]";
+                    let height = if has_keywords{30.0} else {20.0};
+
+                    body.row(height, |mut row| {
                         row.col(|ui| {
-                            ui.label(data.0);
+                            if has_keywords {
+                                ui.vertical(|ui| {
+                                    ui.label(data.0);
+                                    ui.label(RichText::new(keyword_string).color(Color32::LIGHT_BLUE).size(10.5))
+                                });
+                            } else {
+                                ui.label(data.0);
+                            }
                         });
                         row.col(|ui| {
                             ui.label(data.1);
@@ -202,13 +213,20 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             .body(|mut body| {
                 for weapon in unit.melee_weapons.iter() {
                     let data = weapon.to_html_data();
-                    body.row(20.0, |mut row| {
+                    let keyword_string = weapon.format_keywords();
+                    let has_keywords = keyword_string != "[]";
+                    let height = if has_keywords{30.0} else {20.0};
+
+                    body.row(height, |mut row| {
                         row.col(|ui| {
-                            ui.vertical(|ui| {
+                            if has_keywords {
+                                ui.vertical(|ui| {
+                                    ui.label(data.0);
+                                    ui.label(RichText::new(keyword_string).color(Color32::LIGHT_BLUE).size(10.5))
+                                });
+                            } else {
                                 ui.label(data.0);
-                                
-                            });
-                            
+                            }
                         });
                         row.col(|ui| {
                             ui.label(data.1);

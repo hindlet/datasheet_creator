@@ -21,6 +21,15 @@ Datasheets/
 │  ├─ unit.ron
 ├─ vehicles/
 │  ├─ unit.ron
+
 ├─ characters/
 │  ├─ commander.ron
 ```
+
+
+# TODO
+[✓] - add keyword adds ability instead
+[✓] - Melee weapons have WS instead of BS
+[✓] - Stat labels show up in light mode
+[✓] - weapon keywords read mode
+[] - weapon keywords edit mode
