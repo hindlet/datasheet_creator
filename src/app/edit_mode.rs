@@ -1,4 +1,4 @@
-use egui::{Color32, Context, RichText};
+use egui::{CollapsingHeader, Color32, Context, RichText};
 use egui_extras::{Column, TableBuilder};
 
 use crate::{to_pdf::{Ability, Range, Unit, Weapon, UnitStats}, vals::VariableValue};
@@ -52,6 +52,13 @@ impl From<&Weapon> for WeaponEditData {
 
 impl Into<Weapon> for WeaponEditData {
     fn into(self) -> Weapon {
+        let mut sanitised_keywords = Vec::new();
+        for keyword in self.keywords {
+            if !keyword.is_empty() {
+                sanitised_keywords.push(keyword);
+            }
+        }
+
         Weapon {
             name: self.name,
             range: if self.range == 0 {
@@ -64,7 +71,7 @@ impl Into<Weapon> for WeaponEditData {
             strength: self.strength,
             ap: self.ap as i32,
             damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
-            keywords: self.keywords
+            keywords: sanitised_keywords
         }
     }
 }
@@ -120,6 +127,7 @@ impl From<(&Unit, String)> for UnitEditData {
         for weapon in value.melee_weapons.iter() {
             melee_weapons.push(WeaponEditData::from(weapon));
         }
+        
 
         Self {
             name: value.name.clone(),
@@ -175,6 +183,14 @@ impl Into<Unit> for UnitEditData {
             melee_weapons.push(weapon.into());
         }
 
+        
+        let mut sanitised_keywords = Vec::new();
+        for keyword in self.keywords {
+            if !keyword.is_empty() {
+                sanitised_keywords.push(keyword);
+            }
+        }
+
 
         Unit {
             name: self.name,
@@ -201,7 +217,7 @@ impl Into<Unit> for UnitEditData {
             core_abilities: self.core_abilities,
             unique_abilities: self.unique_abilities,
             faction_keyword: self.faction_keyword,
-            keywords: self.keywords,
+            keywords: sanitised_keywords,
             damaged: if self.has_damaged {
                 Some(self.damaged)
             } else {
@@ -297,9 +313,10 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(800.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    for col_header in ["Name", "Range", "A", "BS", "S", "AP", "D"] {
+                    for col_header in ["Name", "Range", "A", "BS", "S", "AP", "D", "Keywords"] {
                         header.col(|ui| {
                             ui.strong(RichText::new(col_header).size(15.0));
                         });
@@ -345,10 +362,27 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                 }
                                 ui.text_edit_singleline(&mut weapon.damage);
                             });
+                            row.col(|ui| {
+                                ui.horizontal(|ui| {
+                                    if ui.button("+").on_hover_text("Add keyword").clicked() {
+                                        weapon.keywords.push("".to_string());
+                                    }
+                                    let mut to_remove = Vec::new();
+                                    for (i, keyword) in weapon.keywords.iter_mut().enumerate() {
+                                        if ui.button("-").on_hover_text("Remove keyword").clicked() {
+                                            to_remove.push(i);
+                                        }
+                                        ui.add(egui::TextEdit::singleline(keyword).desired_width(80.0));
+                                    }
+                                    for (j, i) in to_remove.iter().enumerate() {
+                                        weapon.keywords.remove(i - j);
+                                    }
+                                });
+                            });
                         });
                     }
-                    for index in to_remove {
-                        unit.ranged_weapons.remove(index);
+                    for (j, i) in to_remove.iter().enumerate() {
+                        unit.ranged_weapons.remove(i - j);
                     }
                 });
 
@@ -368,9 +402,10 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(800.0))
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    for col_header in ["Name", "Range", "A", "BS", "S", "AP", "D"] {
+                    for col_header in ["Name", "Range", "A", "WS", "S", "AP", "D", "Keywords"] {
                         header.col(|ui| {
                             ui.strong(RichText::new(col_header).size(15.0));
                         });
@@ -415,10 +450,27 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                                 }
                                 ui.text_edit_singleline(&mut weapon.damage);
                             });
+                            row.col(|ui| {
+                                ui.horizontal(|ui| {
+                                    if ui.button("+").on_hover_text("Add keyword").clicked() {
+                                        weapon.keywords.push("".to_string());
+                                    }
+                                    let mut to_remove = Vec::new();
+                                    for (i, keyword) in weapon.keywords.iter_mut().enumerate() {
+                                        if ui.button("-").on_hover_text("Remove keyword").clicked() {
+                                            to_remove.push(i);
+                                        }
+                                        ui.add(egui::TextEdit::singleline(keyword).desired_width(80.0));
+                                    }
+                                    for (j, i) in to_remove.iter().enumerate() {
+                                        weapon.keywords.remove(i - j);
+                                    }
+                                });
+                            });
                         });
                     }
-                    for index in to_remove {
-                        unit.melee_weapons.remove(index);
+                    for (j, i) in to_remove.iter().enumerate() {
+                        unit.melee_weapons.remove(i - j);
                     }
                 });
             if ui.button("Add new weapon").clicked() {
@@ -464,8 +516,8 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                             });
                         });
                     }
-                    for index in to_remove {
-                        unit.core_abilities.remove(index);
+                    for (j, i) in to_remove.iter().enumerate() {
+                        unit.core_abilities.remove(i - j);
                     }
                 });
 
@@ -504,8 +556,8 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                             });
                         });
                     }
-                    for index in to_remove {
-                        unit.unique_abilities.remove(index);
+                    for (j, i) in to_remove.iter().enumerate() {
+                        unit.unique_abilities.remove(i - j);
                     }
                 });
 
@@ -537,8 +589,8 @@ pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
                             });
                         });
                     }
-                    for index in to_remove {
-                        unit.keywords.remove(index);
+                    for (j, i) in to_remove.iter().enumerate() {
+                        unit.keywords.remove(i - j);
                     }
                 });
 
