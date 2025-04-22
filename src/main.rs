@@ -1,5 +1,5 @@
 use app::{string_to_color32, DatasheetApp};
-use egui::{IconData, ThemePreference};
+use egui::{Color32, IconData, ThemePreference};
 use include_assets::{include_dir, NamedArchive};
 mod to_pdf;
 mod vals;
@@ -29,11 +29,12 @@ fn main() -> eframe::Result {
                     ThemePreference::Dark
                 } else {ThemePreference::Light};
                 cc.egui_ctx.options_mut(|opt| opt.theme_preference = theme_pref);
-                let bar_col = string_to_color32(storage.get_string("Bar_Colour").unwrap_or("".to_string())).unwrap_or_default();
-
+                let bar_col = string_to_color32(storage.get_string("Bar_Colour").unwrap_or("".to_string())).unwrap_or(Color32::LIGHT_BLUE);
+                let key_col = string_to_color32(storage.get_string("Keyword_Colour").unwrap_or("".to_string())).unwrap_or(Color32::LIGHT_BLUE);
 
                 return Ok(Box::new(DatasheetApp {
                     bar_colour: bar_col,
+                    keyword_colour: key_col,
                     ..Default::default()
                 }))
             }

@@ -45,6 +45,7 @@ pub struct DatasheetApp {
     pub settings_open: bool,
     pub bar_colour: Color32,
     pub dark_mode: bool,
+    pub keyword_colour: Color32,
 
 }
 
@@ -190,6 +191,7 @@ impl Default for DatasheetApp {
             settings_open: false,
             bar_colour: Color32::LIGHT_BLUE,
             dark_mode: true,
+            keyword_colour: Color32::LIGHT_BLUE,
         }
     }
 }
@@ -419,7 +421,11 @@ impl App for DatasheetApp {
                             ui.horizontal(|ui| {
                                 ui.label("Bar Colour:");
                                 ui.color_edit_button_srgba(&mut self.bar_colour);
-                            })
+                            });
+                            ui.horizontal(|ui| {
+                                ui.label("Keyword Colour:");
+                                ui.color_edit_button_srgba(&mut self.keyword_colour);
+                            });
                         });
                     if ui.button("Close").clicked() {
                         self.settings_open = false;
@@ -436,6 +442,7 @@ impl App for DatasheetApp {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         storage.set_string("Dark_Mode", self.dark_mode.to_string());
         storage.set_string("Bar_Colour", color32_to_string(self.bar_colour));
+        storage.set_string("Keyword_Colour", color32_to_string(self.keyword_colour));
         storage.flush();
     }
 

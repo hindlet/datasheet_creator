@@ -120,9 +120,9 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             let last = unit.keywords.len().checked_sub(1).unwrap_or(0);
             for (i, keyword) in unit.keywords.iter().enumerate() {
                 if i < last{
-                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(Color32::LIGHT_BLUE));
+                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(app.keyword_colour));
                 } else {
-                    ui.label(RichText::new(keyword.to_uppercase()).color(Color32::LIGHT_BLUE));
+                    ui.label(RichText::new(keyword.to_uppercase()).color(app.keyword_colour));
                 }
                 
             }
@@ -162,7 +162,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                             if has_keywords {
                                 ui.vertical(|ui| {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(keyword_string).color(Color32::LIGHT_BLUE).size(10.5))
+                                    ui.label(RichText::new(keyword_string).color(app.keyword_colour).size(10.5))
                                 });
                             } else {
                                 ui.label(data.0);
@@ -222,7 +222,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                             if has_keywords {
                                 ui.vertical(|ui| {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(keyword_string).color(Color32::LIGHT_BLUE).size(10.5))
+                                    ui.label(RichText::new(keyword_string).color(app.keyword_colour).size(10.5))
                                 });
                             } else {
                                 ui.label(data.0);
