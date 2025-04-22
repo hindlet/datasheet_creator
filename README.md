@@ -8,7 +8,7 @@ This is a small personal project to render custom datacards for warhammer.
 
 There is now a GUI written using [egui](https://crates.io/crates/egui). It is fairly basic but includes a card editor and some basic theme customisation.
 
-[Download](https://github.com/hindlet/datasheet_creator/releases/download/v1.0/datasheet_creator.exe)
+[Download](https://github.com/hindlet/datasheet_creator/releases/download/v1.1/datasheet_creator.exe)
 
 
 ### App File Layout
@@ -25,14 +25,3 @@ Datasheets/
 ├─ characters/
 │  ├─ commander.ron
 ```
-
-
-# TODO
-- [x] add keyword adds ability instead
-- [x] Melee weapons have WS instead of BS
-- [x] Stat labels show up in light mode
-- [x] Weapon keywords read mode
-- [x] Weapon keywords edit mode
-- [x] New unit doesnt crash if there are no folders
-- [x] Keyword Colour Setting
-
