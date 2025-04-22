@@ -34,5 +34,5 @@ Datasheets/
 - [x] Weapon keywords read mode
 - [x] Weapon keywords edit mode
 - [x] New unit doesnt crash if there are no folders
-- [ ] Keyword Colour Setting
+- [x] Keyword Colour Setting
 
