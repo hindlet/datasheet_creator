@@ -25,3 +25,9 @@ Datasheets/
 ├─ characters/
 │  ├─ commander.ron
 ```
+
+
+### TODO
+- [ ] Duplicate Units
+- [ ] Settings for folders
+- [ ] Default Faction Ability

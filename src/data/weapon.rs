@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::vals::VariableValue;
-
-
+use super::variable_val::VariableValue;
 
 
 #[derive(Debug, Deserialize, Clone, Copy, Serialize)]

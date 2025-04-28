@@ -9,7 +9,7 @@ use ron::{
     ser::{to_string_pretty, PrettyConfig}
 };
 
-use crate::to_pdf::Unit;
+use crate::data::Unit;
 mod read_mode;
 mod edit_mode;
 

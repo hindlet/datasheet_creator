@@ -1,8 +1,7 @@
 use app::{string_to_color32, DatasheetApp};
 use egui::{Color32, IconData, ThemePreference};
 use include_assets::{include_dir, NamedArchive};
-mod to_pdf;
-mod vals;
+mod data;
 mod app;
 
 

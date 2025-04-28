@@ -1,7 +1,7 @@
-use egui::{CollapsingHeader, Color32, Context, RichText};
+use egui::{Color32, Context, RichText};
 use egui_extras::{Column, TableBuilder};
 
-use crate::{to_pdf::{Ability, Range, Unit, Weapon, UnitStats}, vals::VariableValue};
+use crate::data::{Ability, Range, Unit, Weapon, UnitStats, VariableValue};
 
 use super::DatasheetApp;
 
