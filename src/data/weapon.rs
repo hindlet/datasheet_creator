@@ -31,10 +31,11 @@ pub struct Weapon {
     pub keywords: Vec<String>
 }
 
-pub type WeaponTuple = (String, String, String, String, u32, String, String, Vec<String>);
+pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);
 
 impl Weapon {
-    pub fn to_html_data(&self) -> WeaponTuple {
+
+    pub fn get_render_data(&self) -> WeaponRenderTuple {
         let mut cased_keywords = Vec::new();
         for keyword in self.keywords.iter() {
             cased_keywords.push(keyword.to_uppercase());
@@ -62,10 +63,9 @@ impl Weapon {
             self.strength,
             ap,
             self.damage.to_string(),
-            cased_keywords
+            self.format_keywords()
         )
     }
-
 
     pub fn format_keywords(&self) -> String{
         let mut keywords: String = "[".to_string();
