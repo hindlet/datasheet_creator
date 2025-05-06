@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Id, Response, RichText, TextEdit, Ui, Widget};
+use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, ScrollArea, TextEdit, Ui, Vec2, Widget};
 use egui_extras::{Column, TableBuilder};
 
 use crate::data::{Ability, Range, Unit, Weapon, UnitStats, VariableValue};
@@ -278,7 +278,7 @@ fn select_drag_value_with_range_on_tab(val: &mut u32, range: RangeInclusive<u32>
 pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
 
     egui::CentralPanel::default().show(ctx, |ui| {
-        egui::ScrollArea::vertical().show(ui, |ui| {
+        egui::ScrollArea::both().show(ui, |ui| {
             ui.heading("General");
             ui.horizontal(|ui| {
                 ui.label("Name:");
@@ -354,7 +354,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(800.0))
+                .column(Column::auto())
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
                     for col_header in ["Name", "Range", "A", "BS", "S", "AP", "D", "Keywords"] {
@@ -413,13 +413,14 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(80.0), ui);
+                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(150.0), ui);
                                         // select_text_on_tab(keyword, ui).desired_width(80.0);
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
                                         weapon.keywords.remove(i - j);
                                     }
                                 });
+                                
                             });
                         });
                     }
@@ -444,7 +445,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(800.0))
+                .column(Column::auto())
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
                     for col_header in ["Name", "Range", "A", "WS", "S", "AP", "D", "Keywords"] {
@@ -503,7 +504,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(80.0), ui);
+                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(150.0), ui);
                                         // select_text_on_tab(keyword, ui).desired_width(80.0);
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
