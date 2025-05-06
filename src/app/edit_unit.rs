@@ -569,6 +569,11 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             ui.separator();
             ui.heading("Keywords");
 
+            ui.horizontal(|ui| {
+                ui.label("Faction Keyword:");
+                ui.text_edit_singleline(&mut unit.faction_keyword);
+            });
+
             TableBuilder::new(ui)
                 .id_salt(5)
                 .striped(true)

@@ -166,6 +166,7 @@ impl DatasheetApp {
         let new_unit = Unit {
             name: filename.clone(),
             faction_ability: faction_ability,
+            faction_keyword: settings.default_faction_keyword.clone(),
             ..Default::default()
         };
         let new_unit_edit_data = UnitEditData::from((&new_unit, filename));
