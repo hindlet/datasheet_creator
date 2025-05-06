@@ -5,8 +5,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct  DatasheetAppSettings {
+    #[serde(default)]
     pub bar_colour: Color32,
+    #[serde(default)]
     pub keyword_colour: Color32,
+    #[serde(default)]
+    pub default_faction_ability: String,
+    #[serde(default)]
     pub dark_mode: bool,
 }
 
@@ -15,6 +20,7 @@ impl DatasheetAppSettings {
     pub fn save(&self, storage: &mut dyn eframe::Storage) {
         storage.set_string("Dark_Mode", self.dark_mode.to_string());
         storage.set_string("Bar_Colour", color32_to_string(self.bar_colour));
+        storage.set_string("Default_Faction_Ability", self.default_faction_ability.clone());
         storage.set_string("Keyword_Colour", color32_to_string(self.keyword_colour));
         storage.flush();
     }
@@ -25,6 +31,7 @@ impl Default for DatasheetAppSettings{
         Self {
             bar_colour: Color32::LIGHT_BLUE,
             keyword_colour: Color32::LIGHT_BLUE,
+            default_faction_ability: "".to_string(),
             dark_mode: true,
         }
     }

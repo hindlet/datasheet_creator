@@ -23,7 +23,7 @@ Datasheets/
 - [x] Duplicate Units
 - [x] Better Context Menus
 - [x] Settings for folders
-- [ ] Default Faction Ability
+- [x] Default Faction Ability
 - [x] Close File button doesnt change selected unit (BUG)
 - [x] File selected on open
 - [ ] Keyboard shortcuts

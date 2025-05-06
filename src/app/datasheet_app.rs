@@ -160,9 +160,12 @@ impl DatasheetApp {
     fn create_unit(&mut self, folder: usize, filename: String) {
 
         let i= self.working_dir[folder].unit_edit_data.len();
+        let settings = self.get_settings();
+        let faction_ability = if settings.default_faction_ability.is_empty() {None} else {Some(settings.default_faction_ability.clone())};
 
         let new_unit = Unit {
             name: filename.clone(),
+            faction_ability: faction_ability,
             ..Default::default()
         };
         let new_unit_edit_data = UnitEditData::from((&new_unit, filename));
@@ -531,6 +534,10 @@ impl App for DatasheetApp {
                             ui.horizontal(|ui| {
                                 ui.label("Keyword Colour:");
                                 ui.color_edit_button_srgba(&mut self.settings.keyword_colour);
+                            });
+                            ui.horizontal(|ui| {
+                                ui.label("Default Faction Ability:");
+                                ui.text_edit_singleline(&mut self.settings.default_faction_ability);
                             });
                         });
                     ui.horizontal(|ui| {
