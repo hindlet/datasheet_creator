@@ -21,7 +21,7 @@ Datasheets/
 
 ### TODO
 - [ ] Duplicate Units
-- [ ] Settings for folders
+- [x] Settings for folders
 - [ ] Default Faction Ability
 - [x] Close File button doesnt change selected unit (BUG)
 - [ ] Keyboard shortcuts
