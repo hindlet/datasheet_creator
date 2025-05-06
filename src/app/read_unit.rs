@@ -116,7 +116,18 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                 }
             }
 
-        })
+        });
+
+        if !unit.faction_keyword.is_empty() {
+            ui.with_layout(egui::Layout::bottom_up(egui::Align::Center), |ui| {
+                ui.horizontal(|ui| {
+                    ui.label("Faction Keyword:");
+                    ui.label(RichText::new(&unit.faction_keyword).color(settings.keyword_colour))
+                });
+                ui.separator();
+            });
+        }
+        
     });
 
 
