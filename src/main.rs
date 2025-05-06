@@ -1,4 +1,4 @@
-use app::{string_to_color32, DatasheetApp};
+use app::{string_to_color32, DatasheetApp, DatasheetAppSettings};
 use egui::{Color32, IconData, ThemePreference};
 use include_assets::{include_dir, NamedArchive};
 mod data;
@@ -32,8 +32,11 @@ fn main() -> eframe::Result {
                 let key_col = string_to_color32(storage.get_string("Keyword_Colour").unwrap_or("".to_string())).unwrap_or(Color32::LIGHT_BLUE);
 
                 return Ok(Box::new(DatasheetApp {
-                    bar_colour: bar_col,
-                    keyword_colour: key_col,
+                    settings: DatasheetAppSettings {
+                        bar_colour: bar_col,
+                        keyword_colour: key_col,
+                        dark_mode: theme_pref == ThemePreference::Dark,
+                    },
                     ..Default::default()
                 }))
             }

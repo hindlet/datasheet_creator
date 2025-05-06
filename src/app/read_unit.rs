@@ -1,13 +1,20 @@
 use egui::{Color32, Context, Rect, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
 
-use super::DatasheetApp;
+use crate::data::Unit;
+
+use super::DatasheetAppSettings;
 
 
 
-pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
-    let index = app.open_files[app.selected_file];
-    let unit = &app.working_dir[index.0].units[index.1];
+pub fn read_unit(settings: &DatasheetAppSettings, ctx: &Context, unit: &Unit) {
+    // let index = match app.open_files[app.selected_file] {
+    //     OpenFile::Index(index) => index,
+    //     _ => return
+    // };
+    // let unit = &app.working_dir[index.0].units[index.1];
+
+    // let settings = app.get_settings();
 
 
     egui::TopBottomPanel::top("stats").show(ctx, |ui| {
@@ -20,7 +27,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY));
 
        
-        let stat_title_color = if app.dark_mode {Color32::WHITE} else {Color32::BLACK};
+        let stat_title_color = if settings.dark_mode {Color32::WHITE} else {Color32::BLACK};
         let show_stat_name_func = |ui: &mut Ui, stat: &str| {
             ui.vertical_centered(|ui| {
                 ui.label(RichText::new(stat).color(stat_title_color).size(20.0));
@@ -64,12 +71,12 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
 
     let paint_bg = |ui: &mut egui::Ui| {
         let gapless_rect = ui.max_rect().expand2(0.5 * ui.spacing().item_spacing);
-        ui.painter().rect_filled(gapless_rect, 0.0, app.bar_colour);
+        ui.painter().rect_filled(gapless_rect, 0.0, settings.bar_colour);
     };
 
     egui::SidePanel::right("abilities").resizable(true).min_width(200.0).show(ctx, |ui| {
         ui.vertical_centered_justified(|ui| {
-            ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, app.bar_colour);
+            ui.painter().rect_filled(Rect::everything_above(185.0), 0.0, settings.bar_colour);
             ui.label(RichText::new("Abilities").size(15.0).color(Color32::BLACK))
         });
 
@@ -120,9 +127,9 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
             let last = unit.keywords.len().checked_sub(1).unwrap_or(0);
             for (i, keyword) in unit.keywords.iter().enumerate() {
                 if i < last{
-                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(app.keyword_colour));
+                    ui.label(RichText::new(format!("{},", keyword.to_uppercase())).color(settings.keyword_colour));
                 } else {
-                    ui.label(RichText::new(keyword.to_uppercase()).color(app.keyword_colour));
+                    ui.label(RichText::new(keyword.to_uppercase()).color(settings.keyword_colour));
                 }
                 
             }
@@ -161,7 +168,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                             if has_keywords {
                                 ui.vertical(|ui| {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(data.7).color(app.keyword_colour).size(10.5))
+                                    ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                 });
                             } else {
                                 ui.label(data.0);
@@ -220,7 +227,7 @@ pub fn render_read_mode(app: &mut DatasheetApp, ctx: &Context) {
                             if has_keywords {
                                 ui.vertical(|ui| {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(data.7).color(app.keyword_colour).size(10.5))
+                                    ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                 });
                             } else {
                                 ui.label(data.0);

@@ -3,8 +3,6 @@ use egui_extras::{Column, TableBuilder};
 
 use crate::data::{Ability, Range, Unit, Weapon, UnitStats, VariableValue};
 
-use super::DatasheetApp;
-
 #[derive(Clone)]
 pub struct WeaponEditData {
     pub name: String,
@@ -241,9 +239,12 @@ impl Into<Unit> for UnitEditData {
 
 
 
-pub fn render_edit_mode(app: &mut DatasheetApp, ctx: &Context) {
-    let index = app.open_files[app.selected_file];
-    let unit = &mut app.working_dir[index.0].unit_edit_data[index.1];
+pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
+    // let index = match app.open_files[app.selected_file] {
+    //     OpenFile::Index(index) => index,
+    //     _ => return
+    // };
+    // let unit = &mut app.working_dir[index.0].unit_edit_data[index.1];
     
     egui::CentralPanel::default().show(ctx, |ui| {
         egui::ScrollArea::vertical().show(ui, |ui| {
