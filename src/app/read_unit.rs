@@ -7,7 +7,7 @@ use super::DatasheetAppSettings;
 
 
 
-pub fn read_unit(settings: &DatasheetAppSettings, ctx: &Context, unit: &Unit) {
+pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context, unit: &Unit) {
     // let index = match app.open_files[app.selected_file] {
     //     OpenFile::Index(index) => index,
     //     _ => return
@@ -27,7 +27,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, ctx: &Context, unit: &Unit) {
             .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY));
 
        
-        let stat_title_color = if settings.dark_mode {Color32::WHITE} else {Color32::BLACK};
+        let stat_title_color = if dark_mode {Color32::WHITE} else {Color32::BLACK};
         let show_stat_name_func = |ui: &mut Ui, stat: &str| {
             ui.vertical_centered(|ui| {
                 ui.label(RichText::new(stat).color(stat_title_color).size(20.0));

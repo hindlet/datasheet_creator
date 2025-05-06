@@ -112,7 +112,7 @@ impl DatasheetApp {
             OpenFile::Index(index) => {
                 match self.mode {
                     DatasheetAppMode::Edit => edit_unit(ctx,  &mut self.working_dir[index.0].unit_edit_data[index.1]),
-                    DatasheetAppMode::Read => read_unit(self.get_settings(), ctx, &self.working_dir[index.0].units[index.1]),
+                    DatasheetAppMode::Read => read_unit(self.get_settings(), self.settings.dark_mode, ctx, &self.working_dir[index.0].units[index.1]),
                 }
             },
         };
