@@ -19,7 +19,7 @@ impl Range {
 }
 
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Weapon {
     pub name: String,
     pub range: Range,

@@ -217,6 +217,11 @@ impl DatasheetApp {
             let _ = fs::write(format!("{}/SETTINGS.ron", self.folder_path), s);
         }
     }
+
+    fn copy_unit(&mut self, unit: &Unit, folder_index: usize, filename: String) {
+        self.working_dir[folder_index].units.push(unit.clone());
+        self.working_dir[folder_index].unit_edit_data.push(UnitEditData::from((unit, filename)));
+    }
 }
 
 
@@ -246,6 +251,7 @@ impl App for DatasheetApp {
     
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         
+        let mut copy_data = None;
         egui::SidePanel::left("LeftPanel").min_width(150.0).resizable(false).show(ctx, |ui| {
 
             if ui.button(RichText::new(&self.working_dir_name).size(15.0)).clicked() {
@@ -271,6 +277,7 @@ impl App for DatasheetApp {
                     }
                 });
             }
+            
             egui::ScrollArea::vertical().show(ui, |ui| {
                 if self.folder_settings.is_some() {
                     if ui.selectable_label(false, "Settings").clicked() {
@@ -278,16 +285,23 @@ impl App for DatasheetApp {
                     }
                 }
 
+                
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
                     if self.deleting.0 {
                         ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
                     }
                     if let Some(name) = &folder.name {
+                        // ui.collapsing(name, |ui| {
+
+                        // }).context_menu(|ui| {
+
+                        // });
                         CollapsingHeader::new(name)
                             .default_open(false)
                             .show(ui, |ui| {
                                 for (j, unit) in folder.units.iter().enumerate() {
-                                    if ui.selectable_label(false, &unit.name).clicked() {
+                                    let unit_label = ui.selectable_label(false, &unit.name);
+                                    if unit_label.clicked() {
                                         let new_file = OpenFile::Index((i, j));
                                         if self.deleting.0 {
                                             self.deleting.1 = Some((i, j, unit.name.clone()));
@@ -300,14 +314,37 @@ impl App for DatasheetApp {
                                             self.selected_file = self.open_files.iter().position(|u| u == &new_file).unwrap();
                                         }
                                     }
+                                    unit_label.context_menu(|ui| {
+                                        if ui.selectable_label(false, "Duplicate").clicked() {
+                                            let new_filename_start = folder.unit_edit_data[j].filename.clone();
+                                            
+                                            let mut i = 1;
+                                            let mut taken = true;
+                                            let mut new_filename: String = "".to_string();
+                                            while taken {
+                                                taken = false;
+                                                new_filename = format!("{}_{}", new_filename_start, i);
+                                                for edit_data in folder.unit_edit_data.iter() {
+                                                    if edit_data.filename == new_filename {
+                                                        taken = true;
+                                                        break;
+                                                    }
+                                                }
+                                                i += 1
+                                            };
+                                            copy_data = Some((unit.clone(), i, new_filename));
+                                        }
+                                    });
                                 }
                             });
                     }
                 }
-            })
-
-            
+            });
         });
+        
+        if let Some((unit, index, filename)) = copy_data {
+            self.copy_unit(&unit, index, filename);
+        }
 
             
         egui::TopBottomPanel::top("TopPanel").min_height(25.0).show(ctx, |ui| {

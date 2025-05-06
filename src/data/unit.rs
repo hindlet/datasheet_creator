@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct UnitStats {
     pub movement: u32,
     pub toughness: u32,
@@ -31,7 +31,7 @@ impl Default for UnitStats {
 
 
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Unit {
     pub name: String,
     pub stats: UnitStats,
