@@ -328,19 +328,19 @@ impl App for DatasheetApp {
                                         if ui.selectable_label(false, "Duplicate").clicked() {
                                             let new_filename_start = folder.unit_edit_data[j].filename.clone();
                                             
-                                            let mut i = 1;
+                                            let mut k = 1;
                                             let mut taken = true;
                                             let mut new_filename: String = "".to_string();
                                             while taken {
                                                 taken = false;
-                                                new_filename = format!("{}_{}", new_filename_start, i);
+                                                new_filename = format!("{}_{}", new_filename_start, k);
                                                 for edit_data in folder.unit_edit_data.iter() {
                                                     if edit_data.filename == new_filename {
                                                         taken = true;
                                                         break;
                                                     }
                                                 }
-                                                i += 1
+                                                k += 1
                                             };
                                             copy_data = Some((unit.clone(), i, new_filename));
                                             ui.close_menu();
