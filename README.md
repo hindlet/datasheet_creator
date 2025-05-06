@@ -20,7 +20,8 @@ Datasheets/
 
 
 ### TODO
-- [ ] Duplicate Units
+- [x] Duplicate Units
+- [x] Better Context Menus
 - [x] Settings for folders
 - [ ] Default Faction Ability
 - [x] Close File button doesnt change selected unit (BUG)

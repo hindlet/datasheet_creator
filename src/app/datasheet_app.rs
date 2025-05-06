@@ -44,7 +44,7 @@ pub struct DatasheetApp {
     pub mode: DatasheetAppMode,
     pub folder_path: String,
 
-    pub deleting: (bool, Option<(usize, usize, String)>),
+    pub deleting: Option<(usize, usize)>,
     pub new_unit: (bool, usize, String),
 
     pub show_confirmation_dialog: bool,
@@ -235,7 +235,7 @@ impl Default for DatasheetApp {
             folder_path: "".to_string(),
             selected_file: 0,
             mode: DatasheetAppMode::Read,
-            deleting: (false, None),
+            deleting: None,
             new_unit: (false, 0, "".to_string()),
 
             show_confirmation_dialog: false,
@@ -267,14 +267,14 @@ impl App for DatasheetApp {
                     }
 
                     ui.reset_style();
-                    if self.deleting.0 == true {
-                        ui.style_mut().visuals.widgets.active.weak_bg_fill = Color32::RED;
-                        ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::RED;
-                        ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
-                    }
-                    if ui.button("Delete Unit").clicked() {
-                        self.deleting.0 ^= true;
-                    }
+                    // if self.deleting.0 == true {
+                    //     ui.style_mut().visuals.widgets.active.weak_bg_fill = Color32::RED;
+                    //     ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::RED;
+                    //     ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
+                    // }
+                    // if ui.button("Delete Unit").clicked() {
+                    //     self.deleting.0 ^= true;
+                    // }
                 });
             }
             
@@ -287,26 +287,22 @@ impl App for DatasheetApp {
 
                 
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
-                    if self.deleting.0 {
-                        ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
-                    }
+
                     if let Some(name) = &folder.name {
-                        // ui.collapsing(name, |ui| {
-
-                        // }).context_menu(|ui| {
-
-                        // });
                         CollapsingHeader::new(name)
                             .default_open(false)
                             .show(ui, |ui| {
                                 for (j, unit) in folder.units.iter().enumerate() {
-                                    let unit_label = ui.selectable_label(false, &unit.name);
+                                    let selected: bool;
+                                    if let Some(index) = self.deleting {
+                                        if index == (i, j) {
+                                            ui.style_mut().visuals.selection.bg_fill = Color32::RED;
+                                            selected = true;
+                                        } else {selected = false;}
+                                    } else {selected = false;}
+                                    let unit_label = ui.selectable_label(selected, &unit.name);
                                     if unit_label.clicked() {
                                         let new_file = OpenFile::Index((i, j));
-                                        if self.deleting.0 {
-                                            self.deleting.1 = Some((i, j, unit.name.clone()));
-                                            continue;
-                                        }
                                         if !self.open_files.contains(&new_file) {
                                             self.selected_file = self.open_files.len();
                                             self.open_files.push(new_file);
@@ -315,6 +311,10 @@ impl App for DatasheetApp {
                                         }
                                     }
                                     unit_label.context_menu(|ui| {
+                                        if ui.selectable_label(false, "Delete Unit").clicked() {
+                                            self.deleting = Some((i, j));
+                                            ui.close_menu();
+                                        }
                                         if ui.selectable_label(false, "Duplicate").clicked() {
                                             let new_filename_start = folder.unit_edit_data[j].filename.clone();
                                             
@@ -333,6 +333,7 @@ impl App for DatasheetApp {
                                                 i += 1
                                             };
                                             copy_data = Some((unit.clone(), i, new_filename));
+                                            ui.close_menu();
                                         }
                                     });
                                 }
@@ -449,20 +450,19 @@ impl App for DatasheetApp {
                 });
         }
 
-        if let Some((i, j, unit_name)) = self.deleting.1.clone() {
+        if let Some((i, j)) = self.deleting {
             egui::Window::new("Confirm Deletion?")
                 .collapsible(false)
                 .resizable(false)
                 .show(ctx, |ui| {
-                    ui.label(format!("Do you want to delete {}", unit_name));
                     ui.horizontal(|ui| {
-                        if ui.button("No").clicked() {
-                            self.deleting.1 = None;
+                        if ui.button("Cancel").clicked() {
+                            self.deleting = None;
                         }
 
-                        if ui.button("Yes").clicked() {
+                        if ui.button("Confirm").clicked() {
                             self.delete_unit(i, j);
-                            self.deleting.1 = None;
+                            self.deleting = None;
                         }
                     });
                 });
