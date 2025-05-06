@@ -216,11 +216,6 @@ impl DatasheetApp {
             let s = to_string_pretty(settings, config).expect("Failed to serialize");
             let _ = fs::write(format!("{}/SETTINGS.ron", self.folder_path), s);
         }
-
-        
-
-
-        
     }
 }
 
@@ -294,13 +289,16 @@ impl App for DatasheetApp {
                                 for (j, unit) in folder.units.iter().enumerate() {
                                     if ui.selectable_label(false, &unit.name).clicked() {
                                         let new_file = OpenFile::Index((i, j));
-                                        if !self.open_files.contains(&new_file) && !self.deleting.0 {
-                                            self.open_files.push(new_file);
-                                        }
                                         if self.deleting.0 {
                                             self.deleting.1 = Some((i, j, unit.name.clone()));
+                                            continue;
                                         }
-                                        
+                                        if !self.open_files.contains(&new_file) {
+                                            self.selected_file = self.open_files.len();
+                                            self.open_files.push(new_file);
+                                        } else {
+                                            self.selected_file = self.open_files.iter().position(|u| u == &new_file).unwrap();
+                                        }
                                     }
                                 }
                             });
