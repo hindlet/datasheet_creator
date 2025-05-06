@@ -25,7 +25,7 @@ Datasheets/
 - [x] Settings for folders
 - [x] Default Faction Ability
 - [x] Default Faction Keyword
-- [ ] Faction Keyword Rendering and editing
+- [x] Faction Keyword Rendering and editing
 - [x] Close File button doesnt change selected unit (BUG)
 - [x] File selected on open
 - [ ] Keyboard shortcuts
