@@ -3,6 +3,7 @@ mod edit_unit;
 mod settings;
 mod datasheet_app;
 mod edit_settings;
+mod shortcuts;
 
 
 pub use datasheet_app::DatasheetApp;

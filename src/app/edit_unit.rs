@@ -1,4 +1,6 @@
-use egui::{Color32, Context, RichText};
+use std::ops::RangeInclusive;
+
+use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Id, Response, RichText, TextEdit, Ui, Widget};
 use egui_extras::{Column, TableBuilder};
 
 use crate::data::{Ability, Range, Unit, Weapon, UnitStats, VariableValue};
@@ -237,40 +239,73 @@ impl Into<Unit> for UnitEditData {
 }
 
 
+fn select_text_on_tab(text_length: usize, text_edit: TextEdit, ui: &mut Ui) -> Response {
+    let mut text_edit = text_edit.show(ui);
+    if text_edit.response.gained_focus() && !text_edit.response.hovered() {
+        text_edit.state.cursor.set_char_range(Some(
+            CCursorRange::two(
+                CCursor::new(0), 
+                CCursor::new(text_length))
+            )
+        );
+        text_edit.state.store(ui.ctx(), text_edit.response.id)
+    }
+    text_edit.response
+}
+
+
+// .style()
+//                 .number_formatter
+//                 .format(value, auto_decimals..=max_decimals),
+fn select_drag_value_with_range_on_tab(val: &mut u32, range: RangeInclusive<u32>, ui: &mut Ui) -> Response{
+
+
+    let drag_value = DragValue::new(val).range(range).ui(ui);
+    if drag_value.gained_focus() && !drag_value.hovered() {
+        let mut state = TextEdit::load_state(ui.ctx(), drag_value.id).unwrap_or_default();
+        state.cursor.set_char_range(Some(
+            CCursorRange::two(
+                CCursor::new(0), 
+                CCursor::new(ui.style().number_formatter.format(*val as f64, 0..=0).len()))
+            )
+        );
+        state.store(ui.ctx(), drag_value.id)
+    }
+    drag_value
+}
 
 
 pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
-    // let index = match app.open_files[app.selected_file] {
-    //     OpenFile::Index(index) => index,
-    //     _ => return
-    // };
-    // let unit = &mut app.working_dir[index.0].unit_edit_data[index.1];
-    
+
     egui::CentralPanel::default().show(ctx, |ui| {
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.heading("General");
             ui.horizontal(|ui| {
                 ui.label("Name:");
-                ui.text_edit_singleline(&mut unit.name);
+                select_text_on_tab( unit.name.len(), egui::TextEdit::singleline(&mut unit.name), ui);
             });
             ui.horizontal(|ui| {
                 ui.label("Filename:");
-                ui.text_edit_singleline(&mut unit.filename);
+                select_text_on_tab(unit.filename.len(), egui::TextEdit::singleline(&mut unit.filename), ui);
+                // ui.text_edit_singleline(&mut unit.filename);
             });
             ui.horizontal(|ui| {
                 ui.label("Movement:");
-                ui.add(egui::DragValue::new(&mut unit.movement)
-                    .range(1..=99)).on_hover_text("Inches");
+                select_drag_value_with_range_on_tab(&mut unit.movement, 1..=99, ui);
+                // ui.add(egui::DragValue::new(&mut unit.movement)
+                //     .range(1..=99)).on_hover_text("Inches");
             });
             ui.horizontal(|ui| {
                 ui.label("Toughness:");
-                ui.add(egui::DragValue::new(&mut unit.toughness)
-                    .range(1..=99));
+                select_drag_value_with_range_on_tab(&mut unit.toughness, 1..=99, ui);
+                // ui.add(egui::DragValue::new(&mut unit.toughness)
+                //     .range(1..=99));
             });
             ui.horizontal(|ui| {
                 ui.label("Save:");
-                ui.add(egui::DragValue::new(&mut unit.save)
-                    .range(1..=6));
+                select_drag_value_with_range_on_tab(&mut unit.save, 1..=6, ui);
+                // ui.add(egui::DragValue::new(&mut unit.save)
+                //     .range(1..=6));
             });
             ui.horizontal(|ui| {
                 ui.label("Has Invulnerable Save:");
@@ -279,24 +314,29 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             if unit.has_invuln {
                 ui.horizontal(|ui| {
                     ui.label("Invulnerable Save:");
-                    ui.add(egui::DragValue::new(&mut unit.invuln)
-                        .range(1..=6));
+                    select_drag_value_with_range_on_tab(&mut unit.invuln, 1..=6, ui);
+                    // ui.add(egui::DragValue::new(&mut unit.invuln)
+                    //     .range(1..=6));
                 });
             }
             ui.horizontal(|ui| {
                 ui.label("Wounds:");
-                ui.add(egui::DragValue::new(&mut unit.wounds)
-                    .range(1..=99));
+                select_drag_value_with_range_on_tab(&mut unit.wounds, 1..=99, ui);
+                // ui.add(egui::DragValue::new(&mut unit.wounds)
+                //     .range(1..=99));
+                
             });
             ui.horizontal(|ui| {
                 ui.label("Leadership:");
-                ui.add(egui::DragValue::new(&mut unit.leadership)
-                    .range(1..=12));
+                select_drag_value_with_range_on_tab(&mut unit.leadership, 1..=12, ui);
+                // ui.add(egui::DragValue::new(&mut unit.leadership)
+                //     .range(1..=12));
             });
             ui.horizontal(|ui| {
                 ui.label("Objective Control:");
-                ui.add(egui::DragValue::new(&mut unit.objective_control)
-                    .range(0..=99));
+                select_drag_value_with_range_on_tab(&mut unit.objective_control, 1..=99, ui);
+                // ui.add(egui::DragValue::new(&mut unit.objective_control)
+                //     .range(0..=99));
             });
 
             ui.separator();
@@ -332,36 +372,36 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    ui.text_edit_singleline(&mut weapon.name);
+                                    select_text_on_tab(weapon.name.len(), egui::TextEdit::singleline(&mut weapon.name), ui);
                                 });
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.range)
-                                    .range(1..=300));
+                                select_drag_value_with_range_on_tab(&mut weapon.range, 1..=300, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.attacks) {
                                     ui.style_mut().visuals.extreme_bg_color = Color32::RED;
                                 }
-                                ui.text_edit_singleline(&mut weapon.attacks);
+                                select_text_on_tab(weapon.attacks.len(), egui::TextEdit::singleline(&mut weapon.attacks), ui);
+                                // select_text_on_tab(&mut weapon.attacks, ui);
+                                // ui.text_edit_singleline(&mut weapon.attacks);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.skill)
-                                    .range(1..=6));
+                                select_drag_value_with_range_on_tab(&mut weapon.skill, 1..=6, ui);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.strength)
-                                    .range(1..=50));
+                                select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.ap)
-                                    .range(0..=6));
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 1..=6, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
                                     ui.style_mut().visuals.extreme_bg_color = Color32::RED;
                                 }
-                                ui.text_edit_singleline(&mut weapon.damage);
+                                select_text_on_tab(weapon.damage.len(), egui::TextEdit::singleline(&mut weapon.damage), ui);
+                                // select_text_on_tab(&mut weapon.damage, ui);
+                                // ui.text_edit_singleline(&mut weapon.damage);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
@@ -373,7 +413,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        ui.add(egui::TextEdit::singleline(keyword).desired_width(80.0));
+                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(80.0), ui);
+                                        // select_text_on_tab(keyword, ui).desired_width(80.0);
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
                                         weapon.keywords.remove(i - j);
@@ -421,35 +462,36 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    ui.text_edit_singleline(&mut weapon.name);
+                                    select_text_on_tab(weapon.name.len(), egui::TextEdit::singleline(&mut weapon.name), ui);
                                 });
                             });
                             row.col(|ui| {
-                                ui.label("melee");
+                                select_drag_value_with_range_on_tab(&mut weapon.range, 1..=300, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.attacks) {
                                     ui.style_mut().visuals.extreme_bg_color = Color32::RED;
                                 }
-                                ui.text_edit_singleline(&mut weapon.attacks);
+                                select_text_on_tab(weapon.attacks.len(), egui::TextEdit::singleline(&mut weapon.attacks), ui);
+                                // select_text_on_tab(&mut weapon.attacks, ui);
+                                // ui.text_edit_singleline(&mut weapon.attacks);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.skill)
-                                    .range(1..=6));
+                                select_drag_value_with_range_on_tab(&mut weapon.skill, 1..=6, ui);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.strength)
-                                    .range(1..=50));
+                                select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                ui.add(egui::DragValue::new(&mut weapon.ap)
-                                    .range(0..=6));
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 1..=6, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
                                     ui.style_mut().visuals.extreme_bg_color = Color32::RED;
                                 }
-                                ui.text_edit_singleline(&mut weapon.damage);
+                                select_text_on_tab(weapon.damage.len(), egui::TextEdit::singleline(&mut weapon.damage), ui);
+                                // select_text_on_tab(&mut weapon.damage, ui);
+                                // ui.text_edit_singleline(&mut weapon.damage);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
@@ -461,7 +503,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        ui.add(egui::TextEdit::singleline(keyword).desired_width(80.0));
+                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(80.0), ui);
+                                        // select_text_on_tab(keyword, ui).desired_width(80.0);
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
                                         weapon.keywords.remove(i - j);
@@ -471,7 +514,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                         });
                     }
                     for (j, i) in to_remove.iter().enumerate() {
-                        unit.melee_weapons.remove(i - j);
+                        unit.ranged_weapons.remove(i - j);
                     }
                 });
             if ui.button("Add new weapon").clicked() {
@@ -492,7 +535,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             if unit.has_faction_ability {
                 ui.horizontal(|ui| {
                     ui.label("Faction Ability:");
-                    ui.text_edit_singleline(&mut unit.faction_ability);
+                    select_text_on_tab(unit.faction_ability.len(), egui::TextEdit::singleline(&mut unit.faction_ability), ui);
+                    // ui.text_edit_singleline(&mut unit.faction_ability);
                 });
             }
 
@@ -512,7 +556,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    ui.text_edit_singleline(ability);
+                                    select_text_on_tab(ability.len(), egui::TextEdit::singleline(ability), ui);
+                                    // ui.text_edit_singleline(ability);
                                 });
                             });
                         });
@@ -549,11 +594,12 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    ui.text_edit_singleline(&mut ability.name);
+                                    select_text_on_tab(ability.name.len(), egui::TextEdit::singleline(&mut ability.name), ui);
+                                    // ui.text_edit_singleline(&mut ability.name);
                                 });
                             });
                             row.col(|ui| {
-                                ui.text_edit_multiline(&mut ability.description);
+                                select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
                             });
                         });
                     }
@@ -589,7 +635,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    ui.text_edit_singleline(keyword);
+                                    select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword), ui);
                                 });
                                 
                             });
@@ -606,6 +652,9 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             ui.separator();
         });
         
+        
     });
+
+    
     
 }

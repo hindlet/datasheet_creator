@@ -29,3 +29,5 @@ Datasheets/
 - [x] Close File button doesnt change selected unit (BUG)
 - [x] File selected on open
 - [ ] Keyboard shortcuts
+- [ ] Keywords section in edit scrolls
+- [ ] Select field when tabbed to

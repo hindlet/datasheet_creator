@@ -906,6 +906,7 @@ version = "0.1.0"
 dependencies = [
  "eframe",
  "egui",
+ "egui-keybind",
  "egui_extras",
  "image",
  "include_assets",
@@ -1051,6 +1052,15 @@ dependencies = [
  "profiling",
  "ron",
  "serde",
+]
+
+[[package]]
+name = "egui-keybind"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6e8f7878508025e4973da37f44a1edb8147f92c58853f8f79fe93c1ef6d1421"
+dependencies = [
+ "egui",
 ]
 
 [[package]]
