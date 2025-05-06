@@ -181,6 +181,8 @@ impl DatasheetApp {
 
         let s = to_string_pretty(&self.working_dir[folder].units[i], config).expect("Failed to serialize");
         let _ = fs::write(format!("{}/{}.ron", self.working_dir[folder].path, self.working_dir[folder].unit_edit_data[i].prev_filename), s);
+        self.selected_file = self.open_files.len();
+        self.open_files.push(OpenFile::Index((folder, i)));
     }
 
     fn delete_unit(&mut self, folder: usize, file: usize) {
@@ -284,7 +286,12 @@ impl App for DatasheetApp {
             egui::ScrollArea::vertical().show(ui, |ui| {
                 if self.folder_settings.is_some() {
                     if ui.selectable_label(false, "Settings").clicked() {
-                        self.open_files.push(OpenFile::Settings);
+                        if !self.open_files.contains(&OpenFile::Settings) {
+                            self.selected_file = self.open_files.len();
+                            self.open_files.push(OpenFile::Settings);
+                        } else {
+                            self.selected_file = self.open_files.iter().position(|u| u == &OpenFile::Settings).unwrap();
+                        }
                     }
                 }
 

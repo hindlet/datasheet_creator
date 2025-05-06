@@ -24,6 +24,7 @@ Datasheets/
 - [x] Better Context Menus
 - [x] Settings for folders
 - [x] Default Faction Ability
+- [ ] Default Faction Keyword
 - [x] Close File button doesnt change selected unit (BUG)
 - [x] File selected on open
 - [ ] Keyboard shortcuts
