@@ -1,8 +1,9 @@
 use egui::Color32;
+use serde::{Deserialize, Serialize};
 
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct  DatasheetAppSettings {
     pub bar_colour: Color32,
     pub keyword_colour: Color32,

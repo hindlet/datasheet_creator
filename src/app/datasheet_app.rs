@@ -42,6 +42,7 @@ pub struct DatasheetApp {
     pub open_files: Vec<OpenFile>,
     pub selected_file: usize,
     pub mode: DatasheetAppMode,
+    pub folder_path: String,
 
     pub deleting: (bool, Option<(usize, usize, String)>),
     pub new_unit: (bool, usize, String),
@@ -58,10 +59,12 @@ pub struct DatasheetApp {
 
 impl DatasheetApp {
     fn open_folder(&mut self, path: PathBuf) {
+        self.folder_path = path.as_path().to_str().unwrap().to_string();
         let dir = fs::read_dir(path).unwrap();
         self.working_dir = Vec::new();
         self.open_files = Vec::new();
         self.selected_file = 0;
+        
         
         for path in dir {
             let path = path.unwrap();
@@ -69,7 +72,9 @@ impl DatasheetApp {
                 self.read_dir(path.path());
                 continue;
             } else if path.file_name() == "SETTINGS.ron" {
-
+                let f = File::open(path.path().clone()).unwrap();
+                let settings: DatasheetAppSettings = from_reader(f).unwrap();
+                self.folder_settings = Some(settings);
             }
         }
     }
@@ -200,6 +205,23 @@ impl DatasheetApp {
         }
         return &self.settings;
     }
+
+    fn save_folder_settings(&self) {
+        if let Some(settings) = &self.folder_settings {
+            let config = PrettyConfig::new()
+            .depth_limit(2)
+            .separate_tuple_members(true)
+            .enumerate_arrays(true);
+
+            let s = to_string_pretty(settings, config).expect("Failed to serialize");
+            let _ = fs::write(format!("{}/SETTINGS.ron", self.folder_path), s);
+        }
+
+        
+
+
+        
+    }
 }
 
 
@@ -210,6 +232,7 @@ impl Default for DatasheetApp {
             working_dir_name: "No Folder Open".to_string(),
             working_dir: Vec::new(),
             open_files: Vec::new(),
+            folder_path: "".to_string(),
             selected_file: 0,
             mode: DatasheetAppMode::Read,
             deleting: (false, None),
@@ -493,6 +516,7 @@ impl App for DatasheetApp {
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         self.settings.save(storage);
+        self.save_folder_settings();
     }
 
 
