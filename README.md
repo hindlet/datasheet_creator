@@ -30,4 +30,4 @@ Datasheets/
 - [x] File selected on open
 - [ ] Keyboard shortcuts
 - [ ] Keywords section in edit scrolls
-- [ ] Select field when tabbed to
+- [x] Select field when tabbed to
