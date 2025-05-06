@@ -21,5 +21,9 @@ pub fn settings_panel(app: &mut DatasheetApp, ctx: &Context) {
             ui.label("Default Faction Ability:");
             ui.text_edit_singleline(&mut settings.default_faction_ability);
         });
+        ui.horizontal(|ui| {
+            ui.label("Default Faction Keyword:");
+            ui.text_edit_singleline(&mut settings.default_faction_keyword);
+        });
     });
 }

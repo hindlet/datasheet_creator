@@ -190,6 +190,13 @@ impl DatasheetApp {
         let _ = remove_file(format!("{}/{}.ron", self.working_dir[folder].path, self.working_dir[folder].unit_edit_data[file].prev_filename));
         self.working_dir[folder].units.remove(file);
         self.working_dir[folder].unit_edit_data.remove(file);
+        let index = OpenFile::Index((folder, file));
+        for (i, open_file) in self.open_files.iter().enumerate() {
+            if open_file == &index {
+                self.open_files.remove(i);
+                break;
+            }
+        }
         for (i, index) in self.open_files.iter().enumerate() {
             match index {
                 OpenFile::Index(index) => {
@@ -545,6 +552,10 @@ impl App for DatasheetApp {
                             ui.horizontal(|ui| {
                                 ui.label("Default Faction Ability:");
                                 ui.text_edit_singleline(&mut self.settings.default_faction_ability);
+                            });
+                            ui.horizontal(|ui| {
+                                ui.label("Default Faction Keyword:");
+                                ui.text_edit_singleline(&mut self.settings.default_faction_keyword);
                             });
                         });
                     ui.horizontal(|ui| {

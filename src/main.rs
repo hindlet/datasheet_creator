@@ -31,12 +31,14 @@ fn main() -> eframe::Result {
                 let bar_col = string_to_color32(storage.get_string("Bar_Colour").unwrap_or("".to_string())).unwrap_or(Color32::LIGHT_BLUE);
                 let key_col = string_to_color32(storage.get_string("Keyword_Colour").unwrap_or("".to_string())).unwrap_or(Color32::LIGHT_BLUE);
                 let default_faction_ability = storage.get_string("Default_Faction_Ability").unwrap_or("".to_string());
+                let default_faction_keyword = storage.get_string("Default_Faction_Keyword").unwrap_or("".to_string());
 
                 return Ok(Box::new(DatasheetApp {
                     settings: DatasheetAppSettings {
                         bar_colour: bar_col,
                         keyword_colour: key_col,
                         default_faction_ability,
+                        default_faction_keyword,
                         dark_mode: theme_pref == ThemePreference::Dark,
                     },
                     ..Default::default()
