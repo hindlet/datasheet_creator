@@ -28,6 +28,6 @@ Datasheets/
 - [x] Faction Keyword Rendering and editing
 - [x] Close File button doesnt change selected unit (BUG)
 - [x] File selected on open
-- [ ] Keyboard shortcuts
+- [x] Keyboard shortcuts
 - [x] Keywords section in edit scrolls
 - [x] Select field when tabbed to

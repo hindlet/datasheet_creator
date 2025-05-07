@@ -2,9 +2,10 @@ use std::{fs::{self, remove_file, File}, path::PathBuf};
 
 use crate::data::Unit;
 
-use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, read_unit::read_unit};
+use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, read_unit::read_unit, shortcuts::*};
 use eframe::App;
 use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, RichText, ThemePreference};
+use egui_keybind::{Bind, Shortcut};
 use ron::{
     de::from_reader,
     ser::{to_string_pretty, PrettyConfig}
@@ -29,6 +30,7 @@ pub struct DatasheetFolder {
     path: String,
 }
 
+#[derive(PartialEq)]
 pub enum DatasheetAppMode {
     Edit,
     Read
@@ -107,6 +109,12 @@ impl DatasheetApp {
 
 
     fn display_current(&mut self, ctx: &Context) {
+
+
+        
+
+
+
         match self.open_files[self.selected_file] {
             OpenFile::Settings => settings_panel(self, ctx),
             OpenFile::Index(index) => {
@@ -263,6 +271,33 @@ impl Default for DatasheetApp {
 impl App for DatasheetApp {
     
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+
+        // SHORTCUTS
+
+        if ctx.input_mut(|i| Shortcut::new(Some(SAVE_FILE_SHORTCUT), None).pressed(i)) {
+            if self.open_files.len() != 0 {
+                if self.mode == DatasheetAppMode::Edit {
+                    self.save_current();
+                }
+            }
+        }
+
+        if ctx.input_mut(|i| Shortcut::new(Some(CLOSE_FILE_SHORTCUT), None).pressed(i)) {
+            if self.open_files.len() != 0 {
+                self.open_files.remove(self.selected_file);
+                if self.selected_file >= self.open_files.len() && self.open_files.len() != 0 {
+                    self.selected_file -= 1;
+                }
+            }
+        }
+
+        
+
+
+        // if ctx.input_mut(|i| Shortcut::new(Some(NEXT_FILE_SHORTCUT), None).pressed(i)) {
+        //     self.selected_file  = self.selected_file + 1 % self.open_files.len();
+        // }
+
         
         let mut copy_data = None;
         egui::SidePanel::left("LeftPanel").min_width(150.0).resizable(false).show(ctx, |ui| {
