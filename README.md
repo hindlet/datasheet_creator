@@ -31,3 +31,4 @@ Datasheets/
 - [x] Keyboard shortcuts
 - [x] Keywords section in edit scrolls
 - [x] Select field when tabbed to
+- [x] Version Number

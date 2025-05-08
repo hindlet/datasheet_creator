@@ -4,7 +4,7 @@ use crate::data::Unit;
 
 use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, read_unit::read_unit, shortcuts::*};
 use eframe::App;
-use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, RichText, ThemePreference};
+use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, Layout, RichText, ThemePreference};
 use egui_keybind::{Bind, Shortcut};
 use ron::{
     de::from_reader,
@@ -12,6 +12,9 @@ use ron::{
 };
 use super::settings::DatasheetAppSettings;
 
+
+
+const CURRENT_VERSION: &str = "v1.2";
 
 #[derive(PartialEq)]
 pub enum OpenFile {
@@ -394,6 +397,9 @@ impl App for DatasheetApp {
                     }
                 }
             });
+
+            
+            
         });
         
         if let Some((unit, index, filename)) = copy_data {
@@ -462,7 +468,13 @@ impl App for DatasheetApp {
                         }
                     }
                 }
-            })
+
+                ui.with_layout(Layout::right_to_left(egui::Align::Center), |ui| {
+                    ui.label(CURRENT_VERSION);
+                })
+            });
+
+            
             
         });
 
