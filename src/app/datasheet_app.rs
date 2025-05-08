@@ -1,4 +1,4 @@
-use std::{fs::{self, remove_file, File}, path::PathBuf};
+use std::{fs::{self, create_dir, remove_file, File}, path::PathBuf};
 
 use crate::data::Unit;
 
@@ -51,6 +51,7 @@ pub struct DatasheetApp {
 
     pub deleting: Option<(usize, usize)>,
     pub new_unit: (bool, usize, String),
+    pub new_folder: (bool, String),
 
     pub show_confirmation_dialog: bool,
     pub allowed_to_close: bool,
@@ -246,6 +247,17 @@ impl DatasheetApp {
         self.working_dir[folder_index].units.push(unit.clone());
         self.working_dir[folder_index].unit_edit_data.push(UnitEditData::from((unit, filename)));
     }
+
+    fn create_folder(&mut self) {
+        let path = format!("{}/{}", self.folder_path, self.new_folder.1);
+        let _ = create_dir(path.clone());
+        self.working_dir.push(DatasheetFolder {
+            name: Some(self.new_folder.1.clone()),
+            units: Vec::new(),
+            unit_edit_data: Vec::new(),
+            path
+        });
+    }
 }
 
 
@@ -261,6 +273,7 @@ impl Default for DatasheetApp {
             mode: DatasheetAppMode::Read,
             deleting: None,
             new_unit: (false, 0, "".to_string()),
+            new_folder: (false, "".to_string()),
 
             show_confirmation_dialog: false,
             allowed_to_close: false,
@@ -315,6 +328,10 @@ impl App for DatasheetApp {
                 ui.horizontal(|ui| {
                     if ui.button("New Unit").clicked() {
                         self.new_unit = (true, 0, "".to_string());
+                    }
+
+                    if ui.button("New Folder").clicked() {
+                        self.new_folder = (true, "".to_string());
                     }
 
                     ui.reset_style();
@@ -528,6 +545,28 @@ impl App for DatasheetApp {
                         if ui.button("Confirm").clicked() {
                             self.delete_unit(i, j);
                             self.deleting = None;
+                        }
+                    });
+                });
+        }
+
+        if self.new_folder.0 {
+            egui::Window::new("Create a new Folder?")
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.horizontal(|ui| {
+                        ui.label("Name: ");
+                        ui.text_edit_singleline(&mut self.new_folder.1);
+                    });
+                    ui.horizontal(|ui| {
+                        if ui.button("Cancel").clicked() {
+                            self.new_folder.0 = false;
+                        }
+
+                        if ui.button("Confirm").clicked() && self.new_folder.1 != ""  {
+                            self.create_folder();
+                            self.new_folder.0 = false;
                         }
                     });
                 });

@@ -32,3 +32,4 @@ Datasheets/
 - [x] Keywords section in edit scrolls
 - [x] Select field when tabbed to
 - [x] Version Number
+- [x] Add Folder Button
