@@ -1,6 +1,6 @@
 # Datasheet Creator
 
-[Download](https://github.com/hindlet/datasheet_creator/releases/download/v1.1/datasheet_creator.exe)
+[Download](https://github.com/hindlet/datasheet_creator/releases/download/v1.2/datasheet_creator.exe)
 
  
 ### App File Layout
@@ -17,19 +17,3 @@ Datasheets/
 ├─ characters/
 │  ├─ commander.ron
 ```
-
-
-### TODO
-- [x] Duplicate Units
-- [x] Better Context Menus
-- [x] Settings for folders
-- [x] Default Faction Ability
-- [x] Default Faction Keyword
-- [x] Faction Keyword Rendering and editing
-- [x] Close File button doesnt change selected unit (BUG)
-- [x] File selected on open
-- [x] Keyboard shortcuts
-- [x] Keywords section in edit scrolls
-- [x] Select field when tabbed to
-- [x] Version Number
-- [x] Add Folder Button
