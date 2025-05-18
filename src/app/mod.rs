@@ -4,6 +4,7 @@ mod settings;
 mod datasheet_app;
 mod edit_settings;
 mod shortcuts;
+mod pop_up_menus;
 
 
 pub use datasheet_app::DatasheetApp;

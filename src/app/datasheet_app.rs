@@ -2,7 +2,7 @@ use std::{fs::{self, create_dir, remove_file, File}, path::PathBuf};
 
 use crate::data::Unit;
 
-use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, read_unit::read_unit, shortcuts::*};
+use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, pop_up_menus, read_unit::read_unit, shortcuts::*};
 use eframe::App;
 use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, Layout, RichText, ThemePreference};
 use egui_keybind::{Bind, Shortcut};
@@ -26,7 +26,7 @@ pub enum OpenFile {
 
 
 pub struct DatasheetFolder {
-    name: Option<String>,
+    pub name: String,
     pub units: Vec<Unit>,
     pub unit_edit_data: Vec<UnitEditData>,
 
@@ -104,7 +104,7 @@ impl DatasheetApp {
             }
         }
         self.working_dir.push(DatasheetFolder {
-            name: Some(name),
+            name: name,
             units: units,
             unit_edit_data,
             path: path.to_str().unwrap().to_string(),
@@ -252,7 +252,7 @@ impl DatasheetApp {
         let path = format!("{}/{}", self.folder_path, self.new_folder.1);
         let _ = create_dir(path.clone());
         self.working_dir.push(DatasheetFolder {
-            name: Some(self.new_folder.1.clone()),
+            name: self.new_folder.1.clone(),
             units: Vec::new(),
             unit_edit_data: Vec::new(),
             path
@@ -360,58 +360,55 @@ impl App for DatasheetApp {
 
                 
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
-
-                    if let Some(name) = &folder.name {
-                        CollapsingHeader::new(name)
-                            .default_open(false)
-                            .show(ui, |ui| {
-                                for (j, unit) in folder.units.iter().enumerate() {
-                                    let selected: bool;
-                                    if let Some(index) = self.deleting {
-                                        if index == (i, j) {
-                                            ui.style_mut().visuals.selection.bg_fill = Color32::RED;
-                                            selected = true;
-                                        } else {selected = false;}
+                    CollapsingHeader::new(&folder.name)
+                        .default_open(false)
+                        .show(ui, |ui| {
+                            for (j, unit) in folder.units.iter().enumerate() {
+                                let selected: bool;
+                                if let Some(index) = self.deleting {
+                                    if index == (i, j) {
+                                        ui.style_mut().visuals.selection.bg_fill = Color32::RED;
+                                        selected = true;
                                     } else {selected = false;}
-                                    let unit_label = ui.selectable_label(selected, &unit.name);
-                                    if unit_label.clicked() {
-                                        let new_file = OpenFile::Index((i, j));
-                                        if !self.open_files.contains(&new_file) {
-                                            self.selected_file = self.open_files.len();
-                                            self.open_files.push(new_file);
-                                        } else {
-                                            self.selected_file = self.open_files.iter().position(|u| u == &new_file).unwrap();
-                                        }
+                                } else {selected = false;}
+                                let unit_label = ui.selectable_label(selected, &unit.name);
+                                if unit_label.clicked() {
+                                    let new_file = OpenFile::Index((i, j));
+                                    if !self.open_files.contains(&new_file) {
+                                        self.selected_file = self.open_files.len();
+                                        self.open_files.push(new_file);
+                                    } else {
+                                        self.selected_file = self.open_files.iter().position(|u| u == &new_file).unwrap();
                                     }
-                                    unit_label.context_menu(|ui| {
-                                        if ui.selectable_label(false, "Delete Unit").clicked() {
-                                            self.deleting = Some((i, j));
-                                            ui.close_menu();
-                                        }
-                                        if ui.selectable_label(false, "Duplicate").clicked() {
-                                            let new_filename_start = folder.unit_edit_data[j].filename.clone();
-                                            
-                                            let mut k = 1;
-                                            let mut taken = true;
-                                            let mut new_filename: String = "".to_string();
-                                            while taken {
-                                                taken = false;
-                                                new_filename = format!("{}_{}", new_filename_start, k);
-                                                for edit_data in folder.unit_edit_data.iter() {
-                                                    if edit_data.filename == new_filename {
-                                                        taken = true;
-                                                        break;
-                                                    }
-                                                }
-                                                k += 1
-                                            };
-                                            copy_data = Some((unit.clone(), i, new_filename));
-                                            ui.close_menu();
-                                        }
-                                    });
                                 }
-                            });
-                    }
+                                unit_label.context_menu(|ui| {
+                                    if ui.selectable_label(false, "Delete Unit").clicked() {
+                                        self.deleting = Some((i, j));
+                                        ui.close_menu();
+                                    }
+                                    if ui.selectable_label(false, "Duplicate").clicked() {
+                                        let new_filename_start = folder.unit_edit_data[j].filename.clone();
+                                        
+                                        let mut k = 1;
+                                        let mut taken = true;
+                                        let mut new_filename: String = "".to_string();
+                                        while taken {
+                                            taken = false;
+                                            new_filename = format!("{}_{}", new_filename_start, k);
+                                            for edit_data in folder.unit_edit_data.iter() {
+                                                if edit_data.filename == new_filename {
+                                                    taken = true;
+                                                    break;
+                                                }
+                                            }
+                                            k += 1
+                                        };
+                                        copy_data = Some((unit.clone(), i, new_filename));
+                                        ui.close_menu();
+                                    }
+                                });
+                            }
+                        });
                 }
             });
 
@@ -511,98 +508,52 @@ impl App for DatasheetApp {
             }
         }
 
-        if self.show_confirmation_dialog {
-            egui::Window::new("Do you want to quit?")
-                .collapsible(false)
-                .resizable(false)
-                .show(ctx, |ui| {
-                    ui.label("Make sure to save your work :)");
-                    ui.horizontal(|ui| {
-                        if ui.button("No").clicked() {
-                            self.show_confirmation_dialog = false;
-                            self.allowed_to_close = false;
-                        }
+        ///// POP UP WINDOWS
 
-                        if ui.button("Yes").clicked() {
-                            self.show_confirmation_dialog = false;
-                            self.allowed_to_close = true;
-                            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
-                        }
-                    });
-                });
+        if self.show_confirmation_dialog {
+            let mut result = None;
+            pop_up_menus::quit_menu(&ctx, &mut result);
+            if let Some(close) = result {
+                self.show_confirmation_dialog = false;
+                self.allowed_to_close = close;
+                if close {
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                }
+            }
         }
 
         if let Some((i, j)) = self.deleting {
-            egui::Window::new("Confirm Deletion?")
-                .collapsible(false)
-                .resizable(false)
-                .show(ctx, |ui| {
-                    ui.horizontal(|ui| {
-                        if ui.button("Cancel").clicked() {
-                            self.deleting = None;
-                        }
-
-                        if ui.button("Confirm").clicked() {
-                            self.delete_unit(i, j);
-                            self.deleting = None;
-                        }
-                    });
-                });
+            let mut result = None;
+            pop_up_menus::delete_window(&ctx, &mut result);
+            if let Some(delete) = result {
+                if delete {
+                    self.delete_unit(i, j);
+                }
+                self.deleting = None;
+            }
         }
 
         if self.new_folder.0 {
-            egui::Window::new("Create a new Folder?")
-                .collapsible(false)
-                .resizable(false)
-                .show(ctx, |ui| {
-                    ui.horizontal(|ui| {
-                        ui.label("Name: ");
-                        ui.text_edit_singleline(&mut self.new_folder.1);
-                    });
-                    ui.horizontal(|ui| {
-                        if ui.button("Cancel").clicked() {
-                            self.new_folder.0 = false;
-                        }
-
-                        if ui.button("Confirm").clicked() && self.new_folder.1 != ""  {
-                            self.create_folder();
-                            self.new_folder.0 = false;
-                        }
-                    });
-                });
+            let mut result = None;
+            pop_up_menus::folder_creation_window(ctx, &mut result, &mut self.new_folder.1);
+            if let Some(create) = result {
+                if create {
+                    self.create_folder();
+                }
+                self.new_folder.0 = false;
+            }
         }
 
         if self.new_unit.0 {
             if self.working_dir.len() != 0 {
-                egui::Window::new("Create new Unit?")
-                .collapsible(false)
-                .resizable(false)
-                .show(ctx, |ui| {
-                    ui.horizontal(|ui| {
-                        ui.label("Folder: ");
-                        egui::ComboBox::from_id_salt(10)
-                            .selected_text(self.working_dir[self.new_unit.1].name.clone().unwrap_or("Main".to_string()))
-                            .show_ui(ui, |ui| {
-                                for (i, folder) in self.working_dir.iter().enumerate() {
-                                    ui.selectable_value(&mut self.new_unit.1, i, folder.name.clone().unwrap_or("Main".to_string()));
-                                }
-                            })
-                    });
-                    ui.horizontal(|ui| {
-                        ui.label("Filename: ");
-                        ui.text_edit_singleline(&mut self.new_unit.2);
-                    });
-                    ui.horizontal(|ui| {
-                        if ui.button("Cancel").clicked() {
-                            self.new_unit.0 = false;
-                        }
-
-                        if ui.button("Confirm").clicked() && self.new_unit.2 != "" {
-                            self.create_unit(self.new_unit.1, self.new_unit.2.clone());
-                            self.new_unit.0 = false;
-                        }
-                    });
-                });
+                let mut result = None;
+                pop_up_menus::new_unit_window(&ctx, &mut result, &mut self.new_unit.2, &self.working_dir, &mut self.new_unit.1);
+                if let Some(create) = result {
+                    if create {
+                        self.create_unit(self.new_unit.1, self.new_unit.2.clone());
+                    }
+                    self.new_unit.0 = false;
+                }
             } else {
                 egui::Window::new("Please add Folders Before Making Units")
                 .collapsible(false)
@@ -616,47 +567,15 @@ impl App for DatasheetApp {
         }
 
         if self.settings_menu_open {
-            egui::Window::new("Settings")
-                .collapsible(false)
-                .resizable(true)
-                
-                .show(ctx, |ui| {
-                    CollapsingHeader::new("UI")
-                        .default_open(false)
-                        .show(ui, |ui| {
-                            ui.horizontal(|ui| {
-                                ui.label("Light Mode:");
-                                global_theme_preference_switch(ui);
-                            });
-                            ui.horizontal(|ui| {
-                                ui.label("Bar Colour:");
-                                ui.color_edit_button_srgba(&mut self.settings.bar_colour);
-                            });
-                            ui.horizontal(|ui| {
-                                ui.label("Keyword Colour:");
-                                ui.color_edit_button_srgba(&mut self.settings.keyword_colour);
-                            });
-                            ui.horizontal(|ui| {
-                                ui.label("Default Faction Ability:");
-                                ui.text_edit_singleline(&mut self.settings.default_faction_ability);
-                            });
-                            ui.horizontal(|ui| {
-                                ui.label("Default Faction Keyword:");
-                                ui.text_edit_singleline(&mut self.settings.default_faction_keyword);
-                            });
-                        });
-                    ui.horizontal(|ui| {
-                        if ui.button("Save for Folder").clicked() {
-                            self.folder_settings = Some(self.settings.clone());
-                        }
-                        if ui.button("Close").clicked() {
-                            self.settings_menu_open = false;
-                        }
-                    });
-                   
-                });
+            let mut result = None;
+            pop_up_menus::settings_window(&ctx, &mut result, &mut self.settings);
+            if let Some(save_to_folder) = result {
+                if save_to_folder {
+                    self.folder_settings = Some(self.settings.clone());
+                }
+                self.settings_menu_open = false
+            }
         }
-
         self.settings.dark_mode = ctx.options(|opt| opt.theme_preference == ThemePreference::Dark);
     }
 
