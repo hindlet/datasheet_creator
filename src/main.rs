@@ -3,6 +3,7 @@ use egui::{Color32, IconData, ThemePreference};
 use include_assets::{include_dir, NamedArchive};
 mod data;
 mod app;
+mod export;
 
 
 fn main() -> eframe::Result {

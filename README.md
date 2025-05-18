@@ -6,3 +6,6 @@
 
 ## TODO for version 1.3
 - [ ] aircraft movement correct
+- [ ] Export to PDF
+- [ ] Export to Latex
+- [ ] Export to HTML
