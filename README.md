@@ -9,3 +9,7 @@
 - [ ] Export to PDF
 - [ ] Export to Latex
 - [ ] Export to HTML
+- [ ] Uses for Non-Crusade Units
+  - [ ] Wargear Options
+  - [ ] Default Wargear
+  - [ ] Wargear Abilities

@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, ScrollArea, TextEdit, Ui, Vec2, Widget};
+use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
 use egui_extras::{Column, TableBuilder};
 
 use crate::data::{Ability, Range, Unit, Weapon, UnitStats, VariableValue};
@@ -110,9 +110,6 @@ pub struct UnitEditData {
     pub can_lead: bool,
     pub leader: Vec<String>,
 
-    // pub default_wargear: Option<String>,
-    pub has_wargear_options: bool,
-    pub wargear_options: String,
 }
 
 impl From<(&Unit, String)> for UnitEditData {
@@ -165,8 +162,6 @@ impl From<(&Unit, String)> for UnitEditData {
             can_lead: value.leader.is_some(),
             leader: value.leader.clone().unwrap_or(Vec::new()),
 
-            has_wargear_options: value.wargear_options.is_some(),
-            wargear_options: value.wargear_options.clone().unwrap_or("".to_string())
         }
     }
 }
@@ -226,11 +221,6 @@ impl Into<Unit> for UnitEditData {
             composition: self.composition,
             leader: if self.can_lead {
                 Some(self.leader)
-            } else {
-                None
-            },
-            wargear_options: if self.has_wargear_options {
-                Some(self.wargear_options)
             } else {
                 None
             },

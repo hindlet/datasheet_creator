@@ -46,8 +46,6 @@ pub struct Unit {
     pub composition: Vec<(u32, u32)>,
     pub leader: Option<Vec<String>>,
 
-    // pub default_wargear: Option<String>,
-    pub wargear_options: Option<String>,
 }
 
 impl Default for Unit {
@@ -65,7 +63,6 @@ impl Default for Unit {
             damaged: None,
             composition: Vec::new(),
             leader: None,
-            wargear_options: None
         }
     }
 }

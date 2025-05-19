@@ -1,5 +1,7 @@
 use egui::{global_theme_preference_switch, CollapsingHeader, Context};
 
+use crate::export::ExportType;
+
 use super::{datasheet_app::DatasheetFolder, DatasheetAppSettings};
 
 
@@ -98,7 +100,6 @@ pub fn settings_window(ctx: &Context, result: &mut Option<bool>, settings: &mut 
     egui::Window::new("Settings")
     .collapsible(false)
     .resizable(true)
-    
     .show(ctx, |ui| {
         CollapsingHeader::new("UI")
             .default_open(false)
@@ -133,5 +134,37 @@ pub fn settings_window(ctx: &Context, result: &mut Option<bool>, settings: &mut 
             }
         });
         
+    });
+}
+
+
+
+pub fn export_window(ctx: &Context, result: &mut Option<bool>, export_type: &mut ExportType) {
+    egui::Window::new("Settings")
+    .collapsible(false)
+    .resizable(true)
+    .show(ctx, |ui| {
+
+        ui.horizontal(|ui| {
+            ui.label("Export File Type: ");
+            egui::ComboBox::from_id_salt(10)
+                .selected_text(export_type.to_string())
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(export_type, ExportType::PDF, "PDF");
+                    ui.selectable_value(export_type, ExportType::LATEX, "LaTeX");
+                    ui.selectable_value(export_type, ExportType::HTML, "HTML");
+                })
+        });
+
+        ui.horizontal(|ui| {
+            if ui.button("Save").clicked() {
+                *result = Some(true);
+            }
+            if ui.button("Cancel").clicked() {
+                *result = Some(false);
+            }
+        });
+
+
     });
 }

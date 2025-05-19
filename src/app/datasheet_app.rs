@@ -1,10 +1,10 @@
 use std::{fs::{self, create_dir, remove_file, File}, path::PathBuf};
 
-use crate::data::Unit;
+use crate::{data::Unit, export::{export_unit, load_export_templates, ExportTemplates, ExportType}};
 
 use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, pop_up_menus, read_unit::read_unit, shortcuts::*};
 use eframe::App;
-use egui::{global_theme_preference_switch, CollapsingHeader, Color32, Context, Layout, RichText, ThemePreference};
+use egui::{CollapsingHeader, Color32, Context, Layout, RichText, ThemePreference};
 use egui_keybind::{Bind, Shortcut};
 use ron::{
     de::from_reader,
@@ -52,6 +52,11 @@ pub struct DatasheetApp {
     pub deleting: Option<(usize, usize)>,
     pub new_unit: (bool, usize, String),
     pub new_folder: (bool, String),
+
+    pub export_templates: ExportTemplates,
+    pub export_unit: Option<((usize, usize), ExportType)>,
+    pub last_export_type: ExportType,
+    pub last_export_dir: PathBuf,
 
     pub show_confirmation_dialog: bool,
     pub allowed_to_close: bool,
@@ -275,6 +280,11 @@ impl Default for DatasheetApp {
             new_unit: (false, 0, "".to_string()),
             new_folder: (false, "".to_string()),
 
+            export_templates: load_export_templates(),
+            export_unit: None,
+            last_export_type: ExportType::PDF,
+            last_export_dir: PathBuf::new(),
+
             show_confirmation_dialog: false,
             allowed_to_close: false,
             settings_menu_open: false,
@@ -335,14 +345,6 @@ impl App for DatasheetApp {
                     }
 
                     ui.reset_style();
-                    // if self.deleting.0 == true {
-                    //     ui.style_mut().visuals.widgets.active.weak_bg_fill = Color32::RED;
-                    //     ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::RED;
-                    //     ui.style_mut().visuals.widgets.hovered.weak_bg_fill = Color32::RED;
-                    // }
-                    // if ui.button("Delete Unit").clicked() {
-                    //     self.deleting.0 ^= true;
-                    // }
                 });
             }
             
@@ -358,19 +360,27 @@ impl App for DatasheetApp {
                     }
                 }
 
-                
+                // Draw units sidebar
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
                     CollapsingHeader::new(&folder.name)
                         .default_open(false)
                         .show(ui, |ui| {
                             for (j, unit) in folder.units.iter().enumerate() {
+                                // hightlighting
                                 let selected: bool;
                                 if let Some(index) = self.deleting {
                                     if index == (i, j) {
                                         ui.style_mut().visuals.selection.bg_fill = Color32::RED;
                                         selected = true;
                                     } else {selected = false;}
+                                } else if let Some((index, _)) = self.export_unit {
+                                    if index == (i, j) {
+                                        ui.style_mut().visuals.selection.bg_fill = Color32::DARK_BLUE;
+                                        selected = true;
+                                    } else {selected = false;}
                                 } else {selected = false;}
+
+
                                 let unit_label = ui.selectable_label(selected, &unit.name);
                                 if unit_label.clicked() {
                                     let new_file = OpenFile::Index((i, j));
@@ -405,6 +415,9 @@ impl App for DatasheetApp {
                                         };
                                         copy_data = Some((unit.clone(), i, new_filename));
                                         ui.close_menu();
+                                    }
+                                    if ui.selectable_label(false, "Export").clicked() {
+                                        self.export_unit = Some(((i, j), self.last_export_type))
                                     }
                                 });
                             }
@@ -576,6 +589,23 @@ impl App for DatasheetApp {
                 self.settings_menu_open = false
             }
         }
+
+        if let Some(((i, j), export_type)) = &mut self.export_unit {
+            let mut result = None;
+            pop_up_menus::export_window(&ctx, &mut result, export_type);
+            if let Some(export) = result {
+                if export {
+                    if let Some(file) = rfd::FileDialog::new().add_filter(export_type.to_string(), export_type.get_extensions()).set_directory(self.last_export_dir.clone()).save_file() {
+                        self.last_export_dir = file.parent().unwrap().to_path_buf();
+                        export_unit(&self.working_dir[*i].units[*j], *export_type,file, &self.export_templates);
+                    }
+                }
+                self.last_export_type = *export_type;
+                self.export_unit = None;
+            }
+        }
+
+
         self.settings.dark_mode = ctx.options(|opt| opt.theme_preference == ThemePreference::Dark);
     }
 
