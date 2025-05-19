@@ -182,7 +182,7 @@ impl Into<Unit> for UnitEditData {
         let mut sanitised_keywords = Vec::new();
         for keyword in self.keywords {
             if !keyword.is_empty() {
-                sanitised_keywords.push(keyword);
+                sanitised_keywords.push(keyword.to_uppercase());
             }
         }
 

@@ -68,6 +68,13 @@ impl Default for Unit {
 }
 
 impl Unit {
+
+    pub fn get_movement(&self) -> String {
+        if self.keywords.contains(&"AIRCRAFT".to_string()) {
+            return "20+".to_string();
+        } else {return format!("{}", self.stats.movement);}
+    }
+
     pub fn format_keywords(&self) -> String{
         let mut keywords: String = "".to_string();
 

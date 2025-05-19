@@ -57,7 +57,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             show_stat_name_func(ui, "ld");
             show_stat_name_func(ui, "OC");
             ui.end_row();
-            show_stat_func(ui, format!("{}\"", unit.stats.movement));
+            show_stat_func(ui, format!("{}\"", unit.get_movement()));
             show_stat_func(ui, unit.stats.toughness.to_string());
             show_stat_func(ui, format!("{}+", unit.stats.save));
             if let Some(invuln) = unit.stats.invuln {

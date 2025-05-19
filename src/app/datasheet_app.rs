@@ -337,11 +337,14 @@ impl App for DatasheetApp {
             if self.working_dir_name != "No Folder Open".to_string() {
                 ui.horizontal(|ui| {
                     if ui.button("New Unit").clicked() {
-                        self.new_unit = (true, 0, "".to_string());
+                        self.new_unit.0 ^= true;
+                        self.new_unit.1 = 0;
+                        self.new_unit.2 = "".to_string();
                     }
 
                     if ui.button("New Folder").clicked() {
-                        self.new_folder = (true, "".to_string());
+                        self.new_folder.0 ^= true;
+                        self.new_folder.1 = "".to_string();
                     }
 
                     ui.reset_style();
@@ -473,7 +476,7 @@ impl App for DatasheetApp {
         egui::TopBottomPanel::bottom("BottomPanel").min_height(25.0).show(ctx, |ui| {
             ui.horizontal(|ui| {
                 if ui.button("Settings").clicked() {
-                    self.settings_menu_open = true;
+                    self.settings_menu_open ^= true;
                 }
                 match self.mode {
                     DatasheetAppMode::Edit => {

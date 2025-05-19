@@ -5,11 +5,12 @@
  
 
 ## TODO for version 1.3
-- [ ] aircraft movement correct
+- [x] aircraft movement correct
 - [ ] Export to PDF
-- [ ] Export to Latex
+- [x] Export to Latex
 - [ ] Export to HTML
 - [ ] Uses for Non-Crusade Units
   - [ ] Wargear Options
   - [ ] Default Wargear
   - [ ] Wargear Abilities
+- [x] Clicking Button Closes Open Window
