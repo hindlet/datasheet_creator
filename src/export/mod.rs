@@ -43,9 +43,6 @@ pub struct ExportTemplates {
 
 pub fn load_export_templates() -> ExportTemplates {
     let templates = NamedArchive::load(include_dir!("templates"));
-    for name in templates.names() {
-        println!("{}", name);
-    }
 
     let latex_template = {
         let data = templates.get("template.tex").unwrap();

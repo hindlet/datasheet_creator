@@ -111,7 +111,6 @@ impl Unit {
         for weapon in self.ranged_weapons.iter() {
             res.push(weapon.get_render_data());
         }
-        println!("{:?}", res);
         res
     }
     fn get_melee_weapon_list(&self) -> Vec<WeaponRenderTuple> {

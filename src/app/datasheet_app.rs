@@ -598,7 +598,7 @@ impl App for DatasheetApp {
             pop_up_menus::export_window(&ctx, &mut result, export_type);
             if let Some(export) = result {
                 if export {
-                    if let Some(file) = rfd::FileDialog::new().add_filter(export_type.to_string(), export_type.get_extensions()).set_directory(self.last_export_dir.clone()).save_file() {
+                    if let Some(file) = rfd::FileDialog::new().add_filter(export_type.to_string(), export_type.get_extensions()).set_directory(self.last_export_dir.clone()).set_file_name(&self.working_dir[*i].units[*j].name).save_file() {
                         self.last_export_dir = file.parent().unwrap().to_path_buf();
                         export_unit(&self.working_dir[*i].units[*j], *export_type,file, &self.export_templates);
                     }
