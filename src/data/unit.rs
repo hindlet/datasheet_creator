@@ -1,5 +1,6 @@
-use super::{Weapon, Ability};
+use super::{Ability, Weapon, WeaponRenderTuple};
 use serde::{Deserialize, Serialize};
+use tera::Context;
 
 
 
@@ -25,6 +26,22 @@ impl Default for UnitStats {
             leadership: 0,
             oc: 0
         }
+    }
+}
+
+impl UnitStats {
+    pub fn add_context(&self, context: &mut Context) {
+        context.insert("movement", &format!("{}", self.movement));
+        context.insert("toughness", &self.toughness);
+        context.insert("save", &self.save);
+        if let Some(invuln) = self.invuln {
+            context.insert("invuln", &format!("{}", invuln));
+        } else {
+            context.insert("invuln", &"None".to_string());
+        }
+        context.insert("wounds", &self.wounds);
+        context.insert("leadership", &self.leadership);
+        context.insert("oc", &self.oc);
     }
 }
 
@@ -88,4 +105,67 @@ impl Unit {
 
         keywords
     }
+
+    fn get_ranged_weapon_list(&self) -> Vec<WeaponRenderTuple> {
+        let mut res = Vec::new();
+        for weapon in self.ranged_weapons.iter() {
+            res.push(weapon.get_render_data());
+        }
+        println!("{:?}", res);
+        res
+    }
+    fn get_melee_weapon_list(&self) -> Vec<WeaponRenderTuple> {
+        let mut res = Vec::new();
+        for weapon in self.melee_weapons.iter() {
+            res.push(weapon.get_render_data());
+        }
+        res
+    }
+
+    pub fn get_context(
+        &self
+    ) -> Context {
+        let mut context = Context::new();
+
+        let mut cased_keywords = Vec::new();
+        for keyword in self.keywords.iter() {
+            cased_keywords.push(keyword.to_uppercase());
+        }
+        
+        
+        context.insert("unit_name", &self.name);
+        self.stats.add_context(&mut context);
+
+        // aircraft movement box
+        if cased_keywords.contains(&"AIRCRAFT".to_string()) {
+            context.insert("movement", &"20+".to_string());
+        }
+        // leader keyword
+        // if self.leader.is_some() && !self.core_abilities.contains(&"Leader".to_string()){
+        //     self.core_abilities.push("Leader".to_string());
+        // }
+
+        // damage bracket
+        let damaged: String;
+        if let Some(damaged_wall) = self.damaged {
+            damaged = format!("{}", damaged_wall);
+        } else {
+            damaged = "none".to_string();
+        }
+        
+        context.insert("ranged_weapons", &self.get_ranged_weapon_list());
+        context.insert("melee_weapons", &self.get_melee_weapon_list());
+        context.insert("faction_ability", &self.faction_ability.clone().unwrap_or("none".to_string()));
+        context.insert("core_abilities", &self.core_abilities);
+        context.insert("unique_abilities", &self.unique_abilities);
+        context.insert("faction_keyword", &self.faction_keyword.to_uppercase());
+        context.insert("keywords", &self.keywords);
+        context.insert("damaged", &damaged);
+        context.insert("unit_composition", &self.composition);
+        context.insert("leader", &self.leader.clone().unwrap_or(Vec::new()));
+        context.insert("wargear_options", "none");
+
+        context
+    }
+
 }

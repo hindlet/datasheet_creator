@@ -151,7 +151,7 @@ pub fn export_window(ctx: &Context, result: &mut Option<bool>, export_type: &mut
                 .selected_text(export_type.to_string())
                 .show_ui(ui, |ui| {
                     ui.selectable_value(export_type, ExportType::PDF, "PDF");
-                    ui.selectable_value(export_type, ExportType::LATEX, "LaTeX");
+                    // ui.selectable_value(export_type, ExportType::LATEX, "LaTeX");
                     ui.selectable_value(export_type, ExportType::HTML, "HTML");
                 })
         });
