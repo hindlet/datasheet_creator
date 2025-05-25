@@ -1,8 +1,8 @@
 use std::{fs::{self, create_dir, remove_file, File}, path::PathBuf};
 
-use crate::{data::Unit, export::{export_unit, load_export_templates, ExportTemplates, ExportType}};
+use crate::{data::{Unit, UnitEditData}, export::{export_unit, load_export_templates, ExportTemplates, ExportType}};
 
-use super::{edit_settings::settings_panel, edit_unit::{edit_unit, UnitEditData}, pop_up_menus, read_unit::read_unit, shortcuts::*};
+use super::{edit_settings::settings_panel, edit_unit::edit_unit, pop_up_menus, read_unit::read_unit, shortcuts::*};
 use eframe::App;
 use egui::{CollapsingHeader, Color32, Context, Layout, RichText, ThemePreference};
 use egui_keybind::{Bind, Shortcut};
