@@ -4,7 +4,7 @@
 
  
 
-## TODO for version 1.3
+## TODO
 - [x] aircraft movement correct
 - [x] Export to PDF
 - [x] Export to HTML
