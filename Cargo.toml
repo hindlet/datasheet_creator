@@ -4,13 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.98"
 eframe = {version = "0.31.1", features = ["persistence"]}
 egui = "0.31.1"
 egui-keybind = "0.6.0"
 egui_extras = "0.31.1"
+headless_chrome = "1.0.17"
 image = "0.25.6"
 include_assets = "1.0.0"
-printpdf = {version = "0.8.2", features = ["html"]}
 regex = "1.11.1"
 rfd = "0.15.3"
 ron = "0.8.1"
