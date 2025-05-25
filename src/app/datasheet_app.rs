@@ -336,11 +336,7 @@ impl App for DatasheetApp {
             }
             if self.working_dir_name != "No Folder Open".to_string() {
                 ui.horizontal(|ui| {
-                    if ui.button("New Unit").clicked() {
-                        self.new_unit.0 ^= true;
-                        self.new_unit.1 = 0;
-                        self.new_unit.2 = "".to_string();
-                    }
+                    
 
                     if ui.button("New Folder").clicked() {
                         self.new_folder.0 ^= true;
@@ -365,7 +361,7 @@ impl App for DatasheetApp {
 
                 // Draw units sidebar
                 for (i, folder) in self.working_dir.iter_mut().enumerate() {
-                    CollapsingHeader::new(&folder.name)
+                    let folder_responce = CollapsingHeader::new(&folder.name)
                         .default_open(false)
                         .show(ui, |ui| {
                             for (j, unit) in folder.units.iter().enumerate() {
@@ -425,6 +421,13 @@ impl App for DatasheetApp {
                                 });
                             }
                         });
+                    folder_responce.header_response.context_menu(|ui| {
+                        if ui.selectable_label(false, "New Unit").clicked() {
+                            self.new_unit.0 ^= true;
+                            self.new_unit.1 = i;
+                            self.new_unit.2 = "".to_string();
+                        }
+                    });
                 }
             });
 

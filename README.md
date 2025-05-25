@@ -13,3 +13,4 @@
   - [ ] Default Wargear
   - [ ] Wargear Abilities
 - [x] Clicking Button Closes Open Window
+- [x] Context menu on folders
