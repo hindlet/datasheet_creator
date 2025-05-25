@@ -6,9 +6,8 @@
 
 ## TODO for version 1.3
 - [x] aircraft movement correct
-- [ ] Export to PDF
-- [x] Export to Latex
-- [ ] Export to HTML
+- [x] Export to PDF
+- [x] Export to HTML
 - [ ] Uses for Non-Crusade Units
   - [ ] Wargear Options
   - [ ] Default Wargear
