@@ -1,4 +1,4 @@
-use std::{fs::{self, create_dir, remove_file, File}, path::PathBuf};
+use std::{fs::{self, create_dir, remove_dir_all, remove_file, File}, path::PathBuf};
 
 use crate::{data::{Unit, UnitEditData}, export::{export_unit, load_export_templates, ExportTemplates, ExportType}};
 
@@ -49,7 +49,7 @@ pub struct DatasheetApp {
     pub mode: DatasheetAppMode,
     pub folder_path: String,
 
-    pub deleting: Option<(usize, usize)>,
+    pub deleting: Option<((usize, usize), bool)>,
     pub new_unit: (bool, usize, String),
     pub new_folder: (bool, String),
 
@@ -116,14 +116,7 @@ impl DatasheetApp {
         });
     }
 
-
     fn display_current(&mut self, ctx: &Context) {
-
-
-        
-
-
-
         match self.open_files[self.selected_file] {
             OpenFile::Settings => settings_panel(self, ctx),
             OpenFile::Index(index) => {
@@ -134,7 +127,6 @@ impl DatasheetApp {
             },
         };
     }
-
 
     pub fn save_current(&mut self) {
         let (extra_dir, intra_dir) = match self.open_files[self.selected_file] {
@@ -208,26 +200,58 @@ impl DatasheetApp {
         let _ = remove_file(format!("{}/{}.ron", self.working_dir[folder].path, self.working_dir[folder].unit_edit_data[file].prev_filename));
         self.working_dir[folder].units.remove(file);
         self.working_dir[folder].unit_edit_data.remove(file);
-        let index = OpenFile::Index((folder, file));
-        for (i, open_file) in self.open_files.iter().enumerate() {
-            if open_file == &index {
-                self.open_files.remove(i);
-                break;
-            }
-        }
-        for (i, index) in self.open_files.iter().enumerate() {
+
+        // find and delete
+        let mut to_remove = None;
+        for (i, index) in self.open_files.iter_mut().enumerate() {
             match index {
-                OpenFile::Index(index) => {
-                    if index == &(folder, file) {
-                        self.open_files.remove(i);
-                        break;
+                OpenFile::Index((j, k)) => {
+                    if *j == folder {
+                        if *k == file {
+                            to_remove = Some(i);
+                        } else if *k > file {
+                            *k -= 1;
+                        }
                     }
                 },
                 _ => return
             }
         }
+        if let Some(index) = to_remove {
+            self.open_files.remove(index);
+            if (index < self.selected_file) || (index == self.selected_file && index != 0) {
+                self.selected_file -=1;
+            }
+        }
+
+        
+        
     }
 
+    fn delete_folder(&mut self, folder: usize) {
+        
+        let _ = remove_dir_all(self.working_dir[folder].path.clone());
+        self.working_dir.remove(folder);
+ 
+        // find and delete
+        let mut to_remove = Vec::new();
+        for (i, index) in self.open_files.iter_mut().enumerate() {
+            match index {
+                OpenFile::Index((j, _)) => {
+                    if *j == folder {
+                        to_remove.push(i)
+                    }
+                },
+                _ => return
+            }
+        }
+        for (i, index) in to_remove.iter().enumerate() {
+            self.open_files.remove(index - i);
+            if (index - i < self.selected_file) || (index - i == self.selected_file && index - i != 0) {
+                self.selected_file -=1;
+            }
+        }
+    }
 
     pub fn get_settings(&self) -> &DatasheetAppSettings {
         if let Some(settings) = &self.folder_settings {
@@ -367,8 +391,8 @@ impl App for DatasheetApp {
                             for (j, unit) in folder.units.iter().enumerate() {
                                 // hightlighting
                                 let selected: bool;
-                                if let Some(index) = self.deleting {
-                                    if index == (i, j) {
+                                if let Some((index, folder)) = self.deleting {
+                                    if !folder && index == (i, j) {
                                         ui.style_mut().visuals.selection.bg_fill = Color32::RED;
                                         selected = true;
                                     } else {selected = false;}
@@ -392,7 +416,7 @@ impl App for DatasheetApp {
                                 }
                                 unit_label.context_menu(|ui| {
                                     if ui.selectable_label(false, "Delete Unit").clicked() {
-                                        self.deleting = Some((i, j));
+                                        self.deleting = Some(((i, j), false));
                                         ui.close_menu();
                                     }
                                     if ui.selectable_label(false, "Duplicate").clicked() {
@@ -426,6 +450,9 @@ impl App for DatasheetApp {
                             self.new_unit.0 ^= true;
                             self.new_unit.1 = i;
                             self.new_unit.2 = "".to_string();
+                        }
+                        if ui.selectable_label(false, "Delete Folder").clicked() {
+                            self.deleting = Some(((i, 0), true));
                         }
                     });
                 }
@@ -541,15 +568,27 @@ impl App for DatasheetApp {
             }
         }
 
-        if let Some((i, j)) = self.deleting {
+        if let Some(((i, j), folder)) = self.deleting {
             let mut result = None;
-            pop_up_menus::delete_window(&ctx, &mut result);
-            if let Some(delete) = result {
+            if folder {
+                pop_up_menus::delete_folder_window(&ctx, &mut result);
+                if let Some(delete) = result {
+                if delete {
+                    self.delete_folder(i);
+                }
+                self.deleting = None;
+                }
+            } else {
+                pop_up_menus::delete_unit_window(&ctx, &mut result);
+                if let Some(delete) = result {
                 if delete {
                     self.delete_unit(i, j);
                 }
                 self.deleting = None;
+                }
             }
+            
+            
         }
 
         if self.new_folder.0 {

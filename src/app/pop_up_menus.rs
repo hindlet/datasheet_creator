@@ -24,8 +24,8 @@ pub fn quit_menu(ctx: &Context, result: &mut Option<bool>) {
     });
 }
 
-pub fn delete_window(ctx: &Context, result: &mut Option<bool>) {
-    egui::Window::new("Confirm Deletion?")
+pub fn delete_unit_window(ctx: &Context, result: &mut Option<bool>) {
+    egui::Window::new("Delete Unit?")
     .collapsible(false)
     .resizable(false)
     .show(ctx, |ui| {
@@ -166,5 +166,23 @@ pub fn export_window(ctx: &Context, result: &mut Option<bool>, export_type: &mut
         });
 
 
+    });
+}
+
+
+pub fn delete_folder_window(ctx: &Context, result: &mut Option<bool>) {
+    egui::Window::new("Delete Folder?")
+    .collapsible(false)
+    .resizable(false)
+    .show(ctx, |ui| {
+        ui.label("WARNING: THIS ACTION CANNOT BE UNDONE");
+        ui.horizontal(|ui| {
+            if ui.button("Cancel").clicked() {
+                *result = Some(false);
+            }
+            if ui.button("Confirm").clicked() {
+                *result = Some(true);
+            }
+        });
     });
 }

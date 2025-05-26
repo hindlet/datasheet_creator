@@ -14,3 +14,5 @@
   - [ ] Wargear Abilities
 - [x] Clicking Button Closes Open Window
 - [x] Context menu on folders
+  - [x] Delete Folders
+- [x] Fixed unit deletion
