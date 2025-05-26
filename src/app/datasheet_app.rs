@@ -14,7 +14,7 @@ use super::settings::DatasheetAppSettings;
 
 
 
-const CURRENT_VERSION: &str = "v1.2";
+const CURRENT_VERSION: &str = "v1.3";
 
 #[derive(PartialEq)]
 pub enum OpenFile {
