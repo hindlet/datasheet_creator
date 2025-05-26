@@ -362,7 +362,7 @@ impl App for DatasheetApp {
                 ui.horizontal(|ui| {
                     
 
-                    if ui.button("New Folder").clicked() {
+                    if ui.button("New Subfolder").clicked() {
                         self.new_folder.0 ^= true;
                         self.new_folder.1 = "".to_string();
                     }
@@ -451,7 +451,7 @@ impl App for DatasheetApp {
                             self.new_unit.1 = i;
                             self.new_unit.2 = "".to_string();
                         }
-                        if ui.selectable_label(false, "Delete Folder").clicked() {
+                        if ui.selectable_label(false, "Delete Subfolder").clicked() {
                             self.deleting = Some(((i, 0), true));
                         }
                     });
@@ -613,7 +613,7 @@ impl App for DatasheetApp {
                     self.new_unit.0 = false;
                 }
             } else {
-                egui::Window::new("Please add Folders Before Making Units")
+                egui::Window::new("Please add Subfolders Before Making Units")
                 .collapsible(false)
                 .resizable(false)
                 .show(ctx, |ui| {

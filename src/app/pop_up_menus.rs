@@ -43,7 +43,7 @@ pub fn delete_unit_window(ctx: &Context, result: &mut Option<bool>) {
 
 
 pub fn folder_creation_window(ctx: &Context, result: &mut Option<bool>, name: &mut String) {
-    egui::Window::new("Create a new Folder?")
+    egui::Window::new("Create a new Subfolder?")
     .collapsible(false)
     .resizable(false)
     .show(ctx, |ui| {
@@ -171,7 +171,7 @@ pub fn export_window(ctx: &Context, result: &mut Option<bool>, export_type: &mut
 
 
 pub fn delete_folder_window(ctx: &Context, result: &mut Option<bool>) {
-    egui::Window::new("Delete Folder?")
+    egui::Window::new("Delete Subfolder?")
     .collapsible(false)
     .resizable(false)
     .show(ctx, |ui| {
