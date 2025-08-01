@@ -9,3 +9,4 @@
   - [ ] Wargear Options
   - [ ] Default Wargear
   - [ ] Wargear Abilities
+- [ ] Only render sections where they exist

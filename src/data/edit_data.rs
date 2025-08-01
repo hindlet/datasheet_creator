@@ -101,9 +101,8 @@ pub struct UnitEditData {
     pub has_damaged: bool,
     pub damaged: u32,
 
-    pub composition: Vec<(u32, u32)>,
 
-    pub can_lead: bool,
+    pub can_lead: bool, 
     pub leader: Vec<String>,
 
 
@@ -158,13 +157,14 @@ impl From<(&Unit, String)> for UnitEditData {
             has_damaged: value.damaged.is_some(),
             damaged: value.damaged.unwrap_or(4),
 
-            composition: value.composition.clone(),
 
             can_lead: value.leader.is_some(),
             leader: value.leader.clone().unwrap_or(Vec::new()),
 
             has_wargear_options: false,
             wargear_options: Vec::new(),
+
+
 
         }
     }
@@ -222,12 +222,13 @@ impl Into<Unit> for UnitEditData {
             } else {
                 None
             },
-            composition: self.composition,
             leader: if self.can_lead {
                 Some(self.leader)
             } else {
                 None
             },
+
+            ..Default::default()
         }
     }
 }

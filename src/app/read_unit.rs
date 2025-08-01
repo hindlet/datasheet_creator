@@ -147,123 +147,130 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
         })
     });
         
+    
     egui::CentralPanel::default().show(ctx, |ui| {
-        TableBuilder::new(ui)
-            .id_salt(1)
-            .striped(true)
-            .resizable(false)
-            .column(Column::auto().at_least(400.0))
-            .column(Column::auto().at_least(75.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-            .header(20.0, |mut header| {
-                for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
-                    header.col(|ui| {
-                        paint_bg(ui);
-                        ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
-                    });
-                }
-            })
-            .body(|mut body| {
-                for weapon in unit.ranged_weapons.iter() {
-                    let data = weapon.get_render_data();
-                    let has_keywords = data.7 != "[]";
-                    let height = if has_keywords{30.0} else {20.0};
+        if unit.ranged_weapons.len() > 0 {
+            TableBuilder::new(ui)
+                .id_salt(1)
+                .striped(true)
+                .resizable(false)
+                .column(Column::auto().at_least(400.0))
+                .column(Column::auto().at_least(75.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .header(20.0, |mut header| {
+                    for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
+                        header.col(|ui| {
+                            paint_bg(ui);
+                            ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
+                        });
+                    }
+                })
+                .body(|mut body| {
+                    for weapon in unit.ranged_weapons.iter() {
+                        let data = weapon.get_render_data();
+                        let has_keywords = data.7 != "[]";
+                        let height = if has_keywords{30.0} else {20.0};
 
-                    body.row(height, |mut row| {
-                        row.col(|ui| {
-                            if has_keywords {
-                                ui.vertical(|ui| {
+                        body.row(height, |mut row| {
+                            row.col(|ui| {
+                                if has_keywords {
+                                    ui.vertical(|ui| {
+                                        ui.label(data.0);
+                                        ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
+                                    });
+                                } else {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
-                                });
-                            } else {
-                                ui.label(data.0);
-                            }
+                                }
+                            });
+                            row.col(|ui| {
+                                ui.label(data.1);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.2);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.3);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.4.to_string());
+                            });
+                            row.col(|ui| {
+                                ui.label(data.5);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.6);
+                            });
                         });
-                        row.col(|ui| {
-                            ui.label(data.1);
+                    }
+                });
+            ui.separator();
+        }
+        
+        if unit.melee_weapons.len() > 0 {
+            TableBuilder::new(ui)
+                .id_salt(2)
+                .striped(true)
+                .resizable(false)
+                .column(Column::auto().at_least(400.0))
+                .column(Column::auto().at_least(75.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(40.0))
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .header(20.0, |mut header| {
+                    for col_header in ["Melee Weapons", "Range", "A", "WS", "S", "AP", "D"] {
+                        header.col(|ui| {
+                            paint_bg(ui);
+                            ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
                         });
-                        row.col(|ui| {
-                            ui.label(data.2);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.3);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.4.to_string());
-                        });
-                        row.col(|ui| {
-                            ui.label(data.5);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.6);
-                        });
-                    });
-                }
-            });
-        ui.separator();
-        TableBuilder::new(ui)
-            .id_salt(2)
-            .striped(true)
-            .resizable(false)
-            .column(Column::auto().at_least(400.0))
-            .column(Column::auto().at_least(75.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .column(Column::auto().at_least(40.0))
-            .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-            .header(20.0, |mut header| {
-                for col_header in ["Melee Weapons", "Range", "A", "WS", "S", "AP", "D"] {
-                    header.col(|ui| {
-                        paint_bg(ui);
-                        ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
-                    });
-                }
-            })
-            .body(|mut body| {
-                for weapon in unit.melee_weapons.iter() {
-                    let data = weapon.get_render_data();
-                    let has_keywords = data.7 != "[]";
-                    let height = if has_keywords{30.0} else {20.0};
+                    }
+                })
+                .body(|mut body| {
+                    for weapon in unit.melee_weapons.iter() {
+                        let data = weapon.get_render_data();
+                        let has_keywords = data.7 != "[]";
+                        let height = if has_keywords{30.0} else {20.0};
 
-                    body.row(height, |mut row| {
-                        row.col(|ui| {
-                            if has_keywords {
-                                ui.vertical(|ui| {
+                        body.row(height, |mut row| {
+                            row.col(|ui| {
+                                if has_keywords {
+                                    ui.vertical(|ui| {
+                                        ui.label(data.0);
+                                        ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
+                                    });
+                                } else {
                                     ui.label(data.0);
-                                    ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
-                                });
-                            } else {
-                                ui.label(data.0);
-                            }
+                                }
+                            });
+                            row.col(|ui| {
+                                ui.label(data.1);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.2);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.3);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.4.to_string());
+                            });
+                            row.col(|ui| {
+                                ui.label(data.5);
+                            });
+                            row.col(|ui| {
+                                ui.label(data.6);
+                            });
                         });
-                        row.col(|ui| {
-                            ui.label(data.1);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.2);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.3);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.4.to_string());
-                        });
-                        row.col(|ui| {
-                            ui.label(data.5);
-                        });
-                        row.col(|ui| {
-                            ui.label(data.6);
-                        });
-                    });
-                }
-            });
+                    }
+                });
+        }
+        
     });
 }
