@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use regex::Regex;
 
-#[derive(Debug, Deserialize, Clone, Copy, Serialize)]
+#[derive(Debug, Deserialize, Clone, Copy, Serialize, PartialEq)]
 pub enum Dice {
     D3,
     D6
@@ -20,7 +20,7 @@ impl Dice {
 
 
 
-#[derive(Debug, Deserialize, Clone, Copy, Serialize)]
+#[derive(Debug, Deserialize, Clone, Copy, Serialize, PartialEq)]
 pub enum VariableValue {
     Set(u32),
     Rolled(u32, Dice, u32)

@@ -1,3 +1,5 @@
+use crate::data::abilities::CoreAbility;
+
 use super::{unit_composition::UnitComposition, unit_stats::UnitStats, Ability, Wargear, WargearOption, Weapon, WeaponRenderTuple};
 use serde::{Deserialize, Serialize};
 use tera::Context;
@@ -12,7 +14,7 @@ pub struct Unit {
     pub melee_weapons: Vec<Weapon>,
 
     pub faction_ability: Option<String>,
-    pub core_abilities: Vec<String>,
+    pub core_abilities: Vec<CoreAbility>,
     pub unique_abilities: Vec<Ability>,
 
     pub faction_keyword: String,
@@ -37,7 +39,7 @@ impl Default for Unit {
             melee_weapons: Vec::new(),
 
             faction_ability: None,
-            core_abilities: Vec::new(),
+            core_abilities: vec![CoreAbility::None],
             unique_abilities: Vec::new(),
 
             faction_keyword: "".to_string(),

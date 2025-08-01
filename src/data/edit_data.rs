@@ -75,7 +75,7 @@ impl Into<Weapon> for WeaponEditData {
 pub struct UnitEditData {
     pub name: String,
     pub filename: String,
-    pub prev_filename: String,
+    pub prev_filename: String, // hidden from user
     pub crusader: bool,
 
     pub movement: u32,
@@ -90,25 +90,18 @@ pub struct UnitEditData {
     pub ranged_weapons: Vec<WeaponEditData>,
     pub melee_weapons: Vec<WeaponEditData>,
 
-    pub has_faction_ability: bool,
-    pub faction_ability: String,
+    pub faction_ability: (bool, String),
 
     pub core_abilities: Vec<String>,
     pub unique_abilities: Vec<Ability>,
     pub faction_keyword: String,
     pub keywords: Vec<String>,
 
-    pub has_damaged: bool,
-    pub damaged: u32,
+    pub damaged: (bool, u32),
 
+    pub leader: (bool, Vec<String>),
 
-    pub can_lead: bool, 
-    pub leader: Vec<String>,
-
-
-    pub has_wargear_options: bool,
-    pub wargear_options: Vec<WargearOption>
-
+    pub wargear_options: (bool, Vec<WargearOption>),
 }
 
 impl From<(&Unit, String)> for UnitEditData {

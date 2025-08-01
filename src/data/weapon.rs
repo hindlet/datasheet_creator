@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::abilities::WeaponAbility;
+
 use super::variable_val::VariableValue;
 
 
@@ -12,7 +14,7 @@ pub enum Range {
 impl Range {
     pub fn to_string(&self) -> String {
         match self {
-            Range::Melee => return "melee".to_string(),
+            Range::Melee => return "Melee".to_string(),
             Range::Ranged(range) => return format!("{}\"", range)
         }
     }
@@ -28,7 +30,7 @@ pub struct Weapon {
     pub strength: u32,
     pub ap: i32,
     pub damage: VariableValue,
-    pub keywords: Vec<String>
+    pub keywords: Vec<WeaponAbility>
 }
 
 pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);
@@ -36,13 +38,8 @@ pub type WeaponRenderTuple = (String, String, String, String, u32, String, Strin
 impl Weapon {
 
     pub fn get_render_data(&self) -> WeaponRenderTuple {
-        let mut cased_keywords = Vec::new();
-        for keyword in self.keywords.iter() {
-            cased_keywords.push(keyword.to_uppercase());
-        }
-
         let skill: String;
-        if cased_keywords.contains(&"TORRENT".to_string()) {
+        if self.keywords.contains(&WeaponAbility::Torrent) {
             skill = "N/A".to_string();
         } else {
             skill = format!("{}+", self.skill)
@@ -68,16 +65,16 @@ impl Weapon {
     }
 
     pub fn format_keywords(&self) -> String{
+        if self.keywords.len() == 0 {return "[]".to_string();} // zero keywords case
         let mut keywords: String = "[".to_string();
 
-        let last = self.keywords.len().checked_sub(1).unwrap_or(0);
-        for (i, keyword) in self.keywords.iter().enumerate() {
-            keywords += &keyword.to_uppercase();
-            if i != last {
-                keywords += ", ";
-            }
+        for keyword in self.keywords.iter() {
+            if keyword == &WeaponAbility::None {continue;}
+            keywords += &keyword.to_string();
+            keywords += ", ";
         }
 
-        return keywords + "]";
+        let i = keywords.len() - 2; // remove the last comma + space
+        return keywords[..i].to_string() + "]";
     }
 }
