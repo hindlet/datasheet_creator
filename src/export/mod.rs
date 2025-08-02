@@ -35,7 +35,7 @@ impl ExportType {
 
 
 pub struct ExportTemplates {
-    latex: String,
+    // latex: String,
     html: Tera
 }
 
@@ -43,13 +43,13 @@ pub struct ExportTemplates {
 pub fn load_export_templates() -> ExportTemplates {
     let templates = NamedArchive::load(include_dir!("templates"));
 
-    let latex_template = {
-        let data = templates.get("template.tex").unwrap();
-        match str::from_utf8(data) {
-            Ok(v) => v,
-            Err(e) => panic!("Invalid UTF-8 sequence in Latex Template: {}", e)
-        }
-    };
+    // let latex_template = {
+    //     let data = templates.get("template.tex").unwrap();
+    //     match str::from_utf8(data) {
+    //         Ok(v) => v,
+    //         Err(e) => panic!("Invalid UTF-8 sequence in Latex Template: {}", e)
+    //     }
+    // };
 
     let html_template = {
         let data = templates.get("template.html").unwrap();
@@ -66,7 +66,7 @@ pub fn load_export_templates() -> ExportTemplates {
 
 
     ExportTemplates {
-        latex: latex_template.to_string(),
+        // latex: latex_template.to_string(),
         html: html_template
     }
 }

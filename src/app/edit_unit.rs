@@ -1,9 +1,9 @@
 use std::ops::RangeInclusive;
 
-use egui::{text::{CCursor, CCursorRange}, Color32, ComboBox, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
+use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
 use egui_extras::{Column, TableBuilder};
 
-use crate::data::{Ability, CoreAbility, Range, Unit, UnitEditData, UnitStats, VariableValue, WargearOption, Weapon, WeaponAbility, WeaponEditData};
+use crate::data::{Ability, CoreAbility, UnitEditData, VariableValue, WeaponAbility, WeaponEditData};
 
 
 

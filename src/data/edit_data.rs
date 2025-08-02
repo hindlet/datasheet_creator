@@ -1,6 +1,6 @@
 use crate::data::abilities::{CoreAbility, WeaponAbility};
 
-use super::{Ability, Range, Unit, UnitStats, VariableValue, WargearOption, Weapon};
+use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
 #[derive(Clone)]
 pub struct WeaponEditData {
@@ -96,7 +96,7 @@ pub struct UnitEditData {
 
     pub leader: (bool, Vec<String>),
 
-    pub wargear_options: (bool, Vec<WargearOption>),
+    // pub wargear_options: (bool, Vec<WargearOption>),
 }
 
 impl From<(&Unit, String)> for UnitEditData {
@@ -145,7 +145,7 @@ impl From<(&Unit, String)> for UnitEditData {
 
             leader: (value.leader.is_some(), value.leader.clone().unwrap_or(Vec::new())),
 
-            wargear_options: (false, Vec::new()),
+            // wargear_options: (false, Vec::new()),
         }
     }
 }

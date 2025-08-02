@@ -6,6 +6,7 @@ mod wargear;
 mod edit_data;
 mod unit_stats;
 mod unit_composition;
+mod crusade_upgrade;
 
 pub use unit::*;
 pub use weapon::*;

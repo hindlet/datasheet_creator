@@ -42,14 +42,14 @@ impl CoreAbility {
     pub fn to_string(&self) -> &str {
         match self {
             CoreAbility::DeepStrike => "Deep Strike",
-            CoreAbility::Scouts(x) => "Scouts",
+            CoreAbility::Scouts(_) => "Scouts",
             CoreAbility::Leader => "Leader",
             CoreAbility::Infiltrators => "Infiltrators",
             CoreAbility::LoneOp => "Lone Operative",
-            CoreAbility::FiringDeck(x) => "Firing Deck",
+            CoreAbility::FiringDeck(_) => "Firing Deck",
             CoreAbility::Stealth => "Stealth",
-            CoreAbility::FeelnoPain(x) => "Feel no Pain",
-            CoreAbility::DeadlyDemise(x) => "Deadly Demise",
+            CoreAbility::FeelnoPain(_) => "Feel no Pain",
+            CoreAbility::DeadlyDemise(_) => "Deadly Demise",
             CoreAbility::FightsFirst => "Fights First",
             CoreAbility::None => "NONE"
         }

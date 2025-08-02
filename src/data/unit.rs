@@ -1,6 +1,6 @@
 use crate::data::abilities::CoreAbility;
 
-use super::{unit_composition::UnitComposition, unit_stats::UnitStats, Ability, Wargear, WargearOption, Weapon, WeaponRenderTuple};
+use super::{unit_composition::UnitComposition, unit_stats::UnitStats, Ability, WargearOption, Weapon, WeaponRenderTuple};
 use serde::{Deserialize, Serialize};
 use tera::Context;
 
@@ -64,19 +64,19 @@ impl Unit {
         } else {return format!("{}", self.stats.movement);}
     }
 
-    pub fn format_keywords(&self) -> String{
-        let mut keywords: String = "".to_string();
+    // pub fn format_keywords(&self) -> String{
+    //     let mut keywords: String = "".to_string();
 
-        let last = self.keywords.len().checked_sub(1).unwrap_or(0);
-        for (i, keyword) in self.keywords.iter().enumerate() {
-            keywords += &keyword.to_uppercase();
-            if i != last {
-                keywords += ", ";
-            }
-        }
+    //     let last = self.keywords.len().checked_sub(1).unwrap_or(0);
+    //     for (i, keyword) in self.keywords.iter().enumerate() {
+    //         keywords += &keyword.to_uppercase();
+    //         if i != last {
+    //             keywords += ", ";
+    //         }
+    //     }
 
-        keywords
-    }
+    //     keywords
+    // }
 
     fn get_ranged_weapon_list(&self) -> Vec<WeaponRenderTuple> {
         let mut res = Vec::new();
