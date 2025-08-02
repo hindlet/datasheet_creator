@@ -1,3 +1,5 @@
+use crate::data::abilities::{CoreAbility, WeaponAbility};
+
 use super::{Ability, Range, Unit, UnitStats, VariableValue, WargearOption, Weapon};
 
 #[derive(Clone)]
@@ -9,7 +11,7 @@ pub struct WeaponEditData {
     pub strength: u32,
     pub ap: u32,
     pub damage: String,
-    pub keywords: Vec<String>
+    pub keywords: Vec<WeaponAbility>
 }
 
 impl Default for WeaponEditData {
@@ -47,13 +49,6 @@ impl From<&Weapon> for WeaponEditData {
 
 impl Into<Weapon> for WeaponEditData {
     fn into(self) -> Weapon {
-        let mut sanitised_keywords = Vec::new();
-        for keyword in self.keywords {
-            if !keyword.is_empty() {
-                sanitised_keywords.push(keyword);
-            }
-        }
-
         Weapon {
             name: self.name,
             range: if self.range == 0 {
@@ -66,7 +61,7 @@ impl Into<Weapon> for WeaponEditData {
             strength: self.strength,
             ap: self.ap as i32,
             damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
-            keywords: sanitised_keywords
+            keywords: self.keywords
         }
     }
 }
@@ -92,7 +87,7 @@ pub struct UnitEditData {
 
     pub faction_ability: (bool, String),
 
-    pub core_abilities: Vec<String>,
+    pub core_abilities: Vec<CoreAbility>,
     pub unique_abilities: Vec<Ability>,
     pub faction_keyword: String,
     pub keywords: Vec<String>,
@@ -136,8 +131,7 @@ impl From<(&Unit, String)> for UnitEditData {
             ranged_weapons,
             melee_weapons,
 
-            has_faction_ability: value.faction_ability.is_some(),
-            faction_ability: value.faction_ability.clone().unwrap_or("".to_string()),
+            faction_ability: (value.faction_ability.is_some(), value.faction_ability.clone().unwrap_or("".to_string())),
 
             core_abilities: value.core_abilities.clone(),
 
@@ -147,18 +141,11 @@ impl From<(&Unit, String)> for UnitEditData {
 
             keywords: value.keywords.clone(),
 
-            has_damaged: value.damaged.is_some(),
-            damaged: value.damaged.unwrap_or(4),
+            damaged: (value.damaged.is_some(), value.damaged.unwrap_or(4)),
 
+            leader: (value.leader.is_some(), value.leader.clone().unwrap_or(Vec::new())),
 
-            can_lead: value.leader.is_some(),
-            leader: value.leader.clone().unwrap_or(Vec::new()),
-
-            has_wargear_options: false,
-            wargear_options: Vec::new(),
-
-
-
+            wargear_options: (false, Vec::new()),
         }
     }
 }
@@ -201,8 +188,8 @@ impl Into<Unit> for UnitEditData {
             },
             ranged_weapons,
             melee_weapons,
-            faction_ability: if self.has_faction_ability {
-                Some(self.faction_ability)
+            faction_ability: if self.faction_ability.0 {
+                Some(self.faction_ability.1)
             } else {
                 None
             },
@@ -210,13 +197,13 @@ impl Into<Unit> for UnitEditData {
             unique_abilities: self.unique_abilities,
             faction_keyword: self.faction_keyword,
             keywords: sanitised_keywords,
-            damaged: if self.has_damaged {
-                Some(self.damaged)
+            damaged: if self.damaged.0 {
+                Some(self.damaged.1)
             } else {
                 None
             },
-            leader: if self.can_lead {
-                Some(self.leader)
+            leader: if self.leader.0 {
+                Some(self.leader.1)
             } else {
                 None
             },

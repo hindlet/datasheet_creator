@@ -1,3 +1,4 @@
+use egui::{ComboBox, Ui};
 use serde::{Deserialize, Serialize};
 
 use crate::data::VariableValue;
@@ -9,7 +10,7 @@ pub struct Ability {
     pub description: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[derive(Debug, Deserialize, Serialize, Clone, Default, PartialEq)]
 pub enum CoreAbility {
     #[default]
     None,
@@ -26,20 +27,49 @@ pub enum CoreAbility {
 }
 
 impl CoreAbility {
-    pub fn to_string(&self) -> String {
+
+    pub fn to_render_string(&self) -> String {
         match self {
-            CoreAbility::DeepStrike => "Deep Strike".to_string(),
             CoreAbility::Scouts(x) => format!("Scouts {}\"", x),
-            CoreAbility::Leader => "Leader".to_string(),
-            CoreAbility::Infiltrators => "Infiltrators".to_string(),
-            CoreAbility::LoneOp => "Lone Operative".to_string(),
             CoreAbility::FiringDeck(x) => format!("Firing Deck {}", x),
-            CoreAbility::Stealth => "Stealth".to_string(),
             CoreAbility::FeelnoPain(x) => format!("Feel no Pain {}+", x),
             CoreAbility::DeadlyDemise(x) => format!("Deadly Demise {}", x.to_string()),
-            CoreAbility::FightsFirst => "Fights First".to_string(),
-            _ => "".to_string()
+            CoreAbility::None => "".to_string(),
+            _ => self.to_string().to_string()
         }
+    }
+
+    pub fn to_string(&self) -> &str {
+        match self {
+            CoreAbility::DeepStrike => "Deep Strike",
+            CoreAbility::Scouts(x) => "Scouts",
+            CoreAbility::Leader => "Leader",
+            CoreAbility::Infiltrators => "Infiltrators",
+            CoreAbility::LoneOp => "Lone Operative",
+            CoreAbility::FiringDeck(x) => "Firing Deck",
+            CoreAbility::Stealth => "Stealth",
+            CoreAbility::FeelnoPain(x) => "Feel no Pain",
+            CoreAbility::DeadlyDemise(x) => "Deadly Demise",
+            CoreAbility::FightsFirst => "Fights First",
+            CoreAbility::None => "NONE"
+        }
+    }
+
+    pub fn combo_box(&mut self, ui: &mut Ui, id: usize) {
+        ComboBox::from_id_salt(id)
+            .selected_text(format!("{}", self.to_string()))
+            .show_ui(ui, |ui| {
+                ui.selectable_value(self, CoreAbility::None, "NONE");
+                ui.selectable_value(self, CoreAbility::Scouts(1), "Scouts");
+                ui.selectable_value(self, CoreAbility::Leader, "Leader");
+                ui.selectable_value(self, CoreAbility::Infiltrators, "Infiltrators");
+                ui.selectable_value(self, CoreAbility::LoneOp, "Lone Operative");
+                ui.selectable_value(self, CoreAbility::FiringDeck(1), "Firing Deck");
+                ui.selectable_value(self, CoreAbility::Stealth, "Stealth");
+                ui.selectable_value(self, CoreAbility::FeelnoPain(6), "Feel no Pain");
+                ui.selectable_value(self, CoreAbility::DeadlyDemise(VariableValue::Set(1)), "Deadly Demise");
+                ui.selectable_value(self, CoreAbility::FightsFirst, "Fights First");
+            });
     }
 }
 
@@ -69,28 +99,85 @@ pub enum WeaponAbility {
 }
 
 impl WeaponAbility {
-    pub fn to_string(&self) -> String {
+    pub fn to_render_string(&self) -> String {
         match self {
-            WeaponAbility::Assault => "ASSAULT".to_string(),
             WeaponAbility::RapidFire(x) => format!("RAPID FIRE {}", x),
-            WeaponAbility::IgnoresCover => "IGNORES COVER".to_string(),
-            WeaponAbility::TwinLinked => "TWIN-LINKED".to_string(),
-            WeaponAbility::Pistol => "PISTOL".to_string(),
-            WeaponAbility::Torrent => "TORRENT".to_string(),
-            WeaponAbility::Lethal => "LETHAL".to_string(),
-            WeaponAbility::Lance => "LANCE".to_string(),
-            WeaponAbility::Indirect => "INDIRECT FIRE".to_string(),
-            WeaponAbility::Precision => "PRECISION".to_string(),
-            WeaponAbility::Blast => "BLAST".to_string(),
             WeaponAbility::Melta(x) => format!("MELTA {}", x),
-            WeaponAbility::Heavy => "HEAVY".to_string(),
-            WeaponAbility::Hazardous => "HAZARDOUS".to_string(),
-            WeaponAbility::Dev => "DEVASTATING WOUNDS".to_string(),
             WeaponAbility::Sustained(x) => format!("SUSTAINED HITS {}", x.to_string()),
-            WeaponAbility::ExtraAttacks => "EXTRA ATTACKS".to_string(),
-            WeaponAbility::AntiX(keyword, x) => format!("ANTI-{} {}+", keyword, x.clamp(&2, &6)),
-            WeaponAbility::OneShot => "ONE SHOT".to_string(),
-            _ => "".to_string()
+            WeaponAbility::AntiX(keyword, x) => format!("ANTI-{} {}+", keyword.to_uppercase(), x.clamp(&2, &6)),
+            WeaponAbility::None => "".to_string(),
+            _ => self.to_string().to_string()
         }
+    }
+
+    pub fn to_string(&self) -> &str {
+        match self {
+            WeaponAbility::Assault => "ASSAULT",
+            WeaponAbility::RapidFire(_) => "RAPID FIRE",
+            WeaponAbility::IgnoresCover => "IGNORES COVER",
+            WeaponAbility::TwinLinked => "TWIN-LINKED",
+            WeaponAbility::Pistol => "PISTOL",
+            WeaponAbility::Torrent => "TORRENT",
+            WeaponAbility::Lethal => "LETHAL HITS",
+            WeaponAbility::Lance => "LANCE",
+            WeaponAbility::Indirect => "INDIRECT FIRE",
+            WeaponAbility::Precision => "PRECISION",
+            WeaponAbility::Blast => "BLAST",
+            WeaponAbility::Melta(_) => "MELTA",
+            WeaponAbility::Heavy => "HEAVY",
+            WeaponAbility::Hazardous => "HAZARDOUS",
+            WeaponAbility::Dev => "DEVASTATING WOUNDS",
+            WeaponAbility::Sustained(_) => "SUSTAINED HITS",
+            WeaponAbility::ExtraAttacks => "EXTRA ATTACKS",
+            WeaponAbility::AntiX(_, _) => "ANTI-X",
+            WeaponAbility::OneShot => "ONE SHOT",
+            WeaponAbility::None => "NONE"
+        }
+    }
+
+    pub fn combo_box_ranged(&mut self, ui: &mut Ui, id: usize) {
+        ComboBox::from_id_salt(id)
+            .selected_text(format!("{}", self.to_string()))
+            .show_ui(ui, |ui| {
+                ui.selectable_value(self, WeaponAbility::None, "NONE");
+                ui.selectable_value(self, WeaponAbility::Assault, "ASSAULT");
+                ui.selectable_value(self, WeaponAbility::RapidFire(1), "RAPID FIRE");
+                ui.selectable_value(self, WeaponAbility::IgnoresCover, "IGNORES COVER");
+                ui.selectable_value(self, WeaponAbility::TwinLinked, "TWIN-LINKED");
+                ui.selectable_value(self, WeaponAbility::Pistol, "PISTOL");
+                ui.selectable_value(self, WeaponAbility::Torrent, "TORRENT");
+                ui.selectable_value(self, WeaponAbility::Lethal, "LETHAL HITS");
+                ui.selectable_value(self, WeaponAbility::Indirect, "INDIRECT");
+                ui.selectable_value(self, WeaponAbility::Precision, "PRECISION");
+                ui.selectable_value(self, WeaponAbility::Blast, "BLAST");
+                ui.selectable_value(self, WeaponAbility::Melta(1), "MELTA");
+                ui.selectable_value(self, WeaponAbility::Heavy, "HEAVY");
+                ui.selectable_value(self, WeaponAbility::Hazardous, "HAZARDOUS");
+                ui.selectable_value(self, WeaponAbility::Dev, "DEVASTATING WOUNDS");
+                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1)), "SUSTAINED HITS");
+                ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
+                ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");
+            });
+            
+    }
+
+    pub fn combo_box_melee(&mut self, ui: &mut Ui, id: usize) {
+        ComboBox::from_id_salt(id)
+            .selected_text(format!("{}", self.to_string()))
+            .show_ui(ui, |ui| {
+                ui.selectable_value(self, WeaponAbility::None, "NONE");
+                ui.selectable_value(self, WeaponAbility::IgnoresCover, "IGNORES COVER");
+                ui.selectable_value(self, WeaponAbility::TwinLinked, "TWIN-LINKED");
+                ui.selectable_value(self, WeaponAbility::Lethal, "LETHAL HITS");
+                ui.selectable_value(self, WeaponAbility::Lance, "LANCE");
+                ui.selectable_value(self, WeaponAbility::Precision, "PRECISION");
+                ui.selectable_value(self, WeaponAbility::Hazardous, "HAZARDOUS");
+                ui.selectable_value(self, WeaponAbility::Dev, "DEVASTATING WOUNDS");
+                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1)), "SUSTAINED HITS");
+                ui.selectable_value(self, WeaponAbility::ExtraAttacks, "EXTRA ATTACKS");
+                ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
+                ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");
+            });
+            
     }
 }

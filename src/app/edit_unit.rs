@@ -1,9 +1,9 @@
 use std::ops::RangeInclusive;
 
-use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
+use egui::{text::{CCursor, CCursorRange}, Color32, ComboBox, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
 use egui_extras::{Column, TableBuilder};
 
-use crate::data::{Ability, Range, Unit, UnitEditData, UnitStats, VariableValue, WargearOption, Weapon, WeaponEditData};
+use crate::data::{Ability, CoreAbility, Range, Unit, UnitEditData, UnitStats, VariableValue, WargearOption, Weapon, WeaponAbility, WeaponEditData};
 
 
 
@@ -179,15 +179,31 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
                                     if ui.button("+").on_hover_text("Add keyword").clicked() {
-                                        weapon.keywords.push("".to_string());
+                                        weapon.keywords.push(WeaponAbility::None);
                                     }
                                     let mut to_remove = Vec::new();
-                                    for (i, keyword) in weapon.keywords.iter_mut().enumerate() {
+                                    for (j, keyword) in weapon.keywords.iter_mut().enumerate() {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(150.0), ui);
-                                        // select_text_on_tab(keyword, ui).desired_width(80.0);
+                                        keyword.combo_box_ranged(ui, i * 50 + j);
+                                        match keyword {
+                                            WeaponAbility::Sustained(x) => {
+                                                
+                                            },
+                                            WeaponAbility::RapidFire(x) => {
+                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            },
+                                            WeaponAbility::AntiX(keyword, x) => {
+                                                select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword), ui);
+                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            },
+                                            WeaponAbility::Melta(x) => {
+                                                select_drag_value_with_range_on_tab( x, 1..=99, ui);
+                                            },
+                                            _ => {}
+                                        }
+                                    
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
                                         weapon.keywords.remove(i - j);
@@ -270,15 +286,31 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
                                     if ui.button("+").on_hover_text("Add keyword").clicked() {
-                                        weapon.keywords.push("".to_string());
+                                        weapon.keywords.push(WeaponAbility::None);
                                     }
                                     let mut to_remove = Vec::new();
-                                    for (i, keyword) in weapon.keywords.iter_mut().enumerate() {
+                                    for (j, keyword) in weapon.keywords.iter_mut().enumerate() {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
                                             to_remove.push(i);
                                         }
-                                        select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword).desired_width(150.0), ui);
-                                        // select_text_on_tab(keyword, ui).desired_width(80.0);
+                                        keyword.combo_box_melee(ui, i * 50 + j + 900000);
+                                        match keyword {
+                                            WeaponAbility::Sustained(x) => {
+                                                
+                                            },
+                                            WeaponAbility::RapidFire(x) => {
+                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            },
+                                            WeaponAbility::AntiX(keyword, x) => {
+                                                select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword), ui);
+                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            },
+                                            WeaponAbility::Melta(x) => {
+                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            },
+                                            _ => {}
+                                        }
+                                    
                                     }
                                     for (j, i) in to_remove.iter().enumerate() {
                                         weapon.keywords.remove(i - j);
@@ -302,14 +334,14 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
 
             ui.horizontal(|ui| {
                 ui.label("Has Faction Ability:");
-                ui.checkbox(&mut unit.has_faction_ability, "");
+                ui.checkbox(&mut unit.faction_ability.0, "");
             });
             
 
-            if unit.has_faction_ability {
+            if unit.faction_ability.0 {
                 ui.horizontal(|ui| {
                     ui.label("Faction Ability:");
-                    select_text_on_tab(unit.faction_ability.len(), egui::TextEdit::singleline(&mut unit.faction_ability), ui);
+                    select_text_on_tab(unit.faction_ability.1.len(), egui::TextEdit::singleline(&mut unit.faction_ability.1), ui);
                     // ui.text_edit_singleline(&mut unit.faction_ability);
                 });
             }
@@ -330,8 +362,22 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     if ui.button("X").on_hover_text("Delete").clicked() {
                                         to_remove.push(i);
                                     }
-                                    select_text_on_tab(ability.len(), egui::TextEdit::singleline(ability), ui);
-                                    // ui.text_edit_singleline(ability);
+                                    ability.combo_box(ui, i * 50000);
+                                    match ability {
+                                        CoreAbility::Scouts(x) => {
+                                            select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                        },
+                                        CoreAbility::FiringDeck(x) => {
+                                            select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                        },
+                                        CoreAbility::FeelnoPain(x) => {
+                                            select_drag_value_with_range_on_tab(x, 1..=6, ui);
+                                        },
+                                        CoreAbility::DeadlyDemise(x) => {
+                                            
+                                        },
+                                        _ => {}
+                                    }
                                 });
                             });
                         });
@@ -342,7 +388,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 });
 
             if ui.button("Add new core ability").clicked() {
-                unit.core_abilities.push("".to_string());
+                unit.core_abilities.push(CoreAbility::None);
             }
 
             TableBuilder::new(ui)

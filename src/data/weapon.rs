@@ -66,11 +66,12 @@ impl Weapon {
 
     pub fn format_keywords(&self) -> String{
         if self.keywords.len() == 0 {return "[]".to_string();} // zero keywords case
+        if self.keywords.len() == 1 && self.keywords[0] == WeaponAbility::None {return "[]".to_string();}
         let mut keywords: String = "[".to_string();
 
         for keyword in self.keywords.iter() {
             if keyword == &WeaponAbility::None {continue;}
-            keywords += &keyword.to_string();
+            keywords += &keyword.to_render_string();
             keywords += ", ";
         }
 

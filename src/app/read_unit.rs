@@ -86,9 +86,9 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                 let last = unit.core_abilities.len().checked_sub(1).unwrap_or(0);
                 for (i, ability) in unit.core_abilities.iter().enumerate() {
                     if i < last{
-                        ui.label(RichText::new(format!("{},", ability)).strong());
+                        ui.label(RichText::new(format!("{},", ability.to_render_string())).strong());
                     } else {
-                        ui.label(RichText::new(ability).strong());
+                        ui.label(RichText::new(ability.to_render_string()).strong());
                     }
                 }
             });

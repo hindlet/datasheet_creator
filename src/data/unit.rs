@@ -85,6 +85,7 @@ impl Unit {
         }
         res
     }
+
     fn get_melee_weapon_list(&self) -> Vec<WeaponRenderTuple> {
         let mut res = Vec::new();
         for weapon in self.melee_weapons.iter() {
