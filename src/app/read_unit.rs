@@ -200,15 +200,21 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    let iter = if unit.crusade_unit {unit.crusade_weapons.0.iter()} else {unit.ranged_weapons.iter()};
-                    for (weapon, count) in iter {
+                    let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
+                    for (weapon, count) in ranged.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
                         let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
-                                let title = if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
+                                let title = if weapon.charge_levels_info.0 {
+                                    if weapon.charge_levels_info.1.is_some() {
+                                        let (parent, parent_count) = &ranged[weapon.charge_levels_info.1.unwrap()];
+                                        if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
+                                    } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
+                                } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
+
                                 if has_keywords {
                                     ui.vertical(|ui| {
                                         ui.label(RichText::new(title).size(14.0));
@@ -264,15 +270,20 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    let iter = if unit.crusade_unit {unit.crusade_weapons.1.iter()} else {unit.melee_weapons.iter()};
-                    for (weapon, count) in iter {
+                    let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
+                    for (weapon, count) in melee.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
                         let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
-                                let title = if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
+                                let title = if weapon.charge_levels_info.0 {
+                                    if weapon.charge_levels_info.1.is_some() {
+                                        let (parent, parent_count) = &melee[weapon.charge_levels_info.1.unwrap()];
+                                        if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
+                                    } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
+                                } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
                                 if has_keywords {
                                     ui.vertical(|ui| {
                                         ui.label(RichText::new(title).size(14.0));

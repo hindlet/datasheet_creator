@@ -1,4 +1,6 @@
-use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod};
+use egui::{ComboBox, Ui};
+
+use crate::{data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod}, helper_funcs::select_text_on_tab};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -78,6 +80,30 @@ impl Into<Weapon> for WeaponEditData {
             keywords: keywords,
             charge_levels_info: self.charge_levels_info
         }
+    }
+}
+
+
+impl WeaponEditData {
+    pub fn charge_edit_section(&mut self, ui: &mut Ui, index: usize, weapons: &Vec<(WeaponEditData, u32)>, id: usize) {
+        ui.horizontal(|ui| {
+            ui.checkbox(&mut self.charge_levels_info.0, "");
+            if self.charge_levels_info.0 {
+                select_text_on_tab(self.charge_levels_info.2.len(), egui::TextEdit::singleline(&mut self.charge_levels_info.2).desired_width(40.0), ui);
+                let label = if self.charge_levels_info.1.is_none() {"Parent"} else {"Child"};
+                ComboBox::from_id_salt(id)
+                    .selected_text(label)
+                    .width(20.0)
+                    .show_ui(ui, |ui| {
+                        ui.selectable_value(&mut self.charge_levels_info.1, None, "Parent");
+                        for (i, weapon) in weapons.iter().enumerate() {
+                            if i == index {continue;}
+                            ui.selectable_value(&mut self.charge_levels_info.1, Some(i), &weapon.0.name);
+                        }
+                    });
+                
+            }
+        });
     }
 }
 
@@ -230,14 +256,14 @@ impl Into<Unit> for UnitEditData {
                         for (upgrade_count, upgrade) in upgrades.iter() {
                             let target = upgrade.target.as_ref().unwrap();
 
-                            if target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == index) && count > 0 {
+                            if target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == target.1) && count > 0 {
                                 let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
                                 crusade_ranged.push((Weapon {
                                     name: upgrade.name.clone(),
                                     range: weapon.range,
                                     attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
                                     skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
-                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.skill},
+                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.strength},
                                     ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
                                     damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
                                     keywords: if upgrade.precise() {
@@ -262,14 +288,14 @@ impl Into<Unit> for UnitEditData {
                         for (upgrade_count, upgrade) in upgrades.iter() {
                             let target = upgrade.target.as_ref().unwrap();
 
-                            if !target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == index) && count > 0 {
+                            if !target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == target.1) && count > 0 {
                                 let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
                                 crusade_ranged.push((Weapon {
                                     name: upgrade.name.clone(),
                                     range: weapon.range,
                                     attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
                                     skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
-                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.skill},
+                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.strength},
                                     ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
                                     damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
                                     keywords: if upgrade.precise() {

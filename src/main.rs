@@ -4,6 +4,7 @@ use include_assets::{include_dir, NamedArchive};
 mod data;
 mod app;
 mod export;
+mod helper_funcs;
 
 
 fn main() -> eframe::Result {

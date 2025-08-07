@@ -1,47 +1,11 @@
-use std::ops::RangeInclusive;
-
-use egui::{text::{CCursor, CCursorRange}, Color32, Context, DragValue, Response, RichText, TextEdit, Ui, Widget};
+use egui::{Color32, Context, RichText};
 use egui_extras::{Column, TableBuilder};
-
-use crate::data::{Ability, CoreAbility, CrusadeUpgrade, UnitEditData, VariableValue, WeaponAbility, WeaponEditData, WeaponMod};
-
+use crate::{data::{Ability, CoreAbility, CrusadeUpgrade, UnitEditData, VariableValue, WeaponAbility, WeaponEditData, WeaponMod}, helper_funcs::{select_drag_value_with_range_on_tab, select_text_on_tab}};
 
 
 
-fn select_text_on_tab(text_length: usize, text_edit: TextEdit, ui: &mut Ui) -> Response {
-    let mut text_edit = text_edit.show(ui);
-    if text_edit.response.gained_focus() && !text_edit.response.hovered() {
-        text_edit.state.cursor.set_char_range(Some(
-            CCursorRange::two(
-                CCursor::new(0), 
-                CCursor::new(text_length))
-            )
-        );
-        text_edit.state.store(ui.ctx(), text_edit.response.id)
-    }
-    text_edit.response
-}
 
 
-// .style()
-//                 .number_formatter
-//                 .format(value, auto_decimals..=max_decimals),
-fn select_drag_value_with_range_on_tab(val: &mut u32, range: RangeInclusive<u32>, ui: &mut Ui) -> Response{
-
-
-    let drag_value = DragValue::new(val).range(range).ui(ui);
-    if drag_value.gained_focus() && !drag_value.hovered() {
-        let mut state = TextEdit::load_state(ui.ctx(), drag_value.id).unwrap_or_default();
-        state.cursor.set_char_range(Some(
-            CCursorRange::two(
-                CCursor::new(0), 
-                CCursor::new(ui.style().number_formatter.format(*val as f64, 0..=0).len()))
-            )
-        );
-        state.store(ui.ctx(), drag_value.id)
-    }
-    drag_value
-}
 
 
 pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
@@ -122,7 +86,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .resizable(false)
                 .column(Column::auto().at_least(400.0))
                 .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(75.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(30.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
@@ -131,7 +96,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .column(Column::auto())
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    for col_header in ["Name", "Count", "Range", "A", "BS", "S", "AP", "D", "Keywords"] {
+                    for col_header in ["Name", "Count", "Range", "A", "WS", "S", "AP", "D", "Charge", "Keywords"] {
                         header.col(|ui| {
                             ui.strong(RichText::new(col_header).size(15.0));
                         });
@@ -139,6 +104,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 })
                 .body(|mut body| {
                     let mut to_remove = Vec::new();
+                    let weapons_list = &unit.ranged_weapons.clone();
                     for (i, (weapon, count)) in unit.ranged_weapons.iter_mut().enumerate() {
                         body.row(20.0, |mut row| {
                             row.col(|ui| {
@@ -179,6 +145,9 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_text_on_tab(weapon.damage.len(), egui::TextEdit::singleline(&mut weapon.damage), ui);
                                 // select_text_on_tab(&mut weapon.damage, ui);
                                 // ui.text_edit_singleline(&mut weapon.damage);
+                            });
+                            row.col(|ui| {
+                                weapon.charge_edit_section(ui, i, weapons_list, i * 50 + 10005000912);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
@@ -238,7 +207,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .resizable(false)
                 .column(Column::auto().at_least(400.0))
                 .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(75.0))
+                .column(Column::auto().at_least(40.0))
+                .column(Column::auto().at_least(30.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
                 .column(Column::auto().at_least(40.0))
@@ -247,7 +217,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .column(Column::auto())
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    for col_header in ["Name", "Count", "Range", "A", "WS", "S", "AP", "D", "Keywords"] {
+                    for col_header in ["Name", "Count", "Range", "A", "WS", "S", "AP", "D", "Charge", "Keywords"] {
                         header.col(|ui| {
                             ui.strong(RichText::new(col_header).size(15.0));
                         });
@@ -265,6 +235,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     select_text_on_tab(weapon.name.len(), egui::TextEdit::singleline(&mut weapon.name), ui);
                                 });
                             });
+                            
                             row.col(|ui| {
                                 select_drag_value_with_range_on_tab(count, 1..=300, ui);
                             });
@@ -295,6 +266,9 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_text_on_tab(weapon.damage.len(), egui::TextEdit::singleline(&mut weapon.damage), ui);
                                 // select_text_on_tab(&mut weapon.damage, ui);
                                 // ui.text_edit_singleline(&mut weapon.damage);
+                            });
+                            row.col(|ui| {
+                                ui.checkbox(&mut weapon.charge_levels_info.0, "");
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
