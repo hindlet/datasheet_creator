@@ -294,7 +294,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                                 }
                             });
                             row.col(|ui| {
-                                ui.label(data.1);
+                                ui.label("Melee");
                             });
                             row.col(|ui| {
                                 ui.label(data.2);

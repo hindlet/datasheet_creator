@@ -1,4 +1,3 @@
-use egui::Ui;
 use serde::{Deserialize, Serialize};
 
 use crate::data::abilities::WeaponAbility;

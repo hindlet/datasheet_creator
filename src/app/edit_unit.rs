@@ -550,7 +550,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                             });
                         }
                         for (j, i) in to_remove.iter().enumerate() {
-                            unit.unique_abilities.remove(i - j);
+                            unit.crusade_data.upgrades.remove(i - j);
                         }
                     });
 
