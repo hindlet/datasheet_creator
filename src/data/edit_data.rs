@@ -1,4 +1,4 @@
-use crate::data::abilities::{CoreAbility, WeaponAbility};
+use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -49,6 +49,17 @@ impl From<&Weapon> for WeaponEditData {
 
 impl Into<Weapon> for WeaponEditData {
     fn into(self) -> Weapon {
+        let mut keywords = Vec::new();
+        for keyword in self.keywords {
+            match keyword {
+                WeaponAbility::Sustained(_, text) => {
+                    let val = VariableValue::from_string(&text).unwrap_or(VariableValue::Set(1));
+                    keywords.push(WeaponAbility::Sustained(val, val.to_string()));
+                },
+                _ => keywords.push(keyword),
+            }
+        }
+
         Weapon {
             name: self.name,
             range: if self.range == 0 {
@@ -61,7 +72,7 @@ impl Into<Weapon> for WeaponEditData {
             strength: self.strength,
             ap: self.ap as i32,
             damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
-            keywords: self.keywords
+            keywords: keywords
         }
     }
 }
@@ -71,7 +82,7 @@ pub struct UnitEditData {
     pub name: String,
     pub filename: String,
     pub prev_filename: String, // hidden from user
-    pub crusader: bool,
+    
 
     pub movement: u32,
     pub toughness: u32,
@@ -82,8 +93,8 @@ pub struct UnitEditData {
     pub leadership: u32,
     pub objective_control: u32,
 
-    pub ranged_weapons: Vec<WeaponEditData>,
-    pub melee_weapons: Vec<WeaponEditData>,
+    pub ranged_weapons: Vec<(WeaponEditData, u32)>,
+    pub melee_weapons: Vec<(WeaponEditData, u32)>,
 
     pub faction_ability: (bool, String),
 
@@ -96,20 +107,21 @@ pub struct UnitEditData {
 
     pub leader: (bool, Vec<String>),
 
-    // pub wargear_options: (bool, Vec<WargearOption>),
+    pub crusader: bool,
+    pub crusade_data: CrusadeUnitData
 }
 
 impl From<(&Unit, String)> for UnitEditData {
     fn from((value, filename): (&Unit, String)) -> Self {
 
         let mut ranged_weapons = Vec::new();
-        for weapon in value.ranged_weapons.iter() {
-            ranged_weapons.push(WeaponEditData::from(weapon));
+        for (weapon, count) in value.ranged_weapons.iter() {
+            ranged_weapons.push((WeaponEditData::from(weapon), *count));
         }
 
         let mut melee_weapons = Vec::new();
-        for weapon in value.melee_weapons.iter() {
-            melee_weapons.push(WeaponEditData::from(weapon));
+        for (weapon, count) in value.melee_weapons.iter() {
+            melee_weapons.push((WeaponEditData::from(weapon), *count));
         }
         
 
@@ -117,7 +129,7 @@ impl From<(&Unit, String)> for UnitEditData {
             name: value.name.clone(),
             filename: filename.clone(),
             prev_filename: filename,
-            crusader: false,
+            
             
             movement: value.stats.movement,
             toughness: value.stats.toughness,
@@ -145,7 +157,8 @@ impl From<(&Unit, String)> for UnitEditData {
 
             leader: (value.leader.is_some(), value.leader.clone().unwrap_or(Vec::new())),
 
-            // wargear_options: (false, Vec::new()),
+            crusader: value.crusade_unit,
+            crusade_data: value.crusade_data.clone(),
         }
     }
 }
@@ -153,13 +166,13 @@ impl From<(&Unit, String)> for UnitEditData {
 impl Into<Unit> for UnitEditData {
     fn into(self) -> Unit {
         let mut ranged_weapons = Vec::new();
-        for weapon in self.ranged_weapons {
-            ranged_weapons.push(weapon.into());
+        for (weapon, count) in self.ranged_weapons {
+            ranged_weapons.push((weapon.into(), count));
         }
 
         let mut melee_weapons = Vec::new();
-        for weapon in self.melee_weapons {
-            melee_weapons.push(weapon.into());
+        for (weapon, count) in self.melee_weapons {
+            melee_weapons.push((weapon.into(), count));
         }
 
         
@@ -167,6 +180,17 @@ impl Into<Unit> for UnitEditData {
         for keyword in self.keywords {
             if !keyword.is_empty() {
                 sanitised_keywords.push(keyword.to_uppercase());
+            }
+        }
+
+        let mut core_abilities = Vec::new();
+        for ability in self.core_abilities {
+            match ability {
+                CoreAbility::DeadlyDemise(_, text) => {
+                    let val = VariableValue::from_string(&text).unwrap_or(VariableValue::Set(1));
+                    core_abilities.push(CoreAbility::DeadlyDemise(val, val.to_string()));
+                }
+                _ => {core_abilities.push(ability);}
             }
         }
 
@@ -193,7 +217,7 @@ impl Into<Unit> for UnitEditData {
             } else {
                 None
             },
-            core_abilities: self.core_abilities,
+            core_abilities: core_abilities,
             unique_abilities: self.unique_abilities,
             faction_keyword: self.faction_keyword,
             keywords: sanitised_keywords,

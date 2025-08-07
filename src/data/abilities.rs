@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::data::VariableValue;
 
 
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[derive(Debug, Deserialize, Serialize, Clone, Default, PartialEq)]
 pub struct Ability {
     pub name: String,
     pub description: String,
@@ -22,7 +22,7 @@ pub enum CoreAbility {
     FiringDeck(u32),
     Stealth,
     FeelnoPain(u32),
-    DeadlyDemise(VariableValue),
+    DeadlyDemise(VariableValue, String),
     FightsFirst
 }
 
@@ -33,7 +33,7 @@ impl CoreAbility {
             CoreAbility::Scouts(x) => format!("Scouts {}\"", x),
             CoreAbility::FiringDeck(x) => format!("Firing Deck {}", x),
             CoreAbility::FeelnoPain(x) => format!("Feel no Pain {}+", x),
-            CoreAbility::DeadlyDemise(x) => format!("Deadly Demise {}", x.to_string()),
+            CoreAbility::DeadlyDemise(x, _) => format!("Deadly Demise {}", x.to_string()),
             CoreAbility::None => "".to_string(),
             _ => self.to_string().to_string()
         }
@@ -49,7 +49,7 @@ impl CoreAbility {
             CoreAbility::FiringDeck(_) => "Firing Deck",
             CoreAbility::Stealth => "Stealth",
             CoreAbility::FeelnoPain(_) => "Feel no Pain",
-            CoreAbility::DeadlyDemise(_) => "Deadly Demise",
+            CoreAbility::DeadlyDemise(_, _) => "Deadly Demise",
             CoreAbility::FightsFirst => "Fights First",
             CoreAbility::None => "NONE"
         }
@@ -67,7 +67,7 @@ impl CoreAbility {
                 ui.selectable_value(self, CoreAbility::FiringDeck(1), "Firing Deck");
                 ui.selectable_value(self, CoreAbility::Stealth, "Stealth");
                 ui.selectable_value(self, CoreAbility::FeelnoPain(6), "Feel no Pain");
-                ui.selectable_value(self, CoreAbility::DeadlyDemise(VariableValue::Set(1)), "Deadly Demise");
+                ui.selectable_value(self, CoreAbility::DeadlyDemise(VariableValue::Set(1), "1".to_string()), "Deadly Demise");
                 ui.selectable_value(self, CoreAbility::FightsFirst, "Fights First");
             });
     }
@@ -92,7 +92,7 @@ pub enum WeaponAbility {
     Heavy,
     Hazardous,
     Dev,
-    Sustained(VariableValue),
+    Sustained(VariableValue, String),
     ExtraAttacks,
     AntiX(String, u32),
     OneShot,
@@ -103,7 +103,7 @@ impl WeaponAbility {
         match self {
             WeaponAbility::RapidFire(x) => format!("RAPID FIRE {}", x),
             WeaponAbility::Melta(x) => format!("MELTA {}", x),
-            WeaponAbility::Sustained(x) => format!("SUSTAINED HITS {}", x.to_string()),
+            WeaponAbility::Sustained(x, _) => format!("SUSTAINED HITS {}", x.to_string()),
             WeaponAbility::AntiX(keyword, x) => format!("ANTI-{} {}+", keyword.to_uppercase(), x.clamp(&2, &6)),
             WeaponAbility::None => "".to_string(),
             _ => self.to_string().to_string()
@@ -127,7 +127,7 @@ impl WeaponAbility {
             WeaponAbility::Heavy => "HEAVY",
             WeaponAbility::Hazardous => "HAZARDOUS",
             WeaponAbility::Dev => "DEVASTATING WOUNDS",
-            WeaponAbility::Sustained(_) => "SUSTAINED HITS",
+            WeaponAbility::Sustained(_, _) => "SUSTAINED HITS",
             WeaponAbility::ExtraAttacks => "EXTRA ATTACKS",
             WeaponAbility::AntiX(_, _) => "ANTI-X",
             WeaponAbility::OneShot => "ONE SHOT",
@@ -154,7 +154,7 @@ impl WeaponAbility {
                 ui.selectable_value(self, WeaponAbility::Heavy, "HEAVY");
                 ui.selectable_value(self, WeaponAbility::Hazardous, "HAZARDOUS");
                 ui.selectable_value(self, WeaponAbility::Dev, "DEVASTATING WOUNDS");
-                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1)), "SUSTAINED HITS");
+                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1), "1".to_string()), "SUSTAINED HITS");
                 ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
                 ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");
             });
@@ -173,7 +173,7 @@ impl WeaponAbility {
                 ui.selectable_value(self, WeaponAbility::Precision, "PRECISION");
                 ui.selectable_value(self, WeaponAbility::Hazardous, "HAZARDOUS");
                 ui.selectable_value(self, WeaponAbility::Dev, "DEVASTATING WOUNDS");
-                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1)), "SUSTAINED HITS");
+                ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1), "1".to_string()), "SUSTAINED HITS");
                 ui.selectable_value(self, WeaponAbility::ExtraAttacks, "EXTRA ATTACKS");
                 ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
                 ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");

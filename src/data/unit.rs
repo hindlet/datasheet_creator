@@ -1,6 +1,6 @@
-use crate::data::abilities::CoreAbility;
+use crate::data::{abilities::CoreAbility, crusade_data::CrusadeUnitData};
 
-use super::{unit_composition::UnitComposition, unit_stats::UnitStats, Ability, WargearOption, Weapon, WeaponRenderTuple};
+use super::{unit_composition::UnitComposition, unit_stats::UnitStats, Ability, Weapon, WeaponRenderTuple};
 use serde::{Deserialize, Serialize};
 use tera::Context;
 
@@ -9,9 +9,11 @@ use tera::Context;
 pub struct Unit {
     pub name: String,
     pub stats: UnitStats,
+   
 
-    pub ranged_weapons: Vec<Weapon>,
-    pub melee_weapons: Vec<Weapon>,
+    pub ranged_weapons: Vec<(Weapon, u32)>,
+    pub melee_weapons: Vec<(Weapon, u32)>,
+    
 
     pub faction_ability: Option<String>,
     pub core_abilities: Vec<CoreAbility>,
@@ -24,9 +26,13 @@ pub struct Unit {
     pub leader: Option<Vec<String>>,
 
     pub unit_comp: UnitComposition,
-    pub has_wargear_options: bool,
-    pub wargear_options: Vec<WargearOption>,
-    pub wargear_abilities: Vec<Ability>
+
+    #[serde(default)]
+    pub crusade_unit: bool,
+    #[serde(default)]
+    pub crusade_data: CrusadeUnitData,
+    #[serde(default)]
+    pub crusade_weapons: (Vec<(Weapon, u32)>, Vec<(Weapon, u32)>) // used for display in crusade, allows us to apply weapon upgrades
 }
 
 impl Default for Unit {
@@ -49,9 +55,10 @@ impl Default for Unit {
             leader: None,
 
             unit_comp: UnitComposition::default(),
-            has_wargear_options: false,
-            wargear_options: Vec::new(),
-            wargear_abilities: Vec::new(),
+
+            crusade_unit: false,
+            crusade_data: CrusadeUnitData::default(),
+            crusade_weapons: (Vec::new(), Vec::new())
         }
     }
 }
@@ -80,7 +87,7 @@ impl Unit {
 
     fn get_ranged_weapon_list(&self) -> Vec<WeaponRenderTuple> {
         let mut res = Vec::new();
-        for weapon in self.ranged_weapons.iter() {
+        for (weapon, _) in self.ranged_weapons.iter() {
             res.push(weapon.get_render_data());
         }
         res
@@ -88,7 +95,7 @@ impl Unit {
 
     fn get_melee_weapon_list(&self) -> Vec<WeaponRenderTuple> {
         let mut res = Vec::new();
-        for weapon in self.melee_weapons.iter() {
+        for (weapon, _) in self.melee_weapons.iter() {
             res.push(weapon.get_render_data());
         }
         res
