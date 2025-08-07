@@ -37,7 +37,9 @@ pub struct Weapon {
     #[serde(default)]
     pub damage: VariableValue,
     #[serde(default)]
-    pub keywords: Vec<WeaponAbility>
+    pub keywords: Vec<WeaponAbility>,
+    #[serde(default)]
+    pub charge_levels_info: (bool, Option<usize>, String) // has levels, option<parent index>, level name
 }
 
 pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);

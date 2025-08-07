@@ -1,4 +1,4 @@
-use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponModChange};
+use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod, WeaponModChange};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -11,7 +11,8 @@ pub struct WeaponEditData {
     pub strength: u32,
     pub ap: u32,
     pub damage: String,
-    pub keywords: Vec<WeaponAbility>
+    pub keywords: Vec<WeaponAbility>,
+    pub charge_levels_info: (bool, Option<usize>, String) // has levels, is parent, level name
 }
 
 impl Default for WeaponEditData {
@@ -24,7 +25,8 @@ impl Default for WeaponEditData {
             strength: 1,
             ap: 0,
             damage: "1".to_string(),
-            keywords: Vec::new()
+            keywords: Vec::new(),
+            charge_levels_info: (false, None, "".to_string())
         }
     }
 }
@@ -42,7 +44,8 @@ impl From<&Weapon> for WeaponEditData {
             strength: value.strength,
             ap: value.ap.abs() as u32,
             damage: value.damage.to_string(),
-            keywords: value.keywords.clone()
+            keywords: value.keywords.clone(),
+            charge_levels_info: value.charge_levels_info.clone()
         }
     }
 }
@@ -72,7 +75,8 @@ impl Into<Weapon> for WeaponEditData {
             strength: self.strength,
             ap: self.ap as i32,
             damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
-            keywords: keywords
+            keywords: keywords,
+            charge_levels_info: self.charge_levels_info
         }
     }
 }
@@ -198,7 +202,7 @@ impl Into<Unit> for UnitEditData {
         let mut crusade_melee = Vec::new();
         let mut crusade_data = self.crusade_data.clone();
         if self.crusader {
-            let mut upgrades = Vec::new();
+            let mut upgrades: Vec<(usize, WeaponMod)> = Vec::new();
             let mut ranged_upgrades = false;
             let mut melee_upgrades = true;
 
@@ -207,7 +211,13 @@ impl Into<Unit> for UnitEditData {
                     CrusadeUpgrade::WeaponMod(weapon_mod) => {
                         if let Some(target) = &weapon_mod.target {
                             if target.0 {ranged_upgrades = true} else {melee_upgrades = true}
-                            upgrades.push((target, weapon_mod.name.clone(), weapon_mod.change_one, weapon_mod.change_two));
+                            for upgrade in upgrades.iter_mut() {
+                                if &upgrade.1 == weapon_mod {
+                                    upgrade.0 += 1;
+                                    continue;
+                                }
+                            }
+                            upgrades.push((1, weapon_mod.clone()));
                         }
                     }
                     _ => {}
@@ -217,23 +227,27 @@ impl Into<Unit> for UnitEditData {
             if ranged_upgrades {
                 for (index, (weapon, count)) in ranged_weapons.iter().enumerate() {
                         let mut count = *count;
-                        for (target, name, change_one, change_two) in upgrades.iter() {
+                        for (upgrade_count, upgrade) in upgrades.iter() {
+                            let target = upgrade.target.as_ref().unwrap();
+
                             if target.0 && target.1 == index && count > 0 {
+                                let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
                                 crusade_ranged.push((Weapon {
-                                    name: name.clone(),
+                                    name: upgrade.name.clone(),
                                     range: weapon.range,
-                                    attacks: if *change_one == WeaponModChange::Attacks || *change_two == WeaponModChange::Attacks {weapon.attacks.add_one()} else {weapon.attacks},
-                                    skill: if *change_one == WeaponModChange::Skill || *change_two == WeaponModChange::Skill {weapon.skill - 1} else {weapon.skill},
-                                    strength: if *change_one == WeaponModChange::Strength || *change_two == WeaponModChange::Strength {weapon.strength + 1} else {weapon.skill},
-                                    ap: if *change_one == WeaponModChange::AP || *change_two == WeaponModChange::AP {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
-                                    damage: if *change_one == WeaponModChange::Damage || *change_two == WeaponModChange::Damage {weapon.damage.add_one()} else {weapon.damage},
-                                    keywords: if *change_one == WeaponModChange::Precise || *change_two == WeaponModChange::Precise {
+                                    attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
+                                    skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
+                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.skill},
+                                    ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
+                                    damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
+                                    keywords: if upgrade.precise() {
                                         let mut keywords = weapon.keywords.clone();
                                         keywords.push(WeaponAbility::Precise);
                                         keywords
                                     } else {weapon.keywords.clone()},
-                                }, 1));
-                                count -= 1;
+                                    charge_levels_info: weapon.charge_levels_info.clone()
+                                }, i));
+                                count -= i;
                             }  
                         }
                         if count > 0 {crusade_ranged.push((weapon.clone(), count));}
@@ -245,26 +259,30 @@ impl Into<Unit> for UnitEditData {
             if melee_upgrades {
                 for (index, (weapon, count)) in melee_weapons.iter().enumerate() {
                         let mut count = *count;
-                        for (target, name, change_one, change_two) in upgrades.iter() {
+                        for (upgrade_count, upgrade) in upgrades.iter() {
+                            let target = upgrade.target.as_ref().unwrap();
+
                             if !target.0 && target.1 == index && count > 0 {
-                                crusade_melee.push((Weapon {
-                                    name: name.clone(),
+                                let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
+                                crusade_ranged.push((Weapon {
+                                    name: upgrade.name.clone(),
                                     range: weapon.range,
-                                    attacks: if *change_one == WeaponModChange::Attacks || *change_two == WeaponModChange::Attacks {weapon.attacks.add_one()} else {weapon.attacks},
-                                    skill: if *change_one == WeaponModChange::Skill || *change_two == WeaponModChange::Skill {weapon.skill - 1} else {weapon.skill},
-                                    strength: if *change_one == WeaponModChange::Strength || *change_two == WeaponModChange::Strength {weapon.strength + 1} else {weapon.skill},
-                                    ap: if *change_one == WeaponModChange::AP || *change_two == WeaponModChange::AP {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
-                                    damage: if *change_one == WeaponModChange::Damage || *change_two == WeaponModChange::Damage {weapon.damage.add_one()} else {weapon.damage},
-                                    keywords: if *change_one == WeaponModChange::Precise || *change_two == WeaponModChange::Precise {
+                                    attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
+                                    skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
+                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.skill},
+                                    ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
+                                    damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
+                                    keywords: if upgrade.precise() {
                                         let mut keywords = weapon.keywords.clone();
                                         keywords.push(WeaponAbility::Precise);
                                         keywords
                                     } else {weapon.keywords.clone()},
-                                }, 1));
-                                count -= 1;
+                                    charge_levels_info: weapon.charge_levels_info.clone()
+                                }, i));
+                                count -= i;
                             }  
                         }
-                        if count > 0 {crusade_melee.push((weapon.clone(), count));}
+                        if count > 0 {crusade_ranged.push((weapon.clone(), count));}
                     }
             } else {
                 crusade_melee = melee_weapons.clone()

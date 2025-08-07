@@ -103,7 +103,7 @@ impl WeaponModChange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct WeaponMod {
     pub name: String,
     pub change_one: WeaponModChange,
@@ -119,6 +119,12 @@ impl Default for WeaponMod {
             change_two: WeaponModChange::Skill,
             target: None
         }
+    }
+}
+
+impl PartialEq for WeaponMod {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.target == other.target && ((self.change_one == other.change_one && self.change_two == other.change_two) || (self.change_two == other.change_one && self.change_one == other.change_two))
     }
 }
 
@@ -159,5 +165,29 @@ impl WeaponMod {
                     ui.selectable_value(&mut self.target, Some((false, index, weapon.0.name.clone())), weapon.0.name.clone());
                 }
             });
+    }
+
+    pub fn attacks(&self) -> bool {
+        self.change_one == WeaponModChange::Attacks || self.change_two == WeaponModChange::Attacks
+    }
+
+    pub fn skill(&self) -> bool {
+        self.change_one == WeaponModChange::Skill || self.change_two == WeaponModChange::Skill
+    }
+
+    pub fn strength(&self) -> bool {
+        self.change_one == WeaponModChange::Strength || self.change_two == WeaponModChange::Strength
+    }
+
+    pub fn ap(&self) -> bool {
+        self.change_one == WeaponModChange::AP || self.change_two == WeaponModChange::AP
+    }
+
+    pub fn damage(&self) -> bool {
+        self.change_one == WeaponModChange::Damage || self.change_two == WeaponModChange::Damage
+    }
+
+    pub fn precise(&self) -> bool {
+        self.change_one == WeaponModChange::Precise || self.change_two == WeaponModChange::Precise
     }
 }
