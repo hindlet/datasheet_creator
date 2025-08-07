@@ -547,7 +547,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         },
                                         CrusadeUpgrade::Relic(ability) => {
                                             ui.horizontal(|ui| {
-                                                select_text_on_tab(ability.name.len(), egui::TextEdit::multiline(&mut ability.name), ui);
+                                                select_text_on_tab(ability.name.len(), egui::TextEdit::singleline(&mut ability.name), ui);
                                             });
                                         },
                                         CrusadeUpgrade::WeaponMod(weapon_mod) => {
@@ -560,18 +560,15 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 row.col(|ui| {
                                     match upgrade {
                                         CrusadeUpgrade::BattleTrait(ability) => {
-                                            ui.horizontal(|ui| {
-                                                select_text_on_tab(ability.description.len(), egui::TextEdit::singleline(&mut ability.description), ui);
-                                            });
+                                            select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
                                         },
                                         CrusadeUpgrade::Relic(ability) => {
-                                            ui.horizontal(|ui| {
-                                                select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
-                                            });
+                                            select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
                                         },
                                         CrusadeUpgrade::WeaponMod(weapon_mod) => {
                                             ui.horizontal(|ui| {
-                                                weapon_mod.combo_boxes(ui, 8 + i * 3);
+                                                weapon_mod.combo_boxes(ui, 8 + i * 4);
+                                                weapon_mod.target_select(ui, 10 + i * 4, &unit.ranged_weapons, &unit.melee_weapons);
                                             });
                                         }
                                     }

@@ -96,6 +96,7 @@ pub enum WeaponAbility {
     ExtraAttacks,
     AntiX(String, u32),
     OneShot,
+    Precise, // Crusade Only
 }
 
 impl WeaponAbility {
@@ -131,7 +132,8 @@ impl WeaponAbility {
             WeaponAbility::ExtraAttacks => "EXTRA ATTACKS",
             WeaponAbility::AntiX(_, _) => "ANTI-X",
             WeaponAbility::OneShot => "ONE SHOT",
-            WeaponAbility::None => "NONE"
+            WeaponAbility::None => "NONE",
+            WeaponAbility::Precise => "PRECISE"
         }
     }
 

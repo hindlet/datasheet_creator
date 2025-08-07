@@ -1,4 +1,4 @@
-use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData};
+use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeUpgrade, WeaponModChange};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -165,12 +165,12 @@ impl From<(&Unit, String)> for UnitEditData {
 
 impl Into<Unit> for UnitEditData {
     fn into(self) -> Unit {
-        let mut ranged_weapons = Vec::new();
+        let mut ranged_weapons: Vec<(Weapon, u32)> = Vec::new();
         for (weapon, count) in self.ranged_weapons {
             ranged_weapons.push((weapon.into(), count));
         }
 
-        let mut melee_weapons = Vec::new();
+        let mut melee_weapons: Vec<(Weapon, u32)> = Vec::new();
         for (weapon, count) in self.melee_weapons {
             melee_weapons.push((weapon.into(), count));
         }
@@ -192,6 +192,84 @@ impl Into<Unit> for UnitEditData {
                 }
                 _ => {core_abilities.push(ability);}
             }
+        }
+
+        let mut crusade_ranged = Vec::new();
+        let mut crusade_melee = Vec::new();
+        if self.crusader {
+            let mut upgrades = Vec::new();
+            let mut ranged_upgrades = false;
+            let mut melee_upgrades = true;
+
+            for upgrade in self.crusade_data.upgrades.iter() {
+                match upgrade {
+                    CrusadeUpgrade::WeaponMod(weapon_mod) => {
+                        println!("A");
+                        if let Some(target) = &weapon_mod.target {
+                            if target.0 {ranged_upgrades = true} else {melee_upgrades = true}
+                            upgrades.push((target, weapon_mod.name.clone(), weapon_mod.change_one, weapon_mod.change_two));
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            if ranged_upgrades {
+                for (index, (weapon, count)) in ranged_weapons.iter().enumerate() {
+                        let mut count = *count;
+                        for (target, name, change_one, change_two) in upgrades.iter() {
+                            if target.0 && target.1 == index && count > 0 {
+                                crusade_ranged.push((Weapon {
+                                    name: name.clone(),
+                                    range: weapon.range,
+                                    attacks: if *change_one == WeaponModChange::Attacks || *change_two == WeaponModChange::Attacks {weapon.attacks.add_one()} else {weapon.attacks},
+                                    skill: if *change_one == WeaponModChange::Skill || *change_two == WeaponModChange::Skill {weapon.skill - 1} else {weapon.skill},
+                                    strength: if *change_one == WeaponModChange::Strength || *change_two == WeaponModChange::Strength {weapon.strength + 1} else {weapon.skill},
+                                    ap: if *change_one == WeaponModChange::AP || *change_two == WeaponModChange::AP {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
+                                    damage: if *change_one == WeaponModChange::Damage || *change_two == WeaponModChange::Damage {weapon.damage.add_one()} else {weapon.damage},
+                                    keywords: if *change_one == WeaponModChange::Precise || *change_two == WeaponModChange::Precise {
+                                        let mut keywords = weapon.keywords.clone();
+                                        keywords.push(WeaponAbility::Precise);
+                                        keywords
+                                    } else {weapon.keywords.clone()},
+                                }, 1));
+                                count -= 1;
+                            }  
+                        }
+                        if count > 0 {crusade_ranged.push((weapon.clone(), count));}
+                    }
+            } else {
+                crusade_ranged = ranged_weapons.clone()
+            }
+
+            if melee_upgrades {
+                for (index, (weapon, count)) in melee_weapons.iter().enumerate() {
+                        let mut count = *count;
+                        for (target, name, change_one, change_two) in upgrades.iter() {
+                            if !target.0 && target.1 == index && count > 0 {
+                                crusade_melee.push((Weapon {
+                                    name: name.clone(),
+                                    range: weapon.range,
+                                    attacks: if *change_one == WeaponModChange::Attacks || *change_two == WeaponModChange::Attacks {weapon.attacks.add_one()} else {weapon.attacks},
+                                    skill: if *change_one == WeaponModChange::Skill || *change_two == WeaponModChange::Skill {weapon.skill - 1} else {weapon.skill},
+                                    strength: if *change_one == WeaponModChange::Strength || *change_two == WeaponModChange::Strength {weapon.strength + 1} else {weapon.skill},
+                                    ap: if *change_one == WeaponModChange::AP || *change_two == WeaponModChange::AP {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
+                                    damage: if *change_one == WeaponModChange::Damage || *change_two == WeaponModChange::Damage {weapon.damage.add_one()} else {weapon.damage},
+                                    keywords: if *change_one == WeaponModChange::Precise || *change_two == WeaponModChange::Precise {
+                                        let mut keywords = weapon.keywords.clone();
+                                        keywords.push(WeaponAbility::Precise);
+                                        keywords
+                                    } else {weapon.keywords.clone()},
+                                }, 1));
+                                count -= 1;
+                            }  
+                        }
+                        if count > 0 {crusade_melee.push((weapon.clone(), count));}
+                    }
+            } else {
+                crusade_melee = melee_weapons.clone()
+            }
+            
         }
 
 
@@ -231,6 +309,10 @@ impl Into<Unit> for UnitEditData {
             } else {
                 None
             },
+
+            crusade_unit: self.crusader,
+            crusade_data: self.crusade_data,
+            crusade_weapons: (crusade_ranged, crusade_melee),
 
             ..Default::default()
         }

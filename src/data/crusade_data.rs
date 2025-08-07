@@ -1,4 +1,4 @@
-use crate::data::Ability;
+use crate::data::{Ability, WeaponEditData};
 use egui::{ComboBox, Ui};
 use serde::{Deserialize, Serialize};
 
@@ -53,7 +53,7 @@ impl CrusadeUpgrade {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Copy)]
 pub enum WeaponModChange {
     Attacks,
     Skill,
@@ -81,7 +81,7 @@ pub struct WeaponMod {
     pub name: String,
     pub change_one: WeaponModChange,
     pub change_two: WeaponModChange,
-    pub target: Option<(bool, usize)>
+    pub target: Option<(bool, usize, String)>
 }
 
 impl Default for WeaponMod {
@@ -116,6 +116,21 @@ impl WeaponMod {
                 if self.change_one != WeaponModChange::AP {ui.selectable_value(&mut self.change_two, WeaponModChange::AP, "AP");}
                 if self.change_one != WeaponModChange::Damage {ui.selectable_value(&mut self.change_two, WeaponModChange::Damage, "Damage");}
                 if self.change_one != WeaponModChange::Precise {ui.selectable_value(&mut self.change_two, WeaponModChange::Precise, "Precise");}
+            });
+    }
+
+    pub fn target_select(&mut self, ui: &mut Ui, id: usize, ranged_weapons: &Vec<(WeaponEditData, u32)>, melee_weapons: &Vec<(WeaponEditData, u32)>) {
+        let text = if self.target.is_none() {"None".to_string()} else {format!("{}", self.target.as_ref().unwrap().2)};
+        ComboBox::from_id_salt(id)
+            .selected_text(text)
+            .show_ui(ui, |ui| {
+                ui.selectable_value(&mut self.target, None, "None");
+                for (index, weapon) in ranged_weapons.iter().enumerate() {
+                    ui.selectable_value(&mut self.target, Some((true, index, weapon.0.name.clone())), weapon.0.name.clone());
+                }
+                for (index, weapon) in melee_weapons.iter().enumerate() {
+                    ui.selectable_value(&mut self.target, Some((false, index, weapon.0.name.clone())), weapon.0.name.clone());
+                }
             });
     }
 }

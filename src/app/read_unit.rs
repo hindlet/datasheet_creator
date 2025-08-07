@@ -193,17 +193,18 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    for (weapon, count) in unit.ranged_weapons.iter() {
+                    let iter = if unit.crusade_unit {unit.crusade_weapons.0.iter()} else {unit.melee_weapons.iter()};
+                    for (weapon, count) in iter {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
-                        let height = if has_keywords{30.0} else {20.0};
+                        let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
                                 let title = if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
                                 if has_keywords {
                                     ui.vertical(|ui| {
-                                        ui.label(title);
+                                        ui.label(RichText::new(title).size(14.0));
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {
@@ -256,17 +257,18 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    for (weapon, count) in unit.melee_weapons.iter() {
+                    let iter = if unit.crusade_unit {unit.crusade_weapons.1.iter()} else {unit.melee_weapons.iter()};
+                    for (weapon, count) in iter {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
-                        let height = if has_keywords{30.0} else {20.0};
+                        let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
                                 let title = if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
                                 if has_keywords {
                                     ui.vertical(|ui| {
-                                        ui.label(title);
+                                        ui.label(RichText::new(title).size(14.0));
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {

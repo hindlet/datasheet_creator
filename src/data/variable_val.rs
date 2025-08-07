@@ -59,6 +59,13 @@ impl VariableValue {
         return dice_and_const.is_match(string) || die_and_const.is_match(string) || dice_only.is_match(string) || die_only.is_match(string) || const_only.is_match(string);
     }
 
+    pub fn add_one(&self) -> VariableValue {
+        match self {
+            VariableValue::Set(x) => VariableValue::Set(x + 1),
+            VariableValue::Rolled(a, b, x) => VariableValue::Rolled(*a, *b, x + 1)
+        }
+    }
+
     pub fn from_string(string: &str) -> Result<Self, VariableValueConversionError> {
         let dice_and_const = Regex::new(r"^\d+D[36]\+\d+$").unwrap();
         let die_and_const = Regex::new(r"^D[36]\+\d+$").unwrap();
