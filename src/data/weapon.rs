@@ -23,13 +23,20 @@ impl Range {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Weapon {
+    #[serde(default)]
     pub name: String,
     pub range: Range,
+    #[serde(default)]
     pub attacks: VariableValue,
+    #[serde(default)]
     pub skill: u32,
+    #[serde(default)]
     pub strength: u32,
+    #[serde(default)]
     pub ap: i32,
+    #[serde(default)]
     pub damage: VariableValue,
+    #[serde(default)]
     pub keywords: Vec<WeaponAbility>
 }
 

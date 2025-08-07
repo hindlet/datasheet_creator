@@ -26,6 +26,12 @@ pub enum VariableValue {
     Rolled(u32, Dice, u32)
 }
 
+impl Default for VariableValue {
+    fn default() -> Self {
+        VariableValue::Set(1)
+    }
+}
+
 pub struct VariableValueConversionError;
 
 impl VariableValue {

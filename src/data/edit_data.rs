@@ -1,4 +1,4 @@
-use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeUpgrade, WeaponModChange};
+use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponModChange};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -196,6 +196,7 @@ impl Into<Unit> for UnitEditData {
 
         let mut crusade_ranged = Vec::new();
         let mut crusade_melee = Vec::new();
+        let mut crusade_data = self.crusade_data.clone();
         if self.crusader {
             let mut upgrades = Vec::new();
             let mut ranged_upgrades = false;
@@ -204,7 +205,6 @@ impl Into<Unit> for UnitEditData {
             for upgrade in self.crusade_data.upgrades.iter() {
                 match upgrade {
                     CrusadeUpgrade::WeaponMod(weapon_mod) => {
-                        println!("A");
                         if let Some(target) = &weapon_mod.target {
                             if target.0 {ranged_upgrades = true} else {melee_upgrades = true}
                             upgrades.push((target, weapon_mod.name.clone(), weapon_mod.change_one, weapon_mod.change_two));
@@ -269,6 +269,14 @@ impl Into<Unit> for UnitEditData {
             } else {
                 crusade_melee = melee_weapons.clone()
             }
+
+            crusade_data.rank = match crusade_data.exp {
+                0..6 => {CrusadeRank::BattleReady},
+                6..16 => {CrusadeRank::Blooded},
+                16..31 => {CrusadeRank::BattleHardended},
+                31..51 => {CrusadeRank::Heroic},
+                51.. => {CrusadeRank::Legendary},
+            }
             
         }
 
@@ -311,7 +319,7 @@ impl Into<Unit> for UnitEditData {
             },
 
             crusade_unit: self.crusader,
-            crusade_data: self.crusade_data,
+            crusade_data: crusade_data,
             crusade_weapons: (crusade_ranged, crusade_melee),
 
             ..Default::default()

@@ -45,7 +45,11 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             });
         };
 
-        ui.heading(egui::RichText::new(&unit.name).size(30.0));
+        ui.horizontal(|ui| {
+            ui.heading(egui::RichText::new(&unit.name).size(30.0));
+            
+        });
+        
         egui::Grid::new("statsgrid").show(ui, |ui| {
             show_stat_name_func(ui, "M");
             show_stat_name_func(ui, "T");
@@ -66,6 +70,9 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             show_stat_func(ui, unit.stats.wounds.to_string());
             show_stat_func(ui, format!("{}+", unit.stats.leadership));
             show_stat_func(ui, unit.stats.oc.to_string());
+            if unit.crusade_unit {
+                ui.label(egui::RichText::new(format!("{}({} exp)", unit.crusade_data.rank.to_string(), unit.crusade_data.exp)));
+            }
         }); 
     });
 
@@ -193,7 +200,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    let iter = if unit.crusade_unit {unit.crusade_weapons.0.iter()} else {unit.melee_weapons.iter()};
+                    let iter = if unit.crusade_unit {unit.crusade_weapons.0.iter()} else {unit.ranged_weapons.iter()};
                     for (weapon, count) in iter {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
@@ -208,7 +215,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {
-                                    ui.label(title);
+                                    ui.label(RichText::new(title).size(14.0));
                                 }
                             });
                             row.col(|ui| {
@@ -272,7 +279,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {
-                                    ui.label(title);
+                                    ui.label(RichText::new(title).size(14.0));
                                 }
                             });
                             row.col(|ui| {

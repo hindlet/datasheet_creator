@@ -7,24 +7,34 @@ use tera::Context;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Unit {
+    #[serde(default)]
     pub name: String,
+    #[serde(default)]
     pub stats: UnitStats,
    
-
+    #[serde(default)]
     pub ranged_weapons: Vec<(Weapon, u32)>,
+    #[serde(default)]
     pub melee_weapons: Vec<(Weapon, u32)>,
     
-
+    #[serde(default)]
     pub faction_ability: Option<String>,
+    #[serde(default)]
     pub core_abilities: Vec<CoreAbility>,
+    #[serde(default)]
     pub unique_abilities: Vec<Ability>,
 
+    #[serde(default)]
     pub faction_keyword: String,
+    #[serde(default)]
     pub keywords: Vec<String>,
 
+    #[serde(default)]
     pub damaged: Option<u32>,
+    #[serde(default)]
     pub leader: Option<Vec<String>>,
 
+    #[serde(default)]
     pub unit_comp: UnitComposition,
 
     #[serde(default)]

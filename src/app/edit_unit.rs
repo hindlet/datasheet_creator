@@ -188,7 +188,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     let mut to_remove = Vec::new();
                                     for (j, keyword) in weapon.keywords.iter_mut().enumerate() {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
-                                            to_remove.push(i);
+                                            to_remove.push(j);
                                         }
                                         keyword.combo_box_ranged(ui, i * 50 + j + 10000000);
                                         match keyword {
@@ -304,7 +304,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                     let mut to_remove = Vec::new();
                                     for (j, keyword) in weapon.keywords.iter_mut().enumerate() {
                                         if ui.button("-").on_hover_text("Remove keyword").clicked() {
-                                            to_remove.push(i);
+                                            to_remove.push(j);
                                         }
                                         keyword.combo_box_melee(ui, i * 50 + j + 900000);
                                         match keyword {

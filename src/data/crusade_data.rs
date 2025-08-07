@@ -6,8 +6,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct CrusadeUnitData {
+    #[serde(default)]
     pub exp: u32,
+    #[serde(default)]
+    pub rank: CrusadeRank,
+    #[serde(default)]
     pub upgrades: Vec<CrusadeUpgrade>,
+    #[serde(default)]
     pub kills: u32,
 }
 
@@ -16,11 +21,33 @@ impl Default for CrusadeUnitData {
         Self {
             exp: 0,
             upgrades: Vec::new(),
-            kills: 0
+            kills: 0,
+            rank: CrusadeRank::BattleReady
         }
     }
 }
 
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Default)]
+pub enum CrusadeRank {
+    #[default]
+    BattleReady,
+    Blooded,
+    BattleHardended,
+    Heroic,
+    Legendary
+}
+
+impl CrusadeRank {
+    pub fn to_string(&self) -> &str {
+        match self {
+            CrusadeRank::BattleReady => "Battle-ready",
+            CrusadeRank::Blooded => "Blooded",
+            CrusadeRank::BattleHardended => "Battle-hardened",
+            CrusadeRank::Heroic => "Heroic",
+            CrusadeRank::Legendary => "Legendary",
+        }
+    }
+}
 
 
 
