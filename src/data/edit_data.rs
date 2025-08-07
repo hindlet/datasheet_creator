@@ -1,4 +1,4 @@
-use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod, WeaponModChange};
+use crate::data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -230,7 +230,7 @@ impl Into<Unit> for UnitEditData {
                         for (upgrade_count, upgrade) in upgrades.iter() {
                             let target = upgrade.target.as_ref().unwrap();
 
-                            if target.0 && target.1 == index && count > 0 {
+                            if target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == index) && count > 0 {
                                 let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
                                 crusade_ranged.push((Weapon {
                                     name: upgrade.name.clone(),
@@ -262,7 +262,7 @@ impl Into<Unit> for UnitEditData {
                         for (upgrade_count, upgrade) in upgrades.iter() {
                             let target = upgrade.target.as_ref().unwrap();
 
-                            if !target.0 && target.1 == index && count > 0 {
+                            if !target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == index) && count > 0 {
                                 let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
                                 crusade_ranged.push((Weapon {
                                     name: upgrade.name.clone(),
@@ -282,7 +282,7 @@ impl Into<Unit> for UnitEditData {
                                 count -= i;
                             }  
                         }
-                        if count > 0 {crusade_ranged.push((weapon.clone(), count));}
+                        if count > 0 {crusade_melee.push((weapon.clone(), count));}
                     }
             } else {
                 crusade_melee = melee_weapons.clone()
