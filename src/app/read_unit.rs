@@ -1,7 +1,7 @@
 use egui::{Color32, Context, Rect, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
 
-use crate::data::Unit;
+use crate::data::{CrusadeUpgrade, Unit};
 
 use super::DatasheetAppSettings;
 
@@ -45,7 +45,11 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             });
         };
 
-        ui.heading(egui::RichText::new(&unit.name).size(30.0));
+        ui.horizontal(|ui| {
+            ui.heading(egui::RichText::new(&unit.name).size(30.0));
+            
+        });
+        
         egui::Grid::new("statsgrid").show(ui, |ui| {
             show_stat_name_func(ui, "M");
             show_stat_name_func(ui, "T");
@@ -66,6 +70,9 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             show_stat_func(ui, unit.stats.wounds.to_string());
             show_stat_func(ui, format!("{}+", unit.stats.leadership));
             show_stat_func(ui, unit.stats.oc.to_string());
+            if unit.crusade_unit {
+                ui.label(egui::RichText::new(format!("{}({} exp)", unit.crusade_data.rank.to_string(), unit.crusade_data.exp)));
+            }
         }); 
     });
 
@@ -86,9 +93,9 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                 let last = unit.core_abilities.len().checked_sub(1).unwrap_or(0);
                 for (i, ability) in unit.core_abilities.iter().enumerate() {
                     if i < last{
-                        ui.label(RichText::new(format!("{},", ability)).strong());
+                        ui.label(RichText::new(format!("{},", ability.to_render_string())).strong());
                     } else {
-                        ui.label(RichText::new(ability).strong());
+                        ui.label(RichText::new(ability.to_render_string()).strong());
                     }
                 }
             });
@@ -105,16 +112,38 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
 
         egui::ScrollArea::vertical().show(ui, |ui| {
             
-            let last = unit.unique_abilities.len().checked_sub(1).unwrap_or(0);
-            for (i, ability) in unit.unique_abilities.iter().enumerate() {
+            for ability in unit.unique_abilities.iter() {
                 ui.horizontal_wrapped(|ui| {
                     ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
                     ui.label(RichText::new(&ability.description));
                 });
-                if i < last {
-                    ui.separator();
+            }
+
+            let mut has_crusade_ability = false;
+            if unit.crusade_unit {
+                for upgrade in unit.crusade_data.upgrades.iter() {
+                    match upgrade {
+                        CrusadeUpgrade::BattleTrait(ability) => {
+                            ui.horizontal_wrapped(|ui| {
+                                ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
+                                ui.label(RichText::new(&ability.description));
+                            });
+                            has_crusade_ability = true;
+                        },
+                        CrusadeUpgrade::Relic(ability) => {
+                            ui.horizontal_wrapped(|ui| {
+                                ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
+                                ui.label(RichText::new(&ability.description));
+                            });
+                            has_crusade_ability = true;
+                        },
+                        _ => {}
+                    }
                 }
             }
+            
+
+            if unit.unique_abilities.len() != 0 || has_crusade_ability {ui.separator();}
 
         });
 
@@ -171,20 +200,28 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    for weapon in unit.ranged_weapons.iter() {
+                    let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
+                    for (weapon, count) in ranged.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
-                        let height = if has_keywords{30.0} else {20.0};
+                        let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
+                                let title = if weapon.charge_levels_info.0 {
+                                    if weapon.charge_levels_info.1.is_some() {
+                                        let (parent, parent_count) = &ranged[weapon.charge_levels_info.1.unwrap()];
+                                        if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
+                                    } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
+                                } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
+
                                 if has_keywords {
                                     ui.vertical(|ui| {
-                                        ui.label(data.0);
+                                        ui.label(RichText::new(title).size(14.0));
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {
-                                    ui.label(data.0);
+                                    ui.label(RichText::new(title).size(14.0));
                                 }
                             });
                             row.col(|ui| {
@@ -233,24 +270,31 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    for weapon in unit.melee_weapons.iter() {
+                    let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
+                    for (weapon, count) in melee.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
-                        let height = if has_keywords{30.0} else {20.0};
+                        let height = if has_keywords{32.0} else {22.0};
 
                         body.row(height, |mut row| {
                             row.col(|ui| {
+                                let title = if weapon.charge_levels_info.0 {
+                                    if weapon.charge_levels_info.1.is_some() {
+                                        let (parent, parent_count) = &melee[weapon.charge_levels_info.1.unwrap()];
+                                        if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
+                                    } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
+                                } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
                                 if has_keywords {
                                     ui.vertical(|ui| {
-                                        ui.label(data.0);
+                                        ui.label(RichText::new(title).size(14.0));
                                         ui.label(RichText::new(data.7).color(settings.keyword_colour).size(10.5))
                                     });
                                 } else {
-                                    ui.label(data.0);
+                                    ui.label(RichText::new(title).size(14.0));
                                 }
                             });
                             row.col(|ui| {
-                                ui.label(data.1);
+                                ui.label("Melee");
                             });
                             row.col(|ui| {
                                 ui.label(data.2);

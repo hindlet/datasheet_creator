@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use regex::Regex;
 
-#[derive(Debug, Deserialize, Clone, Copy, Serialize)]
+#[derive(Debug, Deserialize, Clone, Copy, Serialize, PartialEq)]
 pub enum Dice {
     D3,
     D6
@@ -20,10 +20,16 @@ impl Dice {
 
 
 
-#[derive(Debug, Deserialize, Clone, Copy, Serialize)]
+#[derive(Debug, Deserialize, Clone, Copy, Serialize, PartialEq)]
 pub enum VariableValue {
     Set(u32),
     Rolled(u32, Dice, u32)
+}
+
+impl Default for VariableValue {
+    fn default() -> Self {
+        VariableValue::Set(1)
+    }
 }
 
 pub struct VariableValueConversionError;
@@ -57,6 +63,13 @@ impl VariableValue {
         let const_only = Regex::new(r"^\d+$").unwrap();
 
         return dice_and_const.is_match(string) || die_and_const.is_match(string) || dice_only.is_match(string) || die_only.is_match(string) || const_only.is_match(string);
+    }
+
+    pub fn add_one(&self) -> VariableValue {
+        match self {
+            VariableValue::Set(x) => VariableValue::Set(x + 1),
+            VariableValue::Rolled(a, b, x) => VariableValue::Rolled(*a, *b, x + 1)
+        }
     }
 
     pub fn from_string(string: &str) -> Result<Self, VariableValueConversionError> {

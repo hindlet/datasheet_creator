@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::abilities::WeaponAbility;
+
 use super::variable_val::VariableValue;
 
 
@@ -12,7 +14,7 @@ pub enum Range {
 impl Range {
     pub fn to_string(&self) -> String {
         match self {
-            Range::Melee => return "melee".to_string(),
+            Range::Melee => return "Melee".to_string(),
             Range::Ranged(range) => return format!("{}\"", range)
         }
     }
@@ -21,14 +23,23 @@ impl Range {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Weapon {
+    #[serde(default)]
     pub name: String,
     pub range: Range,
+    #[serde(default)]
     pub attacks: VariableValue,
+    #[serde(default)]
     pub skill: u32,
+    #[serde(default)]
     pub strength: u32,
+    #[serde(default)]
     pub ap: i32,
+    #[serde(default)]
     pub damage: VariableValue,
-    pub keywords: Vec<String>
+    #[serde(default)]
+    pub keywords: Vec<WeaponAbility>,
+    #[serde(default)]
+    pub charge_levels_info: (bool, Option<usize>, String) // has levels, option<parent index>, level name
 }
 
 pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);
@@ -36,13 +47,8 @@ pub type WeaponRenderTuple = (String, String, String, String, u32, String, Strin
 impl Weapon {
 
     pub fn get_render_data(&self) -> WeaponRenderTuple {
-        let mut cased_keywords = Vec::new();
-        for keyword in self.keywords.iter() {
-            cased_keywords.push(keyword.to_uppercase());
-        }
-
         let skill: String;
-        if cased_keywords.contains(&"TORRENT".to_string()) {
+        if self.keywords.contains(&WeaponAbility::Torrent) {
             skill = "N/A".to_string();
         } else {
             skill = format!("{}+", self.skill)
@@ -68,16 +74,17 @@ impl Weapon {
     }
 
     pub fn format_keywords(&self) -> String{
+        if self.keywords.len() == 0 {return "[]".to_string();} // zero keywords case
+        if self.keywords.len() == 1 && self.keywords[0] == WeaponAbility::None {return "[]".to_string();}
         let mut keywords: String = "[".to_string();
 
-        let last = self.keywords.len().checked_sub(1).unwrap_or(0);
-        for (i, keyword) in self.keywords.iter().enumerate() {
-            keywords += &keyword.to_uppercase();
-            if i != last {
-                keywords += ", ";
-            }
+        for keyword in self.keywords.iter() {
+            if keyword == &WeaponAbility::None {continue;}
+            keywords += &keyword.to_render_string();
+            keywords += ", ";
         }
 
-        return keywords + "]";
+        let i = keywords.len() - 2; // remove the last comma + space
+        return keywords[..i].to_string() + "]";
     }
 }
