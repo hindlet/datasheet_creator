@@ -61,6 +61,7 @@ impl CoreAbility {
             .show_ui(ui, |ui| {
                 ui.selectable_value(self, CoreAbility::None, "NONE");
                 ui.selectable_value(self, CoreAbility::Scouts(1), "Scouts");
+                ui.selectable_value(self, CoreAbility::DeepStrike, "Deep Strike");
                 ui.selectable_value(self, CoreAbility::Leader, "Leader");
                 ui.selectable_value(self, CoreAbility::Infiltrators, "Infiltrators");
                 ui.selectable_value(self, CoreAbility::LoneOp, "Lone Operative");
