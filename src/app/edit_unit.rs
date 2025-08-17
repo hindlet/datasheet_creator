@@ -96,7 +96,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 .column(Column::auto())
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
                 .header(20.0, |mut header| {
-                    for col_header in ["Name", "Count", "Range", "A", "WS", "S", "AP", "D", "Charge", "Keywords"] {
+                    for col_header in ["Name", "Count", "Range", "A", "BS", "S", "AP", "D", "Charge", "Keywords"] {
                         header.col(|ui| {
                             ui.strong(RichText::new(col_header).size(15.0));
                         });
@@ -136,7 +136,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                select_drag_value_with_range_on_tab(&mut weapon.ap, 1..=6, ui);
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=6, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
@@ -257,7 +257,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                select_drag_value_with_range_on_tab(&mut weapon.ap, 1..=6, ui);
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=6, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
