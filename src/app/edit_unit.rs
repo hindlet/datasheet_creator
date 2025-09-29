@@ -71,13 +71,19 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             });
             ui.horizontal(|ui| {
                 ui.label("Objective Control:");
-                select_drag_value_with_range_on_tab(&mut unit.objective_control, 1..=99, ui);
+                select_drag_value_with_range_on_tab(&mut unit.objective_control, 0..=99, ui);
                 // ui.add(egui::DragValue::new(&mut unit.objective_control)
                 //     .range(0..=99));
             });
 
             ui.separator();
             ui.heading("Ranged Weapons");
+
+            let weapons_list = {
+                let mut list = unit.ranged_weapons.clone();
+                list.append(&mut unit.melee_weapons.clone());
+                list
+            };
             
             // ranged weapons
             TableBuilder::new(ui)
@@ -104,7 +110,6 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 })
                 .body(|mut body| {
                     let mut to_remove = Vec::new();
-                    let weapons_list = &unit.ranged_weapons.clone();
                     for (i, (weapon, count)) in unit.ranged_weapons.iter_mut().enumerate() {
                         body.row(20.0, |mut row| {
                             row.col(|ui| {
@@ -147,7 +152,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 // ui.text_edit_singleline(&mut weapon.damage);
                             });
                             row.col(|ui| {
-                                weapon.charge_edit_section(ui, i, weapons_list, i * 50 + 10005000912);
+                                weapon.charge_edit_section(ui, i, &weapons_list, i * 50 + 10005000912);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
@@ -177,6 +182,9 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                             WeaponAbility::Melta(x) => {
                                                 select_drag_value_with_range_on_tab( x, 1..=99, ui);
                                             },
+                                            WeaponAbility::Custom(x) => {
+                                                select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
+                                            }
                                             _ => {}
                                         }
                                     
@@ -268,7 +276,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 // ui.text_edit_singleline(&mut weapon.damage);
                             });
                             row.col(|ui| {
-                                ui.checkbox(&mut weapon.charge_levels_info.0, "");
+                                weapon.charge_edit_section(ui, i + unit.ranged_weapons.len(), &weapons_list, i * 51 + 10005000912);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {
@@ -298,6 +306,9 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                             WeaponAbility::Melta(x) => {
                                                 select_drag_value_with_range_on_tab(x, 1..=99, ui);
                                             },
+                                            WeaponAbility::Custom(x) => {
+                                                select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
+                                            }
                                             _ => {}
                                         }
                                     
@@ -310,7 +321,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                         });
                     }
                     for (j, i) in to_remove.iter().enumerate() {
-                        unit.ranged_weapons.remove(i - j);
+                        unit.melee_weapons.remove(i - j);
                     }
                 });
 
@@ -528,7 +539,17 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                             ui.horizontal(|ui| {
                                                 select_text_on_tab(weapon_mod.name.len(), egui::TextEdit::singleline(&mut weapon_mod.name), ui);
                                             });
-                                        }
+                                        },
+                                        CrusadeUpgrade::Enhancement(ability) => {
+                                            ui.horizontal(|ui| {
+                                                select_text_on_tab(ability.name.len(), egui::TextEdit::singleline(&mut ability.name), ui);
+                                            });
+                                        },
+                                        CrusadeUpgrade::BattleScar(ability) => {
+                                            ui.horizontal(|ui| {
+                                                select_text_on_tab(ability.name.len(), egui::TextEdit::singleline(&mut ability.name), ui);
+                                            });
+                                        },
                                     }
                                 });
                                 row.col(|ui| {
@@ -545,6 +566,12 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                                 weapon_mod.target_select(ui, 10 + i * 4, &unit.ranged_weapons, &unit.melee_weapons);
                                             });
                                         }
+                                        CrusadeUpgrade::Enhancement(ability) => {
+                                            select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
+                                        },
+                                        CrusadeUpgrade::BattleScar(ability) => {
+                                            select_text_on_tab(ability.description.len(), egui::TextEdit::multiline(&mut ability.description), ui);
+                                        },
                                     }
                                 });
                             });

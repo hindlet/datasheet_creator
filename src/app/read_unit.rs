@@ -176,7 +176,8 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
         })
     });
         
-    
+    let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
+    let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
     egui::CentralPanel::default().show(ctx, |ui| {
         if unit.ranged_weapons.len() > 0 {
             TableBuilder::new(ui)
@@ -200,7 +201,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
+                    
                     for (weapon, count) in ranged.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
@@ -210,7 +211,11 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                             row.col(|ui| {
                                 let title = if weapon.charge_levels_info.0 {
                                     if weapon.charge_levels_info.1.is_some() {
-                                        let (parent, parent_count) = &ranged[weapon.charge_levels_info.1.unwrap()];
+                                        let (parent, parent_count) = if weapon.charge_levels_info.1.unwrap() >= unit.ranged_weapons.len() {
+                                            &melee[weapon.charge_levels_info.1.unwrap() - unit.ranged_weapons.len()]
+                                        } else {
+                                            &ranged[weapon.charge_levels_info.1.unwrap()]
+                                        };
                                         if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
                                     } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
                                 } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};
@@ -270,7 +275,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                     }
                 })
                 .body(|mut body| {
-                    let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
+                    
                     for (weapon, count) in melee.iter() {
                         let data = weapon.get_render_data();
                         let has_keywords = data.7 != "[]";
@@ -280,7 +285,11 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                             row.col(|ui| {
                                 let title = if weapon.charge_levels_info.0 {
                                     if weapon.charge_levels_info.1.is_some() {
-                                        let (parent, parent_count) = &melee[weapon.charge_levels_info.1.unwrap()];
+                                        let (parent, parent_count) = if weapon.charge_levels_info.1.unwrap() >= unit.ranged_weapons.len() {
+                                            &melee[weapon.charge_levels_info.1.unwrap() - unit.ranged_weapons.len()]
+                                        } else {
+                                            &ranged[weapon.charge_levels_info.1.unwrap()]
+                                        };
                                         if *parent_count == 1 {format!("{} - {}", &parent.name, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", parent_count, &parent.name, &weapon.charge_levels_info.2)}
                                     } else if *count == 1 {format!("{} - {}", data.0, &weapon.charge_levels_info.2)} else {format!("{}x {} - {}", count, data.0, &weapon.charge_levels_info.2)}
                                 } else if *count == 1 {data.0} else {format!("{}x {}", count, data.0)};

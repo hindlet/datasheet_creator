@@ -56,7 +56,9 @@ impl CrusadeRank {
 pub enum CrusadeUpgrade {
     WeaponMod(WeaponMod),
     Relic(Ability),
-    BattleTrait(Ability)
+    BattleTrait(Ability),
+    Enhancement(Ability),
+    BattleScar(Ability),
 }
 
 impl CrusadeUpgrade {
@@ -66,6 +68,8 @@ impl CrusadeUpgrade {
             CrusadeUpgrade::WeaponMod(_) => "Weapon Mod",
             CrusadeUpgrade::Relic(_) => "Relic",
             CrusadeUpgrade::BattleTrait(_) => "Battle Trait",
+            CrusadeUpgrade::Enhancement(_) => "Enhancement",
+            CrusadeUpgrade::BattleScar(_) => "Battle Scar"
         }
     }
 
@@ -76,6 +80,8 @@ impl CrusadeUpgrade {
                 ui.selectable_value(self, CrusadeUpgrade::WeaponMod(WeaponMod::default()), "Weapon Mod");
                 ui.selectable_value(self, CrusadeUpgrade::Relic(Ability::default()), "Relic");
                 ui.selectable_value(self, CrusadeUpgrade::BattleTrait(Ability::default()), "Battle Trait");
+                ui.selectable_value(self, CrusadeUpgrade::Enhancement(Ability::default()), "Enhancement");
+                ui.selectable_value(self, CrusadeUpgrade::BattleScar(Ability::default()), "Battle Scar");
             });
     }
 }

@@ -98,6 +98,9 @@ pub enum WeaponAbility {
     AntiX(String, u32),
     OneShot,
     Precise, // Crusade Only
+    Pyschic,
+    Conversion,
+    Custom(String)
 }
 
 impl WeaponAbility {
@@ -108,6 +111,7 @@ impl WeaponAbility {
             WeaponAbility::Sustained(x, _) => format!("SUSTAINED HITS {}", x.to_string()),
             WeaponAbility::AntiX(keyword, x) => format!("ANTI-{} {}+", keyword.to_uppercase(), x.clamp(&2, &6)),
             WeaponAbility::None => "".to_string(),
+            WeaponAbility::Custom(x) => x.clone(),
             _ => self.to_string().to_string()
         }
     }
@@ -134,7 +138,10 @@ impl WeaponAbility {
             WeaponAbility::AntiX(_, _) => "ANTI-X",
             WeaponAbility::OneShot => "ONE SHOT",
             WeaponAbility::None => "NONE",
-            WeaponAbility::Precise => "PRECISE"
+            WeaponAbility::Precise => "PRECISE",
+            WeaponAbility::Pyschic => "PSYCHIC",
+            WeaponAbility::Conversion => "CONVERSION",
+            WeaponAbility::Custom(_) => "CUSTOM",
         }
     }
 
@@ -160,6 +167,9 @@ impl WeaponAbility {
                 ui.selectable_value(self, WeaponAbility::Sustained(VariableValue::Set(1), "1".to_string()), "SUSTAINED HITS");
                 ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
                 ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");
+                ui.selectable_value(self, WeaponAbility::Pyschic, "PSYCHIC");
+                ui.selectable_value(self, WeaponAbility::Conversion, "CONVERSION");
+                ui.selectable_value(self, WeaponAbility::Custom("name".to_string()), "CUSTOM");
             });
             
     }
@@ -180,6 +190,8 @@ impl WeaponAbility {
                 ui.selectable_value(self, WeaponAbility::ExtraAttacks, "EXTRA ATTACKS");
                 ui.selectable_value(self, WeaponAbility::AntiX("".to_string(), 2), "ANTI-X");
                 ui.selectable_value(self, WeaponAbility::OneShot, "ONE SHOT");
+                ui.selectable_value(self, WeaponAbility::Pyschic, "PSYCHIC");
+                ui.selectable_value(self, WeaponAbility::Custom("name".to_string()), "CUSTOM");
             });
             
     }
