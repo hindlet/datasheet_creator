@@ -137,6 +137,20 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                             });
                             has_crusade_ability = true;
                         },
+                        CrusadeUpgrade::Enhancement(ability) => {
+                            ui.horizontal_wrapped(|ui| {
+                                ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
+                                ui.label(RichText::new(&ability.description));
+                            });
+                            has_crusade_ability = true;
+                        },
+                        CrusadeUpgrade::BattleScar(ability) => {
+                            ui.horizontal_wrapped(|ui| {
+                                ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
+                                ui.label(RichText::new(&ability.description));
+                            });
+                            has_crusade_ability = true;
+                        },
                         _ => {}
                     }
                 }

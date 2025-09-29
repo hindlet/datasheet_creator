@@ -28,7 +28,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             });
             ui.horizontal(|ui| {
                 ui.label("Movement:");
-                select_drag_value_with_range_on_tab(&mut unit.movement, 1..=99, ui);
+                select_drag_value_with_range_on_tab(&mut unit.movement, 0..=99, ui);
                 // ui.add(egui::DragValue::new(&mut unit.movement)
                 //     .range(1..=99)).on_hover_text("Inches");
             });

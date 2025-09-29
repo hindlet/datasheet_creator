@@ -367,6 +367,12 @@ impl App for DatasheetApp {
                         self.new_folder.1 = "".to_string();
                     }
 
+                    if ui.button("New Unit").clicked() {
+                        self.new_unit.0 ^= true;
+                        self.new_unit.1 = 0;
+                        self.new_unit.2 = "".to_string();
+                    }
+
                     ui.reset_style();
                 });
             }
