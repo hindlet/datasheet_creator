@@ -12,11 +12,12 @@ pub fn draw_weapon_row(weapon: &Weapon, count: u32, body: &mut TableBody, keywor
 
     body.row(height, |mut row| {
         row.col(|ui| {
-            let name = match &weapon.charge {
-                ChargeLevels::None => weapon.name.clone(),
-                ChargeLevels::Parent(level_name) => format!("{} - {}", weapon.name, level_name),
-                ChargeLevels::Child(parent_ref, level_name) => format!("{} - {}", parent_ref.name, level_name)
+            let (weapon_name, level_name) = match &weapon.charge {
+                ChargeLevels::None => (weapon.name.clone(), "".to_string()),
+                ChargeLevels::Parent(level_name) => (weapon.name.clone(), level_name.clone()),
+                ChargeLevels::Child(parent_ref, level_name) => (parent_ref.name.clone(), level_name.clone())
             };
+            let name = if level_name == "" {weapon_name} else {format!("{} - {}", weapon_name, level_name)};
             let title = if count == 1 {name} else {format!("{}x {}", count, name)};
 
             if has_keywords {

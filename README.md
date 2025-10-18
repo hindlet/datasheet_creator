@@ -9,3 +9,4 @@
 - [x] Fix weapon mods changing weapon names
 - [x] Fix charge box IDs
 - [x] Fixed ranged and melee weapon mods
+- [x] Suppport for Unnamed Weapon Charges
