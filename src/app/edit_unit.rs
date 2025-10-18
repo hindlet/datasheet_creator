@@ -152,7 +152,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 // ui.text_edit_singleline(&mut weapon.damage);
                             });
                             row.col(|ui| {
-                                weapon.charge_edit_section(ui, i, &weapons_list, i * 50 + 10005000912);
+                                weapon.charge_edit_section(ui, i, &weapons_list, i * 50 + 10005010912);
                             });
                             row.col(|ui| {
                                 ui.horizontal(|ui| {

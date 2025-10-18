@@ -129,7 +129,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                                 ui.label(RichText::new(&ability.description));
                             });
                             has_crusade_ability = true;
-                        },
+                        }, 
                         CrusadeUpgrade::Relic(ability) => {
                             ui.horizontal_wrapped(|ui| {
                                 ui.label(RichText::new(format!("{}:", ability.name.to_uppercase())).strong());
@@ -193,7 +193,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
     let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
     let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
     egui::CentralPanel::default().show(ctx, |ui| {
-        if unit.ranged_weapons.len() > 0 {
+        if ranged.len() > 0 {
             TableBuilder::new(ui)
                 .id_salt(1)
                 .striped(true)
@@ -267,7 +267,7 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
             ui.separator();
         }
         
-        if unit.melee_weapons.len() > 0 {
+        if melee.len() > 0 {
             TableBuilder::new(ui)
                 .id_salt(2)
                 .striped(true)
