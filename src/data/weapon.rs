@@ -39,7 +39,8 @@ pub struct Weapon {
     #[serde(default)]
     pub keywords: Vec<WeaponAbility>,
     #[serde(default)]
-    pub charge_levels_info: (bool, Option<usize>, String) // has levels, option<parent index>, level name
+    // has levels, option<parent index>, level name (The parent index is global, between both ranged and melee)
+    pub charge_levels_info: (bool, Option<usize>, String)
 }
 
 pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);
