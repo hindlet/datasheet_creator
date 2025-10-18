@@ -5,7 +5,7 @@
  
 
 ## TODO
-- [ ] Fix Melee Weapon Mods
-- [ ] Fix weapon mods changing weapon names
+- [x] Fix Melee Weapon Mods
+- [x] Fix weapon mods changing weapon names
 - [x] Fix charge box IDs
-- [ ] Fixed ranged and melee weapon mods
+- [x] Fixed ranged and melee weapon mods

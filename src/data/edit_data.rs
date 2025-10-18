@@ -1,6 +1,8 @@
+use std::collections::BTreeMap;
+
 use egui::{ComboBox, Ui};
 
-use crate::{data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, CrusadeRank, CrusadeUpgrade, WeaponMod}, helper_funcs::select_text_on_tab};
+use crate::{data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, index::WeaponReference, ChargeLevels, CrusadeRank, CrusadeUpgrade, WeaponMod}, helper_funcs::select_text_on_tab};
 
 use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
 
@@ -14,7 +16,7 @@ pub struct WeaponEditData {
     pub ap: u32,
     pub damage: String,
     pub keywords: Vec<WeaponAbility>,
-    pub charge_levels_info: (bool, Option<usize>, String) // has levels, is parent, level name
+    pub charge_levels_info: (bool, Option<WeaponReference>, String) // has levels, is parent, level name
 }
 
 impl Default for WeaponEditData {
@@ -47,7 +49,7 @@ impl From<&Weapon> for WeaponEditData {
             ap: value.ap.abs() as u32,
             damage: value.damage.to_string(),
             keywords: value.keywords.clone(),
-            charge_levels_info: value.charge_levels_info.clone()
+            charge_levels_info: value.charge.to_edit()
         }
     }
 }
@@ -78,14 +80,14 @@ impl Into<Weapon> for WeaponEditData {
             ap: self.ap as i32,
             damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
             keywords: keywords,
-            charge_levels_info: self.charge_levels_info
+            charge: ChargeLevels::from_edit(self.charge_levels_info.0, self.charge_levels_info.1, self.charge_levels_info.2) 
         }
     }
 }
 
 
 impl WeaponEditData {
-    pub fn charge_edit_section(&mut self, ui: &mut Ui, index: usize, weapons: &Vec<(WeaponEditData, u32)>, id: usize) {
+    pub fn charge_edit_section(&mut self, ui: &mut Ui, index: usize, weapons: &Vec<WeaponReference>, id: usize) {
         ui.horizontal(|ui| {
             ui.checkbox(&mut self.charge_levels_info.0, "");
             if self.charge_levels_info.0 {
@@ -98,7 +100,7 @@ impl WeaponEditData {
                         ui.selectable_value(&mut self.charge_levels_info.1, None, "Parent");
                         for (i, weapon) in weapons.iter().enumerate() {
                             if i == index {continue;}
-                            ui.selectable_value(&mut self.charge_levels_info.1, Some(i), &weapon.0.name);
+                            ui.selectable_value(&mut self.charge_levels_info.1, Some(weapon.clone()), &weapon.name);
                         }
                     });
                 
@@ -229,14 +231,13 @@ impl Into<Unit> for UnitEditData {
         let mut crusade_data = self.crusade_data.clone();
         if self.crusader {
             let mut upgrades: Vec<(usize, WeaponMod)> = Vec::new();
-            let mut ranged_upgrades = false;
-            let mut melee_upgrades = true;
+            // list of names of upgrade parents
+            let mut upgrade_names: BTreeMap<WeaponReference, String> = BTreeMap::new();
 
             for upgrade in self.crusade_data.upgrades.iter() {
                 match upgrade {
                     CrusadeUpgrade::WeaponMod(weapon_mod) => {
-                        if let Some(target) = &weapon_mod.target {
-                            if target.0 {ranged_upgrades = true} else {melee_upgrades = true}
+                        if weapon_mod.target.is_some() {
                             for upgrade in upgrades.iter_mut() {
                                 if &upgrade.1 == weapon_mod {
                                     upgrade.0 += 1;
@@ -250,68 +251,74 @@ impl Into<Unit> for UnitEditData {
                 }
             }
 
-            if ranged_upgrades {
-                for (index, (weapon, count)) in ranged_weapons.iter().enumerate() {
-                        let mut count = *count;
-                        for (upgrade_count, upgrade) in upgrades.iter() {
-                            let target = upgrade.target.as_ref().unwrap();
+            let weapons = {
+                let mut list = Vec::new();
+                for (id, weapon) in ranged_weapons.iter().enumerate() {
+                    list.push((true, id, weapon));
+                }
+                for (id, weapon) in melee_weapons.iter().enumerate() {
+                    list.push((false, id, weapon));
+                }
+                list
+            };
 
-                            if target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == target.1) && count > 0 {
-                                let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
-                                crusade_ranged.push((Weapon {
-                                    name: upgrade.name.clone(),
-                                    range: weapon.range,
-                                    attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
-                                    skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
-                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.strength},
-                                    ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
-                                    damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
-                                    keywords: if upgrade.precise() {
-                                        let mut keywords = weapon.keywords.clone();
-                                        keywords.push(WeaponAbility::Precise);
-                                        keywords
-                                    } else {weapon.keywords.clone()},
-                                    charge_levels_info: weapon.charge_levels_info.clone()
-                                }, i));
-                                count -= i;
-                            }  
+            for (ranged, index, (weapon, count)) in weapons.iter() {
+                let mut count = *count;
+                for (upgrade_count, upgrade) in upgrades.iter() {
+                    let target = upgrade.target.as_ref().unwrap();
+                    let upgrade_target =
+                        target.is_id(*ranged, *index) // direct target
+                        || (match &weapon.charge { // indirect target
+                            ChargeLevels::Child(reference, _) => *target == *reference,
+                            _ => false
+                        });
+                    
+                    if upgrade_target {
+                        let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
+
+                        let new_charge = match &weapon.charge {
+                            ChargeLevels::None => ChargeLevels::None,
+                            ChargeLevels::Parent(name) => {
+                                upgrade_names.insert(WeaponReference::new(weapon.name.clone(), *ranged, *index), upgrade.name.clone());
+                                ChargeLevels::Parent(name.clone())
+                            },
+                            ChargeLevels::Child(parent_ref, name) => {
+                                if let Some(new_parent) = upgrade_names.get(&parent_ref) {
+                                    ChargeLevels::Child(WeaponReference::new(new_parent.to_string(), parent_ref.ranged, parent_ref.id), name.clone())
+                                } else {
+                                    ChargeLevels::Child(parent_ref.clone(), name.clone())
+                                }
+                            }
+                        };
+
+                        let new_weapon = (Weapon {
+                            name: upgrade.name.clone(),
+                            range: weapon.range,
+                            attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
+                            skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
+                            strength: if upgrade.strength() {weapon.strength + 1} else {weapon.strength},
+                            ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
+                            damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
+                            keywords: if upgrade.precise() {
+                                let mut keywords = weapon.keywords.clone();
+                                keywords.push(WeaponAbility::Precise);
+                                keywords
+                            } else {weapon.keywords.clone()},
+                            charge: new_charge
+                        }, i);
+                        count -= i;
+                        if *ranged {
+                            crusade_ranged.push(new_weapon);
+                        } else {
+                            crusade_melee.push(new_weapon);
                         }
-                        if count > 0 {crusade_ranged.push((weapon.clone(), count));}
-                    }
-            } else {
-                crusade_ranged = ranged_weapons.clone()
-            }
-
-            if melee_upgrades {
-                for (index, (weapon, count)) in melee_weapons.iter().enumerate() {
-                        let mut count = *count;
-                        for (upgrade_count, upgrade) in upgrades.iter() {
-                            let target = upgrade.target.as_ref().unwrap();
-
-                            if !target.0 && (target.1 == index || weapon.charge_levels_info.0 && weapon.charge_levels_info.1.is_some() && weapon.charge_levels_info.1.unwrap() == target.1) && count > 0 {
-                                let i = if count > *upgrade_count as u32 {*upgrade_count as u32} else {count};
-                                crusade_ranged.push((Weapon {
-                                    name: upgrade.name.clone(),
-                                    range: weapon.range,
-                                    attacks: if upgrade.attacks() {weapon.attacks.add_one()} else {weapon.attacks},
-                                    skill: if upgrade.skill() {weapon.skill - 1} else {weapon.skill},
-                                    strength: if upgrade.strength() {weapon.strength + 1} else {weapon.strength},
-                                    ap: if upgrade.ap() {if weapon.ap <= 0 {weapon.ap - 1} else {weapon.ap + 1}} else {weapon.ap},
-                                    damage: if upgrade.damage() {weapon.damage.add_one()} else {weapon.damage},
-                                    keywords: if upgrade.precise() {
-                                        let mut keywords = weapon.keywords.clone();
-                                        keywords.push(WeaponAbility::Precise);
-                                        keywords
-                                    } else {weapon.keywords.clone()},
-                                    charge_levels_info: weapon.charge_levels_info.clone()
-                                }, i));
-                                count -= i;
-                            }  
-                        }
-                        if count > 0 {crusade_melee.push((weapon.clone(), count));}
-                    }
-            } else {
-                crusade_melee = melee_weapons.clone()
+                    } 
+                }
+                if *ranged {
+                    if count > 0 {crusade_ranged.push((weapon.clone(), count));}
+                } else {
+                    if count > 0 {crusade_melee.push((weapon.clone(), count));}
+                }
             }
 
             crusade_data.rank = match crusade_data.exp {

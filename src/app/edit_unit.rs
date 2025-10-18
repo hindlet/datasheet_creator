@@ -1,6 +1,6 @@
 use egui::{Color32, Context, RichText};
 use egui_extras::{Column, TableBuilder};
-use crate::{data::{Ability, CoreAbility, CrusadeUpgrade, UnitEditData, VariableValue, WeaponAbility, WeaponEditData, WeaponMod}, helper_funcs::{select_drag_value_with_range_on_tab, select_text_on_tab}};
+use crate::{data::{Ability, CoreAbility, CrusadeUpgrade, UnitEditData, VariableValue, WeaponAbility, WeaponEditData, WeaponMod, WeaponReference}, helper_funcs::{select_drag_value_with_range_on_tab, select_text_on_tab}};
 
 
 
@@ -80,8 +80,13 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             ui.heading("Ranged Weapons");
 
             let weapons_list = {
-                let mut list = unit.ranged_weapons.clone();
-                list.append(&mut unit.melee_weapons.clone());
+                let mut list: Vec<WeaponReference> = Vec::new();
+                for (id, weapon) in unit.ranged_weapons.iter().enumerate() {
+                    list.push(WeaponReference::new(weapon.0.name.clone(), true, id));
+                }
+                for (id, weapon) in unit.melee_weapons.iter().enumerate() {
+                    list.push(WeaponReference::new(weapon.0.name.clone(), false, id));
+                }
                 list
             };
             
@@ -141,7 +146,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=6, ui);
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=10, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
@@ -208,7 +213,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
             ui.separator();
             ui.heading("Melee Weapons");
 
-            // ranged weapons
+            // melee weapons
             TableBuilder::new(ui)
                 .id_salt(2)
                 .striped(true)
@@ -248,7 +253,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_drag_value_with_range_on_tab(count, 1..=300, ui);
                             });
                             row.col(|ui| {
-                                select_drag_value_with_range_on_tab(&mut weapon.range, 1..=300, ui);
+                                select_drag_value_with_range_on_tab(&mut weapon.range, 0..=0, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.attacks) {
@@ -265,7 +270,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                 select_drag_value_with_range_on_tab(&mut weapon.strength, 1..=99, ui);
                             });
                             row.col(|ui| {
-                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=6, ui);
+                                select_drag_value_with_range_on_tab(&mut weapon.ap, 0..=10, ui);
                             });
                             row.col(|ui| {
                                 if !VariableValue::is_valid_variable_val(&weapon.damage) {
@@ -563,7 +568,7 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                         CrusadeUpgrade::WeaponMod(weapon_mod) => {
                                             ui.horizontal(|ui| {
                                                 weapon_mod.combo_boxes(ui, 8 + i * 4);
-                                                weapon_mod.target_select(ui, 10 + i * 4, &unit.ranged_weapons, &unit.melee_weapons);
+                                                weapon_mod.target_select(ui, 10 + i * 4, &weapons_list);
                                             });
                                         }
                                         CrusadeUpgrade::Enhancement(ability) => {

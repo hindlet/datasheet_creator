@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::data::abilities::WeaponAbility;
+use crate::data::{abilities::WeaponAbility, index::WeaponReference};
 
 use super::variable_val::VariableValue;
 
@@ -16,6 +16,32 @@ impl Range {
         match self {
             Range::Melee => return "Melee".to_string(),
             Range::Ranged(range) => return format!("{}\"", range)
+        }
+    }
+}
+
+#[derive(Debug, Default, Deserialize, Clone, Serialize)]
+pub enum ChargeLevels {
+    #[default]
+    None,
+    Parent(String),
+    Child(WeaponReference, String)
+}
+
+impl ChargeLevels {
+    pub fn to_edit(&self) -> (bool, Option<WeaponReference>, String) {
+        match self {
+            ChargeLevels::None => (false, None, "".to_string()),
+            ChargeLevels::Parent(name) => (true, None, name.clone()),
+            ChargeLevels::Child(reference, name) => (true, Some(reference.clone()), name.clone()),
+        }
+    }
+
+    pub fn from_edit(exists: bool, reference: Option<WeaponReference>, name: String) -> Self {
+        match (exists, reference) {
+            (false, _) => Self::None,
+            (true, None) => Self::Parent(name.clone()),
+            (true, Some(weapon_ref)) => Self::Child(weapon_ref, name.clone())
         }
     }
 }
@@ -39,8 +65,7 @@ pub struct Weapon {
     #[serde(default)]
     pub keywords: Vec<WeaponAbility>,
     #[serde(default)]
-    // has levels, option<parent index>, level name (The parent index is global, between both ranged and melee)
-    pub charge_levels_info: (bool, Option<usize>, String)
+    pub charge: ChargeLevels
 }
 
 pub type WeaponRenderTuple = (String, String, String, String, u32, String, String, String);

@@ -7,6 +7,7 @@ mod edit_data;
 mod unit_stats;
 mod unit_composition;
 mod crusade_data;
+mod index;
 
 pub use unit::*;
 pub use weapon::*;
@@ -16,3 +17,4 @@ pub use wargear::*;
 pub use edit_data::*;
 pub use unit_stats::UnitStats;
 pub use crusade_data::*;
+pub use index::WeaponReference;

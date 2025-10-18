@@ -5,7 +5,7 @@ mod datasheet_app;
 mod edit_settings;
 mod shortcuts;
 mod pop_up_menus;
-
+mod helper;
 
 pub use datasheet_app::DatasheetApp;
 pub use settings::{string_to_color32, DatasheetAppSettings};

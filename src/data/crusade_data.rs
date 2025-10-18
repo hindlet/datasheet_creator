@@ -1,4 +1,4 @@
-use crate::data::{Ability, WeaponEditData};
+use crate::data::{Ability, WeaponReference};
 use egui::{ComboBox, Ui};
 use serde::{Deserialize, Serialize};
 
@@ -114,7 +114,7 @@ pub struct WeaponMod {
     pub name: String,
     pub change_one: WeaponModChange,
     pub change_two: WeaponModChange,
-    pub target: Option<(bool, usize, String)>
+    pub target: Option<WeaponReference>
 }
 
 impl Default for WeaponMod {
@@ -158,17 +158,14 @@ impl WeaponMod {
             });
     }
 
-    pub fn target_select(&mut self, ui: &mut Ui, id: usize, ranged_weapons: &Vec<(WeaponEditData, u32)>, melee_weapons: &Vec<(WeaponEditData, u32)>) {
-        let text = if self.target.is_none() {"None".to_string()} else {format!("{}", self.target.as_ref().unwrap().2)};
+    pub fn target_select(&mut self, ui: &mut Ui, id: usize, weapons: &Vec<WeaponReference>) {
+        let text = if self.target.is_none() {"None".to_string()} else {format!("{}", self.target.as_ref().unwrap().name)};
         ComboBox::from_id_salt(id)
             .selected_text(text)
             .show_ui(ui, |ui| {
                 ui.selectable_value(&mut self.target, None, "None");
-                for (index, weapon) in ranged_weapons.iter().enumerate() {
-                    ui.selectable_value(&mut self.target, Some((true, index, weapon.0.name.clone())), weapon.0.name.clone());
-                }
-                for (index, weapon) in melee_weapons.iter().enumerate() {
-                    ui.selectable_value(&mut self.target, Some((false, index, weapon.0.name.clone())), weapon.0.name.clone());
+                for weapon in weapons.iter() {
+                    ui.selectable_value(&mut self.target, Some(weapon.clone()), &weapon.name);
                 }
             });
     }
