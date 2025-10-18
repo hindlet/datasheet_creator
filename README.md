@@ -5,3 +5,5 @@
  
 
 ## TODO
+- [ ] Fix Melee Weapon Mods
+- [ ] Fix weapon mods changing weapon names
