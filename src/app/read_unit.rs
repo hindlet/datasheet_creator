@@ -196,60 +196,60 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
     egui::CentralPanel::default().show(ctx, |ui| {
         ScrollArea::vertical().show(ui, |ui| {
             if ranged.len() > 0 {
-            TableBuilder::new(ui)
-                .id_salt(1)
-                .striped(true)
-                .resizable(false)
-                .column(Column::auto().at_least(400.0))
-                .column(Column::auto().at_least(75.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-                .header(20.0, |mut header| {
-                    for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
-                        header.col(|ui| {
-                            paint_bg(ui);
-                            ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
-                        });
-                    }
-                })
-                .body(|mut body| {
-                    for (weapon, count) in ranged.iter() {
-                        helper::draw_weapon_row(weapon, *count, &mut body, settings.keyword_colour);
-                    }
-                });
-            ui.separator();
-        }
+                TableBuilder::new(ui)
+                    .id_salt(1)
+                    .striped(true)
+                    .resizable(false)
+                    .column(Column::auto().at_least(400.0))
+                    .column(Column::auto().at_least(75.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                    .header(20.0, |mut header| {
+                        for col_header in ["Ranged Weapons", "Range", "A", "BS", "S", "AP", "D"] {
+                            header.col(|ui| {
+                                paint_bg(ui);
+                                ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
+                            });
+                        }
+                    })
+                    .body(|mut body| {
+                        for (weapon, count) in ranged.iter() {
+                            helper::draw_weapon_row(weapon, *count, &mut body, settings.keyword_colour);
+                        }
+                    });
+                ui.separator();
+            }
         
-        if melee.len() > 0 {
-            TableBuilder::new(ui)
-                .id_salt(2)
-                .striped(true)
-                .resizable(false)
-                .column(Column::auto().at_least(400.0))
-                .column(Column::auto().at_least(75.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .column(Column::auto().at_least(40.0))
-                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-                .header(20.0, |mut header| {
-                    for col_header in ["Melee Weapons", "Range", "A", "WS", "S", "AP", "D"] {
-                        header.col(|ui| {
-                            paint_bg(ui);
-                            ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
-                        });
-                    }
-                })
-                .body(|mut body| {
-                    for (weapon, count) in melee.iter() {
-                        helper::draw_weapon_row(weapon, *count, &mut body, settings.keyword_colour);
-                    }
-                });
+            if melee.len() > 0 {
+                TableBuilder::new(ui)
+                    .id_salt(2)
+                    .striped(true)
+                    .resizable(false)
+                    .column(Column::auto().at_least(400.0))
+                    .column(Column::auto().at_least(75.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .column(Column::auto().at_least(40.0))
+                    .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                    .header(20.0, |mut header| {
+                        for col_header in ["Melee Weapons", "Range", "A", "WS", "S", "AP", "D"] {
+                            header.col(|ui| {
+                                paint_bg(ui);
+                                ui.strong(RichText::new(col_header).color(Color32::BLACK).size(15.0));
+                            });
+                        }
+                    })
+                    .body(|mut body| {
+                        for (weapon, count) in melee.iter() {
+                            helper::draw_weapon_row(weapon, *count, &mut body, settings.keyword_colour);
+                        }
+                    });
             }
         });
 

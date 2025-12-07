@@ -238,18 +238,24 @@ impl Into<Unit> for UnitEditData {
                 match upgrade {
                     CrusadeUpgrade::WeaponMod(weapon_mod) => {
                         if weapon_mod.target.is_some() {
+                            let mut found = false;
                             for upgrade in upgrades.iter_mut() {
                                 if &upgrade.1 == weapon_mod {
                                     upgrade.0 += 1;
-                                    continue;
+                                    found = true;
+                                    break;
                                 }
                             }
-                            upgrades.push((1, weapon_mod.clone()));
+                            if !found {
+                                upgrades.push((1, weapon_mod.clone()));
+                            }
                         }
                     }
                     _ => {}
                 }
             }
+
+            println!("{:?}", upgrades);
 
             let weapons = {
                 let mut list = Vec::new();
