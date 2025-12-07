@@ -1,4 +1,4 @@
-use egui::{Color32, Context, Rect, RichText, Ui};
+use egui::{Color32, Context, Rect, RichText, ScrollArea, Ui};
 use egui_extras::{Column, TableBuilder};
 
 use crate::{app::helper, data::{CrusadeUpgrade, Unit}};
@@ -194,7 +194,8 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
     let ranged = if unit.crusade_unit {&unit.crusade_weapons.0} else {&unit.ranged_weapons};
     let melee = if unit.crusade_unit {&unit.crusade_weapons.1} else {&unit.melee_weapons};
     egui::CentralPanel::default().show(ctx, |ui| {
-        if ranged.len() > 0 {
+        ScrollArea::vertical().show(ui, |ui| {
+            if ranged.len() > 0 {
             TableBuilder::new(ui)
                 .id_salt(1)
                 .striped(true)
@@ -249,7 +250,11 @@ pub fn read_unit(settings: &DatasheetAppSettings, dark_mode: bool, ctx: &Context
                         helper::draw_weapon_row(weapon, *count, &mut body, settings.keyword_colour);
                     }
                 });
-        }
+            }
+        });
+
+
+        
         
     });
 }
