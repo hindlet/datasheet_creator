@@ -26,55 +26,8 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                 ui.label("Is a Crusade Unit:");
                 ui.checkbox( &mut unit.crusader, "");
             });
-            ui.horizontal(|ui| {
-                ui.label("Movement:");
-                select_drag_value_with_range_on_tab(&mut unit.movement, 0..=99, ui);
-                // ui.add(egui::DragValue::new(&mut unit.movement)
-                //     .range(1..=99)).on_hover_text("Inches");
-            });
-            ui.horizontal(|ui| {
-                ui.label("Toughness:");
-                select_drag_value_with_range_on_tab(&mut unit.toughness, 1..=99, ui);
-                // ui.add(egui::DragValue::new(&mut unit.toughness)
-                //     .range(1..=99));
-            });
-            ui.horizontal(|ui| {
-                ui.label("Save:");
-                select_drag_value_with_range_on_tab(&mut unit.save, 1..=6, ui);
-                // ui.add(egui::DragValue::new(&mut unit.save)
-                //     .range(1..=6));
-            });
-            ui.horizontal(|ui| {
-                ui.label("Has Invulnerable Save:");
-                ui.checkbox(&mut unit.has_invuln, "");
-            });
-            if unit.has_invuln {
-                ui.horizontal(|ui| {
-                    ui.label("Invulnerable Save:");
-                    select_drag_value_with_range_on_tab(&mut unit.invuln, 1..=6, ui);
-                    // ui.add(egui::DragValue::new(&mut unit.invuln)
-                    //     .range(1..=6));
-                });
-            }
-            ui.horizontal(|ui| {
-                ui.label("Wounds:");
-                select_drag_value_with_range_on_tab(&mut unit.wounds, 1..=99, ui);
-                // ui.add(egui::DragValue::new(&mut unit.wounds)
-                //     .range(1..=99));
-                
-            });
-            ui.horizontal(|ui| {
-                ui.label("Leadership:");
-                select_drag_value_with_range_on_tab(&mut unit.leadership, 1..=12, ui);
-                // ui.add(egui::DragValue::new(&mut unit.leadership)
-                //     .range(1..=12));
-            });
-            ui.horizontal(|ui| {
-                ui.label("Objective Control:");
-                select_drag_value_with_range_on_tab(&mut unit.objective_control, 0..=99, ui);
-                // ui.add(egui::DragValue::new(&mut unit.objective_control)
-                //     .range(0..=99));
-            });
+            unit.stats.render(ui);
+            
 
             ui.separator();
             ui.heading("Ranged Weapons");
@@ -177,8 +130,11 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                                 }
                                                 select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
                                             },
-                                            WeaponAbility::RapidFire(x) => {
-                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            WeaponAbility::RapidFire(_, x) => {
+                                                if !VariableValue::is_valid_variable_val(&x) {
+                                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                                }
+                                                select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
                                             },
                                             WeaponAbility::AntiX(keyword, x) => {
                                                 select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword), ui);
@@ -301,8 +257,11 @@ pub fn edit_unit(ctx: &Context, unit: &mut UnitEditData) {
                                                 }
                                                 select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
                                             },
-                                            WeaponAbility::RapidFire(x) => {
-                                                select_drag_value_with_range_on_tab(x, 1..=99, ui);
+                                            WeaponAbility::RapidFire(_, x) => {
+                                                if !VariableValue::is_valid_variable_val(&x) {
+                                                    ui.style_mut().visuals.extreme_bg_color = Color32::RED;
+                                                }
+                                                select_text_on_tab(x.len(), egui::TextEdit::singleline(x), ui);
                                             },
                                             WeaponAbility::AntiX(keyword, x) => {
                                                 select_text_on_tab(keyword.len(), egui::TextEdit::singleline(keyword), ui);

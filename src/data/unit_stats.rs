@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tera::Context;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
 pub struct UnitStats {
     pub movement: u32,
     pub toughness: u32,
@@ -40,4 +40,5 @@ impl UnitStats {
         context.insert("leadership", &self.leadership);
         context.insert("oc", &self.oc);
     }
+
 }

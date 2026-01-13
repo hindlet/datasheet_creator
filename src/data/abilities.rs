@@ -79,7 +79,7 @@ pub enum WeaponAbility {
     #[default]
     None,
     Assault,
-    RapidFire(u32),
+    RapidFire(VariableValue, String),
     IgnoresCover,
     TwinLinked,
     Pistol,
@@ -106,7 +106,7 @@ pub enum WeaponAbility {
 impl WeaponAbility {
     pub fn to_render_string(&self) -> String {
         match self {
-            WeaponAbility::RapidFire(x) => format!("RAPID FIRE {}", x),
+            WeaponAbility::RapidFire(x, _) => format!("RAPID FIRE {}", x.to_string()),
             WeaponAbility::Melta(x) => format!("MELTA {}", x),
             WeaponAbility::Sustained(x, _) => format!("SUSTAINED HITS {}", x.to_string()),
             WeaponAbility::AntiX(keyword, x) => format!("ANTI-{} {}+", keyword.to_uppercase(), x.clamp(&2, &6)),
@@ -119,7 +119,7 @@ impl WeaponAbility {
     pub fn to_string(&self) -> &str {
         match self {
             WeaponAbility::Assault => "ASSAULT",
-            WeaponAbility::RapidFire(_) => "RAPID FIRE",
+            WeaponAbility::RapidFire(_, _) => "RAPID FIRE",
             WeaponAbility::IgnoresCover => "IGNORES COVER",
             WeaponAbility::TwinLinked => "TWIN-LINKED",
             WeaponAbility::Pistol => "PISTOL",
@@ -151,7 +151,7 @@ impl WeaponAbility {
             .show_ui(ui, |ui| {
                 ui.selectable_value(self, WeaponAbility::None, "NONE");
                 ui.selectable_value(self, WeaponAbility::Assault, "ASSAULT");
-                ui.selectable_value(self, WeaponAbility::RapidFire(1), "RAPID FIRE");
+                ui.selectable_value(self, WeaponAbility::RapidFire(VariableValue::Set(1), "1".to_string()), "RAPID FIRE");
                 ui.selectable_value(self, WeaponAbility::IgnoresCover, "IGNORES COVER");
                 ui.selectable_value(self, WeaponAbility::TwinLinked, "TWIN-LINKED");
                 ui.selectable_value(self, WeaponAbility::Pistol, "PISTOL");

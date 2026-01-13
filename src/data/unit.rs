@@ -11,6 +11,9 @@ pub struct Unit {
     pub name: String,
     #[serde(default)]
     pub stats: UnitStats,
+
+    #[serde(default)]
+    pub extra_statlines: (String, Vec<(String, UnitStats)>),
    
     #[serde(default)]
     pub ranged_weapons: Vec<(Weapon, u32)>,
@@ -50,6 +53,7 @@ impl Default for Unit {
         Self {
             name: "".to_string(),
             stats: UnitStats::default(),
+            extra_statlines: ("".to_string(), Vec::new()),
 
             ranged_weapons: Vec::new(),
             melee_weapons: Vec::new(),

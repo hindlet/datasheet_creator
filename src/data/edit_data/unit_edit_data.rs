@@ -1,113 +1,10 @@
 use std::collections::BTreeMap;
-
-use egui::{ComboBox, Ui};
-
-use crate::{data::{abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, index::WeaponReference, ChargeLevels, CrusadeRank, CrusadeUpgrade, WeaponMod}, helper_funcs::select_text_on_tab};
-
-use super::{Ability, Range, Unit, UnitStats, VariableValue, Weapon};
-
-#[derive(Clone)]
-pub struct WeaponEditData {
-    pub name: String,
-    pub range: u32,
-    pub attacks: String,
-    pub skill: u32,
-    pub strength: u32,
-    pub ap: u32,
-    pub damage: String,
-    pub keywords: Vec<WeaponAbility>,
-    pub charge_levels_info: (bool, Option<WeaponReference>, String) // has levels, is parent, level name
-}
-
-impl Default for WeaponEditData {
-    fn default() -> Self {
-        Self {
-            name: "".to_string(),
-            range: 1,
-            attacks: "1".to_string(),
-            skill: 1,
-            strength: 1,
-            ap: 0,
-            damage: "1".to_string(),
-            keywords: Vec::new(),
-            charge_levels_info: (false, None, "".to_string())
-        }
-    }
-}
-
-impl From<&Weapon> for WeaponEditData {
-    fn from(value: &Weapon) -> Self {
-        Self {
-            name: value.name.clone(),
-            range: match value.range {
-                Range::Ranged(range) => range,
-                _ => 0
-            },
-            attacks: value.attacks.to_string(),
-            skill: value.skill,
-            strength: value.strength,
-            ap: value.ap.abs() as u32,
-            damage: value.damage.to_string(),
-            keywords: value.keywords.clone(),
-            charge_levels_info: value.charge.to_edit()
-        }
-    }
-}
-
-impl Into<Weapon> for WeaponEditData {
-    fn into(self) -> Weapon {
-        let mut keywords = Vec::new();
-        for keyword in self.keywords {
-            match keyword {
-                WeaponAbility::Sustained(_, text) => {
-                    let val = VariableValue::from_string(&text).unwrap_or(VariableValue::Set(1));
-                    keywords.push(WeaponAbility::Sustained(val, val.to_string()));
-                },
-                _ => keywords.push(keyword),
-            }
-        }
-
-        Weapon {
-            name: self.name,
-            range: if self.range == 0 {
-                Range::Melee
-            } else {
-                Range::Ranged(self.range)
-            },
-            attacks: VariableValue::from_string(&self.attacks).unwrap_or(VariableValue::Set(0)),
-            skill: self.skill,
-            strength: self.strength,
-            ap: self.ap as i32,
-            damage: VariableValue::from_string(&self.damage).unwrap_or(VariableValue::Set(0)),
-            keywords: keywords,
-            charge: ChargeLevels::from_edit(self.charge_levels_info.0, self.charge_levels_info.1, self.charge_levels_info.2) 
-        }
-    }
-}
+use crate::data::{Ability, ChargeLevels, CrusadeRank, CrusadeUpgrade, Unit, VariableValue, Weapon, WeaponMod, abilities::{CoreAbility, WeaponAbility}, crusade_data::CrusadeUnitData, edit_data::{edit_stats::EditStats, weapon_edit_data::WeaponEditData}, index::WeaponReference, unit_stats::UnitStats};
 
 
-impl WeaponEditData {
-    pub fn charge_edit_section(&mut self, ui: &mut Ui, index: usize, weapons: &Vec<WeaponReference>, id: usize) {
-        ui.horizontal(|ui| {
-            ui.checkbox(&mut self.charge_levels_info.0, "");
-            if self.charge_levels_info.0 {
-                select_text_on_tab(self.charge_levels_info.2.len(), egui::TextEdit::singleline(&mut self.charge_levels_info.2).desired_width(40.0), ui);
-                let label = if self.charge_levels_info.1.is_none() {"Parent"} else {"Child"};
-                ComboBox::from_id_salt(id)
-                    .selected_text(label)
-                    .width(20.0)
-                    .show_ui(ui, |ui| {
-                        ui.selectable_value(&mut self.charge_levels_info.1, None, "Parent");
-                        for (i, weapon) in weapons.iter().enumerate() {
-                            if i == index {continue;}
-                            ui.selectable_value(&mut self.charge_levels_info.1, Some(weapon.clone()), &weapon.name);
-                        }
-                    });
-                
-            }
-        });
-    }
-}
+
+
+
 
 #[derive(Clone)]
 pub struct UnitEditData {
@@ -115,15 +12,8 @@ pub struct UnitEditData {
     pub filename: String,
     pub prev_filename: String, // hidden from user
     
-
-    pub movement: u32,
-    pub toughness: u32,
-    pub save: u32,
-    pub has_invuln: bool,
-    pub invuln: u32,
-    pub wounds: u32,
-    pub leadership: u32,
-    pub objective_control: u32,
+    pub stats: EditStats,
+    pub extra_stats: (String, Vec<(String, EditStats)>),
 
     pub ranged_weapons: Vec<(WeaponEditData, u32)>,
     pub melee_weapons: Vec<(WeaponEditData, u32)>,
@@ -155,6 +45,14 @@ impl From<(&Unit, String)> for UnitEditData {
         for (weapon, count) in value.melee_weapons.iter() {
             melee_weapons.push((WeaponEditData::from(weapon), *count));
         }
+
+        let extra_statlines = {
+            let mut extras = Vec::new();
+            for (name, stats) in value.extra_statlines.1.iter() {
+                extras.push((name.clone(), stats.into()));
+            }
+            (value.extra_statlines.0.clone(), extras)
+        };
         
 
         Self {
@@ -162,15 +60,8 @@ impl From<(&Unit, String)> for UnitEditData {
             filename: filename.clone(),
             prev_filename: filename,
             
-            
-            movement: value.stats.movement,
-            toughness: value.stats.toughness,
-            save: value.stats.save,
-            has_invuln: value.stats.invuln.is_some(),
-            invuln: value.stats.invuln.unwrap_or(4),
-            wounds: value.stats.wounds,
-            leadership: value.stats.leadership,
-            objective_control: value.stats.oc,
+            stats: value.stats.into(),
+            extra_stats: extra_statlines,
             
             ranged_weapons,
             melee_weapons,
@@ -226,6 +117,14 @@ impl Into<Unit> for UnitEditData {
             }
         }
 
+        let extra_statlines = {
+            let mut extras: Vec<(String, UnitStats)> = Vec::new();
+            for (name, stats) in self.extra_stats.1.iter() {
+                extras.push((name.clone(), stats.into()));
+            }
+            (self.extra_stats.0.clone(), extras)
+        };
+
         let mut crusade_ranged = Vec::new();
         let mut crusade_melee = Vec::new();
         let mut crusade_data = self.crusade_data.clone();
@@ -254,8 +153,6 @@ impl Into<Unit> for UnitEditData {
                     _ => {}
                 }
             }
-
-            println!("{:?}", upgrades);
 
             let weapons = {
                 let mut list = Vec::new();
@@ -340,19 +237,8 @@ impl Into<Unit> for UnitEditData {
 
         Unit {
             name: self.name,
-            stats: UnitStats {
-                movement: self.movement,
-                toughness: self.toughness,
-                save: self.save,
-                invuln: if self.has_invuln {
-                    Some(self.invuln)
-                } else {
-                    None
-                },
-                wounds: self.wounds,
-                leadership: self.leadership,
-                oc: self.objective_control
-            },
+            stats: self.stats.into(),
+            extra_statlines,
             ranged_weapons,
             melee_weapons,
             faction_ability: if self.faction_ability.0 {
