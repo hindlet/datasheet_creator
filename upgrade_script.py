@@ -19,13 +19,16 @@ def get_all_files(searchDepth: int):
             paths = [dir + "/" + p for p in current_dir]
             files += [f for f in paths if os.path.isfile(f) and os.path.splitext(f)[1] == ".ron"]
             dirs += [f for f in paths if os.path.isdir(f)]
-    files.remove('SETTINGS.ron')
+    if "SETTINGS.ron" in files:
+        files.remove('SETTINGS.ron')
     return files
 
 
 def upgrade_unit(file: str):
     text = open(file).read();
-    replace = re.sub(re.escape("RapidFire([1-9]+)"), "RapidFire(Set(1), \"\")", text)
+    # for match in re.findall("RapidFire[(][0-9]+[)]", text):
+    #     print(match)
+    replace = re.sub("RapidFire[(][0-9]+[)]", "RapidFire(Set(1), \"1\")", text)
     # print(replace)
     open(file, 'w').write(replace)
     print("Updated file: " + file)
